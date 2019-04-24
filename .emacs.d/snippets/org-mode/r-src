@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: r-src
+# key: <r
+# --
+#+BEGIN_SRC R :tangle yes
+$0
+#+END_SRC

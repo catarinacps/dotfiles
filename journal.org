@@ -1,0 +1,13 @@
+#+TITLE: Journal of this repository
+#+AUTHOR: Henrique Silva
+#+email: hcpsilva@inf.ufrgs.br
+#+INFOJS_OPT:
+#+PROPERTY: cache yes
+#+PROPERTY: exports both
+#+PROPERTY: tangle yes
+
+* ToDo's
+
+  - [ ] copy all my configs here
+  - [ ] figure out a way to keep them here instead of their respective folders (symlinks?)
+  - [ ] make a script to automate the "installing" process

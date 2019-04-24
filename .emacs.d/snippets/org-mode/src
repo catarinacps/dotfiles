@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: src
+# key: <s
+# --
+#+BEGIN_SRC :tangle yes
+$0
+#+END_SRC

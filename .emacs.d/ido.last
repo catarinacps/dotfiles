@@ -1,0 +1,93 @@
+;;; -*- coding: utf-8 -*-
+
+;; ----- ido-last-directory-list -----
+(
+ ("/home/" . "henrique/")
+ ("/home/henrique/.emacs.d/snippets/" . "org-mode/")
+ ("/home/henrique/Repositories/bropdox/include/" . "networking/")
+ ("/home/henrique/Repositories/bropdox/" . "include/")
+ ("/home/henrique/.emacs.d/personal/" . "preload/")
+ ("/home/henrique/.emacs.d/" . "snippets/")
+ ("/home/henrique/" . ".scripts/")
+ ("/home/henrique/Repositories/" . "dotfiles/")
+)
+
+;; ----- ido-work-directory-list -----
+(
+ "/home/henrique/.scripts/"
+ "/home/henrique/.i3/"
+ "/home/henrique/Repositories/dotfiles/"
+ "/home/henrique/.emacs.d/personal/"
+ "/home/henrique/.emacs.d/snippets/org-mode/"
+ "/home/henrique/.emacs.d/core/"
+ "/home/henrique/.emacs.d/modules/"
+ "/home/henrique/Repositories/bropdox/"
+ "/home/henrique/Repositories/bropdox/include/networking/"
+ "/home/henrique/Documents/"
+ "/home/henrique/"
+ "/home/henrique/.emacs.d/personal/preload/"
+ "/home/henrique/.emacs.d/doc/"
+ "/home/henrique/.emacs.d/sample/"
+)
+
+;; ----- ido-work-file-list -----
+(
+ "touch_toggle.sh"
+ "config"
+ "journal.org"
+ "emacs.el"
+ "editor.el"
+ "r-src"
+ "elisp-src"
+ "prelude-core.el"
+ "prelude-org.el"
+ "README.org"
+)
+
+;; ----- ido-dir-file-cache -----
+(
+ ("/home/henrique/.emacs.d/personal/" (23742 22339 170245 726000) "custom.elc" "./" "prelude-modules.el" "custom.el" "emacs.el" ".dir-locals.el" "preload/" "languages.el" ".gitkeep" "editor.el" "../")
+
+ ("/home/henrique/.scripts/" (23742 26518 464484 612000) "./" "../")
+
+ ("/home/henrique/" (23742 26526 541174 795000) ".xinitrc" ".vscode/" ".dmenurc" ".zshrc" ".gimp-2.8/" "Videos/" "Public/" ".Xresources" "Documents/" ".mozilla/" ".BurpSuite/" ".zcompdump-henrique-note-5.5.1" ".thunderbird/" ".emacs.d/" ".octave_hist" ".bashrc" ".erc/" "Desktop/" "Downloads/" ".steam/" ".profile" ".xsession-errors.old" ".bash_logout" ".python_history" ".urxvt/" "./" "Repositories/" ".zcompdump-henrique-note-5.7.1" "Templates/" ".cache/" ".moonchild productions/" ".electron-gyp/" ".mono/" ".bash_profile" ".dir_colors" "Pictures/" ".emacs.d.pre-prelude.tar" ".moc/" ".dmrc" ".node-gyp/" ".esd_auth" ".viminfo" ".recently-used" ".oh-my-zsh/" ".steampath" ".gitconfig" ".scripts/" ".yarnrc" ".rnd" ".gnupg/" ".steampid" ".config/" ".Xclients" "OneDrive/" "Music/" ".pylint.d/" ".stremio-server/" ".yarn/" ".icons/" ".java/" "pic.png" ".xsession-errors" ".xmodmap" ".local/" ".zcompdump-henrique-note-5.6.2" ".pki/" ".Xauthority" ".zsh_history" ".gtkrc-2.0" ".bash_history" "../" ".i3/" ".thumbnails/")
+
+ ("/home/henrique/Repositories/dotfiles/" (23742 22549 227739 16000) ".git/" "./" "README.org" "LICENSE" "journal.org" "../")
+
+ ("/home/henrique/.emacs.d/snippets/org-mode/" (23742 21857 348002 318000) "./" "src" "r-header" "r-src" "../" "elisp-src")
+
+ ("/home/henrique/.emacs.d/core/" (23742 21259 285070 475000) "prelude-packages.elc" "prelude-mode.elc" "./" "prelude-packages.el" "prelude-ui.el" "prelude-core.el" "prelude-editor.el" "prelude-ui.elc" "prelude-linux.el" "prelude-macos.elc" "prelude-linux.elc" "prelude-global-keybindings.elc" "prelude-custom.elc" "prelude-editor.elc" "prelude-macos.el" "prelude-global-keybindings.el" "prelude-custom.el" "../" "prelude-core.elc" "prelude-mode.el")
+
+ ("/home/henrique/.emacs.d/" (23742 21258 875069 509000) "CONTRIBUTING.md" "themes/" "elpa/" ".projectile" "savefile/" "smex-items" ".git/" "./" "utils/" "var/" "personal/" "init.el" ".gitignore" "snippets/" "transient/" "doc/" "core/" "projectile-bookmarks.eld" "modules/" "irony/" "README.md" "sample/" "mkdocs.yml" "init.elc" "ido.last" ".mc-lists.el" "../" "vendor/" "auto-save-list/" "prelude-cheatsheet.pdf")
+
+ ("/home/henrique/.emacs.d/modules/" (23742 21224 338321 864000) "prelude-elixir.el" "prelude-clojure.el" "prelude-elixir.elc" "prelude-rust.elc" "prelude-scala.el" "prelude-latex.elc" "prelude-common-lisp.elc" "prelude-ruby.el" "prelude-company.el" "prelude-org.el" "prelude-perl.el" "prelude-org.elc" "prelude-css.elc" "prelude-lisp.elc" "prelude-clojure.elc" "prelude-python.el" "prelude-go.el" "prelude-emacs-lisp.el" "prelude-css.el" "./" "prelude-latex.el" "prelude-common-lisp.el" "prelude-key-chord.el" "prelude-lisp.el" "prelude-c.elc" "prelude-scala.elc" "prelude-programming.el" "prelude-python.elc" "prelude-coffee.el" "prelude-ido.el" "prelude-shell.elc" "prelude-perl.elc" "prelude-ocaml.el" "prelude-lsp.el" "prelude-erlang.elc" "prelude-erlang.el" "prelude-c.el" "prelude-erc.el" "prelude-rust.el" "prelude-yaml.el" "prelude-web.el" "prelude-ts.el" "prelude-haskell.el" "prelude-scss.el" "prelude-xml.elc" "prelude-helm.el" "prelude-emacs-lisp.elc" "prelude-js.el" "prelude-coffee.elc" "prelude-xml.el" "prelude-haskell.elc" "prelude-yaml.elc" "prelude-helm-everywhere.el" "prelude-evil.el" "prelude-erc.elc" "prelude-shell.el" "prelude-ivy.el" "../" "prelude-ruby.elc" "prelude-scss.elc" "prelude-programming.elc" "prelude-scheme.el")
+
+ ("/home/henrique/Repositories/" (23742 19931 206846 586000) "dotfiles/" "./" "halftone-qrcode/" "bropdox/" "photochopp/" "hashbooks/" "../")
+
+ ("/home/henrique/Documents/" (23741 63431 417500 269000) "Cover_Letter_for_the_IC_position.pdf" "./" "letter/" "fpi.org" "materialism_and_empiriocriticism.pdf" "lenin-cw-vol-14.pdf" "bh1vUHW.png" "v46i03.pdf" ".clang-format" "Henrique Silva.zip" "selecao/" "org-test.org" "Henrique Silva/" "Enunciado 3 - FBD.pdf" "../")
+
+ ("/home/" (23377 14937 930299 5000) "./" "henrique/" "../")
+
+ ("/home/henrique/Repositories/bropdox/" (23741 57919 977629 604000) "bin/" "Makefile" "project-book.org" ".git/" "./" "include/" ".gitignore" "build/" "lib/" "img/" "src/" "tests/" ".clang-format" "README.md" "project-book.tex" "../")
+
+ ("/home/henrique/Repositories/bropdox/include/networking/" (23741 16339 676343 622000) "ActiveSocket.hpp" "./" "RawSocket.hpp" "Connection.hpp" "Socket.hpp" "PassiveSocket.hpp" "../")
+
+ ("/home/henrique/.emacs.d/personal/preload/" (23741 96 864617 482000) "./" "looks.el" ".gitkeep" "../")
+
+ ("/home/henrique/.electron-gyp/" (23740 3740 857769 278000) "./" "4.1.1/" "iojs-3.1.6/" "../")
+
+ ("/home/henrique/.i3/" (23738 10470 782043 593000) "./" "config" "../")
+
+ ("/home/henrique/.emacs.d/doc/" (23709 40328 746330 291000) "configuration.md" "./" "prelude-cheatsheet.tex" "troubleshooting.md" "faq.md" "css/" "cheatsheet.png" "usage.md" "index.md" "modules/" "installation.md" "contributing.md" "support.md" "../" "prelude-cheatsheet.pdf")
+
+ ("/home/henrique/.emacs.d/snippets/" (23739 60140 543090 194000) "./" "org-mode/" "../")
+
+ ("/home/henrique/.emacs.d/sample/" (23738 43328 160233 380000) "./" "prelude-modules.el" "prelude-pinned-packages.elc" "prelude-pinned-packages.el" "../")
+
+ ("/home/henrique/Repositories/bropdox/include/" (23730 39656 873795 480000) "inotify-cpp/" "./" "server/" "helpers/" "client/" "spdlog/" "util/" "networking/" "../")
+
+ ("/home/henrique/Downloads/" (23734 36249 58230 530000) "HenriqueCorreaPereiraDaSilva-262508.pdf" "SISOP - Trabalho 1.pdf" "Git - Aula 2 (adaptação by Henrique).pdf" "./" "Telegram Desktop/" "Git - Aula 1 (adaptação by Henrique).pdf" "Provas (P1, P2, P3)-20190407T035631Z-001.zip" "projetoSISOP.pdf" "newlfm.zip" "Resumo SISOP P2.pdf" "802.jpg" "8ca.jpg" "snek.jpeg" "Minuta Edital PET COMPUTAÇÂO.docx" "Resumo P3.pdf" "Avaliação interna PET.csv.zip" "Avaliação interna PET.csv" "newlfm/" "../")
+)
+
+;; ----- ido-unc-hosts-cache -----
+t

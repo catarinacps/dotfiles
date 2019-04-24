@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: r-header
+# key: rhead_
+# --
+#+TITLE: $1
+#+AUTHOR: Henrique Silva
+#+email: hcpsilva@inf.ufrgs.br
+#+INFOJS_OPT:
+#+PROPERTY: session *R*
+#+PROPERTY: cache yes
+#+PROPERTY: results graphics
+#+PROPERTY: exports both
+#+PROPERTY: tangle yes
