@@ -6,8 +6,9 @@
 #+PROPERTY: exports both
 #+PROPERTY: tangle yes
 
-* ToDo's
+* ToDo's [2/3]
 
-  - [ ] copy all my configs here
-  - [ ] figure out a way to keep them here instead of their respective folders (symlinks?)
-  - [ ] make a script to automate the "installing" process
+  - [X] copy all my configs here
+  - [X] figure out a way to keep them here instead of their respective folders (symlinks?)
+  - +[ ] make a script to automate the "installing" process+
+  - [ ] find out how to deal with existing files on a new system

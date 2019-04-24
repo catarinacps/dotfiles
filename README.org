@@ -6,9 +6,7 @@
 #+PROPERTY: exports both
 #+PROPERTY: tangle yes
 
-* The idea
-
-  I intend to use this repository (and also this README file) as a tool to
-  organize myself and my configurations. That way I can incrementally rip
-  whatever I like from my Manjaro configs, store it here and perhaps some day in
-  the near future distro-hop to Arch (either that or use Manjaro Architect).
+I intend to use this repository (and also this README file) as a tool to
+organize myself and my configurations. That way I can incrementally rip
+whatever I like from my Manjaro configs, store it here and perhaps some day in
+the near future distro-hop to Arch (either that or use Manjaro Architect).
