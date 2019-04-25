@@ -350,7 +350,7 @@ bar {
         background #222D31C0
         statusline #F9FAF9
         separator  #454947
-/
+
 #                      border  backgr. text
         focused_workspace  #EC0000 #222D31D0 #EC0000
         active_workspace   #222D31 #222D31D0 #FDF6E3
