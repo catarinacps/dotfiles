@@ -6,11 +6,11 @@
 #+PROPERTY: exports both
 #+PROPERTY: tangle yes
 
-* ToDo's [3/5]
+* ToDo's [4/6]
 
   - [X] copy all my configs here
   - [X] figure out a way to keep them here instead of their respective folders (symlinks?)
-  - +[ ] make a script to automate the "installing" process+
+  - [X] make a script to automate the "installing" process
   - [X] find out how to deal with existing files on a new system
   - [ ] load all emacs configs in a single org file
   - [ ] update the README to include the instructions as to how to clone this repo
