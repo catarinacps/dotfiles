@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # Originally based on code by Dieter Plaetinck.
@@ -87,7 +86,7 @@ get_type () {
 
 if ! type=$(grep -lx "$match" -R "$config_dir"); then
     type=$(get_type)
-else 
+else
     type=${type##*/}
     if ! [[ $known_types =~ " $type " ]]; then
         rm "$config_dir/$type"
