@@ -6,13 +6,14 @@
 #+PROPERTY: exports both
 #+PROPERTY: tangle yes
 
-* ToDo's [2/4]
+* ToDo's [3/5]
 
   - [X] copy all my configs here
   - [X] figure out a way to keep them here instead of their respective folders (symlinks?)
   - +[ ] make a script to automate the "installing" process+
-  - [ ] find out how to deal with existing files on a new system
+  - [X] find out how to deal with existing files on a new system
   - [ ] load all emacs configs in a single org file
+  - [ ] update the README to include the instructions as to how to clone this repo
 
 * Diary
 
@@ -23,3 +24,8 @@
     Today I initiated this repository. I've used a method of keeping the files
     synchronized that involves a bare git repository and everything went
     pretty well!
+
+*** 2019-04-25
+
+    Updated and added a bunch of stuff, also added a script that handles the
+    existing files issue.
