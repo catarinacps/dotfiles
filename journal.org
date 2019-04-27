@@ -29,3 +29,9 @@
 
     Updated and added a bunch of stuff, also added a script that handles the
     existing files issue.
+
+*** 2019-04-27
+
+    Still cleaning up ~.emacs.d/~ Prelude stuff. Don't get me wrong, Prelude is
+    very useful, but I'm trying to customize my own Emacs from what Prelude
+    offers.
