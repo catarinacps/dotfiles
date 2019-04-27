@@ -3,6 +3,7 @@
 (require 'yasnippet)
 (require 'smart-mode-line)
 (require 'org-journal)
+(require 'xkcd)
 
 (setq initial-major-mode 'org-mode)
 (setq initial-scratch-message "\
