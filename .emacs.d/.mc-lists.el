@@ -3,10 +3,14 @@
 
 (setq mc/cmds-to-run-for-all
       '(
+        evil-insert
+        evil-normal-state
+        evil-yank
         org-self-insert-command
         ))
 
 (setq mc/cmds-to-run-once
       '(
         beginning-of-buffer
+        sp-backward-delete-char
         ))
