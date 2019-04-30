@@ -24,3 +24,5 @@
 (yas-global-mode 1)
 
 (sml/setup)
+
+(pdf-loader-install)

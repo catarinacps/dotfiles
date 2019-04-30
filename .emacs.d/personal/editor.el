@@ -3,6 +3,7 @@
 (require 'flycheck)
 (require 'god-mode)
 (require 'key-chord)
+(require 'evil-collection)
 
 ;; Functions
 ;;(defun hook-update-cursor ()
@@ -34,3 +35,6 @@
 ;; Key-chords
 (setq key-chord-two-keys-delay .015
       key-chord-one-key-delay .020)
+
+(setq evil-want-keybinding nil)
+(evil-collection-init)

@@ -137,6 +137,7 @@
     "t" 'org-todo ; mark a TODO item as DONE
     ",c" 'org-cycle
     (kbd "TAB") 'org-cycle
+    (kbd "S-TAB") 'org-global-cycle
     ",e" 'org-export-dispatch
     ",n" 'outline-next-visible-heading
     ",p" 'outline-previous-visible-heading
