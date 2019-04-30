@@ -10,6 +10,7 @@
 # ZSH_THEME="bullet-train"
 ZSH_THEME="gallois"
 
+
 # Set list of themes to load
 # Setting this variable when ZSH_THEME=random
 # cause zsh load theme from this variable instead of
