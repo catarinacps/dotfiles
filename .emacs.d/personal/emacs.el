@@ -5,6 +5,10 @@
 (require 'org-journal)
 (require 'xkcd)
 (require 'zone)
+(require 'exec-path-from-shell)
+
+(exec-path-from-shell-copy-env "SSH_AGENT_PID")
+(exec-path-from-shell-copy-env "SSH_AUTH_SOCK")
 
 (setq initial-major-mode 'org-mode)
 (setq initial-scratch-message "\
