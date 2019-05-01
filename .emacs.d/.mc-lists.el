@@ -3,6 +3,7 @@
 
 (setq mc/cmds-to-run-for-all
       '(
+        evil-delete-backward-char-and-join
         evil-insert
         evil-normal-state
         evil-yank

@@ -1,0 +1,314 @@
+# -*- mode: org -*-
+
+#+TITLE: My emacs configuration file
+#+AUTHOR: Henrique Silva
+#+email: hcpsilva@inf.ufrgs.br
+#+INFOJS_OPT:
+
+* Emacs
+
+Here is all base emacs things that I wish were set in another way.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq-default
+ ad-redefinition-action 'accept                ; Silence warnings for redefinition
+ auto-window-vscroll nil                       ; Lighten vertical scroll
+ confirm-kill-emacs 'yes-or-no-p               ; Confirm before exiting Emacs
+ cursor-in-non-selected-windows t              ; Hide the cursor in inactive windows
+ delete-by-moving-to-trash t                   ; Delete files to trash
+ display-time-format "%H:%M"                   ; Format the time string
+ fill-column 80                                ; Set width for automatic line breaks
+ help-window-select t                          ; Focus new help windows when opened
+ initial-scratch-message ""                    ; Empty the initial *scratch* buffer
+ recenter-positions '(5 top bottom)            ; Set re-centering positions
+ scroll-conservatively most-positive-fixnum    ; Always scroll by one line
+ select-enable-clipboard t                     ; Merge system's and Emacs' clipboard
+ tab-width 4                                   ; Set width for tabs
+ uniquify-buffer-name-style 'forward           ; Uniquify buffer names
+ display-line-numbers-type 'relative           ; Set relative line numbering
+ window-combination-resize t                   ; Resize windows proportionally
+ x-stretch-cursor t)                           ; Stretch cursor to the glyph width
+
+(display-time-mode 1)                          ; Enable time in the mode-line
+(fset 'yes-or-no-p 'y-or-n-p)                  ; Replace yes/no prompts with y/n
+(set-face-attribute 'default nil :height 110)  ; Sets the font size to 11
+(global-display-line-numbers-mode)
+#+END_SRC
+
+** Features
+
+These are emacs-behaviour related! In other words, these extend the capabilities
+of emacs as an editor, and NOT add support to other languages or etc.
+
+*** Completion
+
+I use =company= as my completion framework. In the words of Dmitry Gutov:
+
+#+BEGIN_QUOTE
+Company is a text completion framework for Emacs. The name stands for "complete
+anything". It uses pluggable back-ends and front-ends to retrieve and display
+completion candidates.
+
+[[http://company-mode.github.io/][Dmitry Gutov]]
+#+END_QUOTE
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package company
+  :defer 1
+  :bind
+  (:map company-active-map
+        ("RET" . nil)
+        ([return] . nil)
+        ("TAB" . company-complete-selection)
+        ([tab] . company-complete-selection)
+        ("<right>" . company-complete-common))
+  :config
+  (global-company-mode 1)
+  (setq-default
+   company-idle-delay .2
+   company-minimum-prefix-length 1
+   company-require-match nil
+   company-tooltip-align-annotations t))
+#+END_SRC
+
+*** Buffers and windows
+
+- *TODO*: make a hydra to change buffers like tabs (=j= goes to previous buffer,
+=l= to the next)
+
+=windmove= is a package that creates commands to move around windows.
+
+#+BEGIN_SRC emacs-lisp
+(use-package windmove
+  :ensure nil
+  :bind
+  ((C-M-<left>. windmove-left)
+   ("C-M-<right>". windmove-right)
+   ("C-M-<up>". windmove-up)
+   ("C-M-<down>". windmove-down)))
+#+END_SRC
+
+Originally, =midnight= is used to /run something at midnight/. I use its feature that
+kills old buffers.
+
+#+BEGIN_SRC emacs-lisp
+(use-package midnight
+  :ensure nil
+  :config
+  (setq-default clean-buffer-list-delay-general 1))
+#+END_SRC
+
+*** Templates and Snippets
+
+I use =YaSnippet= to handle my snippet needs.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package yasnippet
+  :bind
+  (:map yas-minor-mode-map
+        ("TAB" . nil)
+        ("<tab>" . nil))
+  :hook
+  ((emacs-lisp-mode . yas-minor-mode)
+   (html-mode . yas-minor-mode)
+   (js-mode . yas-minor-mode)
+   (org-mode . yas-minor-mode)
+   (python-mode . yas-minor-mode))
+  :config
+  (yas-reload-all))
+#+END_SRC
+
+*** Folding
+
+Enables vim-like folding of regions.
+
+#+BEGIN_SRC emacs-lisp
+(use-package vimish-fold
+  :defer 1
+  :bind
+  (:map vimish-fold-folded-keymap ("<tab>" . vimish-fold-unfold)
+   :map vimish-fold-unfolded-keymap ("<tab>" . vimish-fold-refold))
+  :init
+  (setq-default vimish-fold-dir (expand-file-name ".vimish-fold/" user-emacs-directory))
+  (vimish-fold-global-mode 1)
+  :config
+  (setq-default vimish-fold-header-width 79))
+#+END_SRC
+
+*** Hydra
+
+=Hydra= is a package that allows keybindings to be activated under the pressing
+of a specific combination of keys. These will then be active as long as only
+them are being pressed, as on the moment a key which isn't part of the hydra is
+pressed the hydra is killed and the keybindings deactivated.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package hydra
+  :preface
+  (defvar-local me/ongoing-hydra-body nil)
+  (defun me/ongoing-hydra ()
+    (interactive)
+    (if me/ongoing-hydra-body
+        (funcall me/ongoing-hydra-body)
+      (user-error "me/ongoing-hydra: me/ongoing-hydra-body is not set")))
+  :bind
+  ("C-c e" . hydra-eyebrowse/body)
+  ("C-c f" . hydra-flycheck/body)
+  :config (setq-default hydra-default-hint nil))
+
+#+END_SRC
+
+**** Eyebrowse
+
+#+BEGIN_SRC emacs-lisp
+(defhydra hydra-eyebrowse (:color blue)
+  "
+^
+^Eyebrowse^         ^Do^                ^Switch^
+^─────────^─────────^──^────────────────^──────^────────────
+_q_ quit            _c_ create          _<_ previous
+^^                  _k_ kill            _>_ next
+^^                  _r_ rename          _e_ last
+^^                  ^^                  _s_ switch
+^^                  ^^                  ^^
+"
+  ("q" nil)
+  ("<" eyebrowse-prev-window-config :color red)
+  (">" eyebrowse-next-window-config :color red)
+  ("c" eyebrowse-create-window-config)
+  ("e" eyebrowse-last-window-config)
+  ("k" eyebrowse-close-window-config :color red)
+  ("r" eyebrowse-rename-window-config)
+  ("s" eyebrowse-switch-to-window-config))
+#+END_SRC
+
+**** Flycheck
+
+#+BEGIN_SRC emacs-lisp
+(defhydra hydra-flycheck (:color pink)
+  "
+^
+^Flycheck^          ^Errors^            ^Checker^
+^────────^──────────^──────^────────────^───────^───────────
+_q_ quit            _<_ previous        _?_ describe
+_m_ manual          _>_ next            _d_ disable
+_v_ verify setup    _f_ check           _s_ select
+^^                  _l_ list            ^^
+^^                  ^^                  ^^
+"
+  ("q" nil)
+  ("<" flycheck-previous-error)
+  (">" flycheck-next-error)
+  ("?" flycheck-describe-checker :color blue)
+  ("d" flycheck-disable-checker :color blue)
+  ("f" flycheck-buffer)
+  ("l" flycheck-list-errors :color blue)
+  ("m" flycheck-manual :color blue)
+  ("s" flycheck-select-checker :color blue)
+  ("v" flycheck-verify-setup :color blue))
+#+END_SRC
+
+
+*** Syntax Checking
+
+=Flycheck= provides a reliable source to syntax checking in emacs.
+
+#+BEGIN_SRC emacs-lisp
+(use-package flycheck
+  :hook
+  ((css-mode . flycheck-mode)
+   (emacs-lisp-mode . flycheck-mode)
+   (js-mode . flycheck-mode)
+   (python-mode . flycheck-mode))
+  :config
+  (setq-default
+   flycheck-check-syntax-automatically '(save mode-enabled)
+   flycheck-disabled-checkers '(emacs-lisp-checkdoc)
+   flycheck-display-errors-delay .3))
+#+END_SRC
+
+*** Region and pointers
+
+Increase region by semantic units. It tries to be smart about it and adapt to
+the structure of the current major mode.
+
+#+BEGIN_SRC emacs-lisp
+(use-package expand-region
+  :bind
+  ("C-+" . er/contract-region)
+  ("C-=" . er/expand-region))
+#+END_SRC
+
+*** Indentation
+
+I use =aggressive-indent= to keep my code indented as I write.
+
+#+BEGIN_SRC emacs-lisp
+(use-package aggressive-indent
+  :preface
+  (defun me/aggressive-indent-mode-off ()
+    (aggressive-indent-mode 0))
+  :hook
+  ((emacs-lisp-mode . aggressive-indent-mode)
+   (lisp-mode . aggressive-indent-mode))
+  :config
+  (setq-default aggressive-indent-comments-too t)
+  (add-to-list 'aggressive-indent-protected-commands 'comment-dwim))
+#+END_SRC
+
+*** Utilities
+
+Random utilities that don't fit anywhere else.
+
+**** Date
+
+Insert the current date.
+
+#+BEGIN_SRC emacs-lisp
+(defun me/date-iso ()
+  "Insert the current date, ISO format, eg. 2016-12-09."
+  (interactive)
+  (insert (format-time-string "%F")))
+
+(defun me/date-iso-with-time ()
+  "Insert the current date, ISO format with time, eg. 2016-12-09T14:34:54+0100."
+  (interactive)
+  (insert (format-time-string "%FT%T%z")))
+
+(defun me/date-long ()
+  "Insert the current date, long format, eg. December 09, 2016."
+  (interactive)
+  (insert (format-time-string "%B %d, %Y")))
+
+(defun me/date-long-with-time ()
+  "Insert the current date, long format, eg. December 09, 2016 - 14:34."
+  (interactive)
+  (insert (capitalize (format-time-string "%B %d, %Y - %H:%M"))))
+
+(defun me/date-short ()
+  "Insert the current date, short format, eg. 2016.12.09."
+  (interactive)
+  (insert (format-time-string "%Y.%m.%d")))
+
+(defun me/date-short-with-time ()
+  "Insert the current date, short format with time, eg. 2016.12.09 14:34"
+  (interactive)
+  (insert (format-time-string "%Y.%m.%d %H:%M")))
+#+END_SRC
+
+
+* Languages
+
+Here I'll store any package load and configurations related to languages.
+
+** org
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package org-src
+  :ensure nil
+  :after org
+  :config
+  (setq-default
+   org-edit-src-content-indentation 0
+   org-edit-src-persistent-message nil))
+#+END_SRC

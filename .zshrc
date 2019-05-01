@@ -106,3 +106,4 @@ fi
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias dotgit='git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 alias tiv='tiv -256'
+alias reset_emacs='killall emacs; emacs --daemon'

@@ -9,7 +9,7 @@ set $mod Mod4
 
 # Configure border style <normal|1pixel|pixel xx|none|pixel>
 new_window none
-new_float 1pixel
+new_float none
 
 # Hide borders
 hide_edge_borders none

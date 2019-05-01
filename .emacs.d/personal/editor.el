@@ -1,8 +1,6 @@
 (require 'multiple-cursors)
 (require 'company)
 (require 'flycheck)
-(require 'god-mode)
-(require 'key-chord)
 (require 'evil-collection)
 
 ;; Functions
@@ -21,7 +19,7 @@
 (setq display-line-numbers-type 'relative)
 
 ;; Font size
-(set-face-attribute 'default nil :height 120)
+(set-face-attribute 'default nil :height 110)
 
 ;; Key bindings
 (global-set-key [C-M-tab] 'clang-format-buffer)
@@ -31,10 +29,6 @@
 
 ;; Word wrap
 (setq-default fill-column 80)
-
-;; Key-chords
-(setq key-chord-two-keys-delay .015
-      key-chord-one-key-delay .020)
 
 (setq evil-want-keybinding nil)
 (evil-collection-init)

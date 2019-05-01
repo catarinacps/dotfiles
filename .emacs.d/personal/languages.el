@@ -1,5 +1,6 @@
 (require 'irony)
 (require 'org)
+(require 'ess-r-mode)
 
 (add-hook 'c++-mode-hook 'irony-mode)
 (add-hook 'c-mode-hook 'irony-mode)
