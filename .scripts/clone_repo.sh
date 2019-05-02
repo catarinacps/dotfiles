@@ -1,7 +1,7 @@
-#!/bin/bash
-
 # This script is supposed to be downloaded and ran BEFORE the cloning of
 # this repository, i.e. run this script to clone
+# Example usage: chmod +x ./clone_repo.sh; $SHELL ./clone_repo.sh
+
 
 # Definitions
 gitdir=".cfg/"
