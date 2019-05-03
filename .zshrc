@@ -8,7 +8,7 @@
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 # ZSH_THEME="bullet-train"
-ZSH_THEME="gentoo"
+ZSH_THEME="alanpeabody"
 
 # Set list of themes to load
 # Setting this variable when ZSH_THEME=random
