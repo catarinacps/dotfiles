@@ -10,3 +10,53 @@ I intend to use this repository (and also this README file) as a tool to
 organize myself and my configurations. That way I can incrementally rip
 whatever I like from my Manjaro configs, store it here and perhaps some day in
 the near future distro-hop to Arch (either that or use Manjaro Architect).
+
+** Configurations that can be found here
+
+- i3-gaps
+- urxvt
+- dmenu
+- lightdm
+- emacs
+- zsh
+- compton
+- dunst
+- redshift
+
+** Installing
+
+In order to clone and "install" (i.e. copy these dotfiles to their correct
+location), you should use [[./.scripts/install_dotfiles.sh][this script]].
+
+Here is it, by the way:
+
+#+BEGIN_SRC shell :tangle yes
+  # This script is supposed to be downloaded and ran BEFORE the cloning of
+  # this repository, i.e. run this script to clone
+  # Example usage: chmod +x ./clone_repo.sh; $SHELL ./clone_repo.sh
+
+
+  gitdir="~/.cfg/"
+  gitrepo='git@github.com:hcpsilva/dotfiles.git'
+  gitalias="git --git-dir=$gitdir --work-tree=$HOME"
+
+  # Set-up
+  alias dotgit="'$gitalias'"
+  echo "alias dotgit='$gitalias'" >> $HOME/.$(basename $SHELL)rc
+  echo $gitdir >> $HOME/.gitignore
+
+  # Cloning
+  git clone --bare $gitrepo $gitdir
+
+  # Make sure we checkout (if before where any duplicates)
+  dotgit checkout -f
+
+  # Set so that this repo can't see untracked files (otherwise madness)
+  dotgit config --local status.showUntrackedFiles no
+
+  # Load up the alias
+  source $HOME/.$(basename $SHELL)rc
+#+END_SRC
+
+It ensures that the repo is cloned the right way and puts an useful alias
+in your =$SHELL= configuration file.
