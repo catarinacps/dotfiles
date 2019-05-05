@@ -107,3 +107,5 @@ fi
 alias dotgit='git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 alias tiv='tiv -256'
 alias reset_emacs='killall emacs; emacs --daemon'
+alias emacst='emacsclient -t'
+alias emacsc='emacsclient -c'

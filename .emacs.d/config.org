@@ -1,13 +1,25 @@
 # -*- mode: org -*-
-
-#+TITLE: My emacs configuration file
+#+TITLE: My Emacs configuration file
 #+AUTHOR: Henrique Silva
 #+email: hcpsilva@inf.ufrgs.br
 #+INFOJS_OPT:
 
+These configurations represent my preferred version of Emacs, one that uses
+=evil-mode= everywhere it can and one that tries to be as minimalist as +I want+
+possible.
+
+Cool Emacs configs from cool people:
+
+- [[https://github.com/caisah/emacs.dz][Lots of cool people]]
+- [[https://github.com/hrs/dotfiles][hrs]]  (he likes org-mode and evil)
+
 * Emacs
 
-Here is all base emacs things that I wish were set in another way.
+Everything related to Emacs as the editor and platform.
+
+** Definitions
+
+Default definitions that are better other way.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (setq-default
@@ -24,6 +36,7 @@ Here is all base emacs things that I wish were set in another way.
  scroll-conservatively most-positive-fixnum    ; Always scroll by one line
  select-enable-clipboard t                     ; Merge system's and Emacs' clipboard
  tab-width 4                                   ; Set width for tabs
+ line-spacing nil                              ; Set no extra line spacing
  uniquify-buffer-name-style 'forward           ; Uniquify buffer names
  display-line-numbers-type 'relative           ; Set relative line numbering
  window-combination-resize t                   ; Resize windows proportionally
@@ -32,13 +45,54 @@ Here is all base emacs things that I wish were set in another way.
 (display-time-mode 1)                          ; Enable time in the mode-line
 (fset 'yes-or-no-p 'y-or-n-p)                  ; Replace yes/no prompts with y/n
 (set-face-attribute 'default nil :height 110)  ; Sets the font size to 11
-(global-display-line-numbers-mode)
+(global-display-line-numbers-mode)             ; Sets the number line globally
 #+END_SRC
 
 ** Features
 
-These are emacs-behaviour related! In other words, these extend the capabilities
-of emacs as an editor, and NOT add support to other languages or etc.
+These are Emacs-behaviour related! In other words, these extend the capabilities
+of Emacs as an editor, and do NOT add support to other languages or etc.
+
+I still need to add:
+
+- [ ] ranger
+- [ ] neotree
+- [ ] smartparens
+- [ ] which-key
+- [ ] smart-mode-line
+- [ ] helpful
+- [ ] gruvbox
+
+*** Packages
+
+I use =use-package= to load my packages and to organize them neatly in this org
+file. I plan to gradually rip everything I want from =prelude= and put it here
+eventually, using =use-package=.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(require 'use-package-ensure)
+(setq use-package-always-ensure t)
+#+END_SRC
+
+Having that said, I too use =auto-compile= to always compile packages and to
+have their newest version always.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package auto-compile
+  :config (auto-compile-on-load-mode))
+
+(setq load-prefer-newer t)
+#+END_SRC
+
+*** Evil mode
+
+=evil=, or Extensible vi Layer, is a minor mode that changes Emacs text editing
+keybindings to match the modal edit modes of vi and vim.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package evil-mode
+  )
+#+END_SRC
 
 *** Completion
 
@@ -98,7 +152,7 @@ kills old buffers.
   (setq-default clean-buffer-list-delay-general 1))
 #+END_SRC
 
-*** Templates and Snippets
+*** Templates and snippets
 
 I use =YaSnippet= to handle my snippet needs.
 
