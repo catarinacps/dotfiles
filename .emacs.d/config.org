@@ -13,7 +13,7 @@ Cool Emacs configs from cool people:
 - [[https://github.com/caisah/emacs.dz][Lots of cool people]]
 - [[https://github.com/hrs/dotfiles][hrs]]  (he likes org-mode and evil)
 
-* Emacs
+* The editor
 
 Everything related to Emacs as the editor and platform.
 
@@ -62,8 +62,15 @@ I still need to add:
 - [ ] smart-mode-line
 - [ ] helpful
 - [ ] gruvbox
+- [ ] sensible-defaults
+- [ ] projectile
+- [ ] minions
+- [ ] ivy
+- [ ] dumb-jump
+- [ ] magit
+- [ ] flyspell
 
-*** Packages
+*** Package loading
 
 I use =use-package= to load my packages and to organize them neatly in this org
 file. I plan to gradually rip everything I want from =prelude= and put it here
@@ -84,15 +91,92 @@ have their newest version always.
 (setq load-prefer-newer t)
 #+END_SRC
 
-*** Evil mode
+*** Keybindings
 
-=evil=, or Extensible vi Layer, is a minor mode that changes Emacs text editing
-keybindings to match the modal edit modes of vi and vim.
+These packages change keybindings and the default editing modes of Emacs.
+
+**** Evil
+
+=evil=, or /Extensible vi Layer/, is a minor mode that changes Emacs text
+editing keybindings to match the modal edit modes of vi and vim.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package evil-mode
   )
 #+END_SRC
+
+**** Hydra
+
+=Hydra= is a package that allows keybindings to be activated under the pressing
+of a specific combination of keys. These will then be active as long as only
+them are being pressed, as on the moment a key which isn't part of the hydra is
+pressed the hydra is killed and the keybindings deactivated.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package hydra
+  :preface
+  (defvar-local me/ongoing-hydra-body nil)
+  (defun me/ongoing-hydra ()
+    (interactive)
+    (if me/ongoing-hydra-body
+        (funcall me/ongoing-hydra-body)
+      (user-error "me/ongoing-hydra: me/ongoing-hydra-body is not set")))
+  :bind
+  ("C-c e" . hydra-eyebrowse/body)
+  ("C-c f" . hydra-flycheck/body)
+  :config (setq-default hydra-default-hint nil))
+#+END_SRC
+
+***** Eyebrowse
+
+ #+BEGIN_SRC emacs-lisp
+ (defhydra hydra-eyebrowse (:color blue)
+   "
+ ^
+ ^Eyebrowse^         ^Do^                ^Switch^
+ ^─────────^─────────^──^────────────────^──────^────────────
+ _q_ quit            _c_ create          _<_ previous
+ ^^                  _k_ kill            _>_ next
+ ^^                  _r_ rename          _e_ last
+ ^^                  ^^                  _s_ switch
+ ^^                  ^^                  ^^
+ "
+   ("q" nil)
+   ("<" eyebrowse-prev-window-config :color red)
+   (">" eyebrowse-next-window-config :color red)
+   ("c" eyebrowse-create-window-config)
+   ("e" eyebrowse-last-window-config)
+   ("k" eyebrowse-close-window-config :color red)
+   ("r" eyebrowse-rename-window-config)
+   ("s" eyebrowse-switch-to-window-config))
+ #+END_SRC
+
+***** Flycheck
+
+ #+BEGIN_SRC emacs-lisp
+ (defhydra hydra-flycheck (:color pink)
+   "
+ ^
+ ^Flycheck^          ^Errors^            ^Checker^
+ ^────────^──────────^──────^────────────^───────^───────────
+ _q_ quit            _<_ previous        _?_ describe
+ _m_ manual          _>_ next            _d_ disable
+ _v_ verify setup    _f_ check           _s_ select
+ ^^                  _l_ list            ^^
+ ^^                  ^^                  ^^
+ "
+   ("q" nil)
+   ("<" flycheck-previous-error)
+   (">" flycheck-next-error)
+   ("?" flycheck-describe-checker :color blue)
+   ("d" flycheck-disable-checker :color blue)
+   ("f" flycheck-buffer)
+   ("l" flycheck-list-errors :color blue)
+   ("m" flycheck-manual :color blue)
+   ("s" flycheck-select-checker :color blue)
+   ("v" flycheck-verify-setup :color blue))
+ #+END_SRC
+
 
 *** Completion
 
@@ -128,7 +212,7 @@ completion candidates.
 *** Buffers and windows
 
 - *TODO*: make a hydra to change buffers like tabs (=j= goes to previous buffer,
-=l= to the next)
+  =l= to the next)
 
 =windmove= is a package that creates commands to move around windows.
 
@@ -188,80 +272,6 @@ Enables vim-like folding of regions.
   (setq-default vimish-fold-header-width 79))
 #+END_SRC
 
-*** Hydra
-
-=Hydra= is a package that allows keybindings to be activated under the pressing
-of a specific combination of keys. These will then be active as long as only
-them are being pressed, as on the moment a key which isn't part of the hydra is
-pressed the hydra is killed and the keybindings deactivated.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-(use-package hydra
-  :preface
-  (defvar-local me/ongoing-hydra-body nil)
-  (defun me/ongoing-hydra ()
-    (interactive)
-    (if me/ongoing-hydra-body
-        (funcall me/ongoing-hydra-body)
-      (user-error "me/ongoing-hydra: me/ongoing-hydra-body is not set")))
-  :bind
-  ("C-c e" . hydra-eyebrowse/body)
-  ("C-c f" . hydra-flycheck/body)
-  :config (setq-default hydra-default-hint nil))
-
-#+END_SRC
-
-**** Eyebrowse
-
-#+BEGIN_SRC emacs-lisp
-(defhydra hydra-eyebrowse (:color blue)
-  "
-^
-^Eyebrowse^         ^Do^                ^Switch^
-^─────────^─────────^──^────────────────^──────^────────────
-_q_ quit            _c_ create          _<_ previous
-^^                  _k_ kill            _>_ next
-^^                  _r_ rename          _e_ last
-^^                  ^^                  _s_ switch
-^^                  ^^                  ^^
-"
-  ("q" nil)
-  ("<" eyebrowse-prev-window-config :color red)
-  (">" eyebrowse-next-window-config :color red)
-  ("c" eyebrowse-create-window-config)
-  ("e" eyebrowse-last-window-config)
-  ("k" eyebrowse-close-window-config :color red)
-  ("r" eyebrowse-rename-window-config)
-  ("s" eyebrowse-switch-to-window-config))
-#+END_SRC
-
-**** Flycheck
-
-#+BEGIN_SRC emacs-lisp
-(defhydra hydra-flycheck (:color pink)
-  "
-^
-^Flycheck^          ^Errors^            ^Checker^
-^────────^──────────^──────^────────────^───────^───────────
-_q_ quit            _<_ previous        _?_ describe
-_m_ manual          _>_ next            _d_ disable
-_v_ verify setup    _f_ check           _s_ select
-^^                  _l_ list            ^^
-^^                  ^^                  ^^
-"
-  ("q" nil)
-  ("<" flycheck-previous-error)
-  (">" flycheck-next-error)
-  ("?" flycheck-describe-checker :color blue)
-  ("d" flycheck-disable-checker :color blue)
-  ("f" flycheck-buffer)
-  ("l" flycheck-list-errors :color blue)
-  ("m" flycheck-manual :color blue)
-  ("s" flycheck-select-checker :color blue)
-  ("v" flycheck-verify-setup :color blue))
-#+END_SRC
-
-
 *** Syntax Checking
 
 =Flycheck= provides a reliable source to syntax checking in emacs.
@@ -280,7 +290,7 @@ _v_ verify setup    _f_ check           _s_ select
    flycheck-display-errors-delay .3))
 #+END_SRC
 
-*** Region and pointers
+*** Regions and pointers
 
 Increase region by semantic units. It tries to be smart about it and adapt to
 the structure of the current major mode.
