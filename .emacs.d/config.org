@@ -12,6 +12,7 @@ Cool Emacs configs from cool people:
 
 - [[https://github.com/caisah/emacs.dz][Lots of cool people]]
 - [[https://github.com/hrs/dotfiles][hrs]]  (he likes org-mode and evil)
+- [[https://app-learninglab.inria.fr/gitlab/learning-lab/mooc-rr-ressources/blob/master/module2/ressources/rr_org/init.org][Konrad's and Arnaud's]]
 
 * The editor
 
@@ -19,36 +20,51 @@ Everything related to Emacs as the editor and platform.
 
 ** Definitions
 
-Default definitions that are better other way.
+Defaults that are better other way.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (setq-default
- ad-redefinition-action 'accept                ; Silence warnings for redefinition
- auto-window-vscroll nil                       ; Lighten vertical scroll
- confirm-kill-emacs 'yes-or-no-p               ; Confirm before exiting Emacs
- cursor-in-non-selected-windows t              ; Hide the cursor in inactive windows
- delete-by-moving-to-trash t                   ; Delete files to trash
- display-time-format "%H:%M"                   ; Format the time string
- fill-column 80                                ; Set width for automatic line breaks
- help-window-select t                          ; Focus new help windows when opened
- initial-scratch-message ""                    ; Empty the initial *scratch* buffer
- recenter-positions '(5 top bottom)            ; Set re-centering positions
- scroll-conservatively most-positive-fixnum    ; Always scroll by one line
- select-enable-clipboard t                     ; Merge system's and Emacs' clipboard
- tab-width 4                                   ; Set width for tabs
- line-spacing nil                              ; Set no extra line spacing
- uniquify-buffer-name-style 'forward           ; Uniquify buffer names
- display-line-numbers-type 'relative           ; Set relative line numbering
- window-combination-resize t                   ; Resize windows proportionally
- x-stretch-cursor t)                           ; Stretch cursor to the glyph width
+ ad-redefinition-action 'accept                  ; Silence warnings for redefinition
+ auto-window-vscroll nil                         ; Lighten vertical scroll
+ confirm-kill-emacs 'yes-or-no-p                 ; Confirm before exiting Emacs
+ cursor-in-non-selected-windows t                ; Hide the cursor in inactive windows
+ display-time-format "%H:%M"                     ; Format the time string
+ fill-column 80                                  ; Set width for automatic line breaks
+ help-window-select t                            ; Focus new help windows when opened
+ initial-scratch-message ""                      ; Empty the initial *scratch* buffer
+ select-enable-clipboard t                       ; Merge system's and Emacs' clipboard
+ indent-tabs-mode nil                            ; Never use tabs! TODO makefile uses tabs!
+ tab-width 4                                     ; Set width for tabs
+ line-spacing nil                                ; Set no extra line spacing
+ uniquify-buffer-name-style 'forward             ; Uniquify buffer names
+ display-line-numbers-type 'relative             ; Set relative line numbering
+ window-combination-resize t                     ; Resize windows proportionally
+ scroll-step 1                                   ; Vim-like scrolling
+ scroll-conservatively 10000
+ require-final-newline t                         ; Add a newline at the end
+ inhibit-startup-screen t                        ; No startup screen
+ ring-bell-function 'ignore                      ; No bell ring
+ x-stretch-cursor t)                             ; Stretch cursor to the glyph width
 
-(display-time-mode 1)                          ; Enable time in the mode-line
-(fset 'yes-or-no-p 'y-or-n-p)                  ; Replace yes/no prompts with y/n
-(set-face-attribute 'default nil :height 110)  ; Sets the font size to 11
-(global-display-line-numbers-mode)             ; Sets the number line globally
+(display-time-mode 1)                            ; Enable time in the mode-line
+(fset 'yes-or-no-p 'y-or-n-p)                    ; Replace yes/no prompts with y/n
+(set-face-attribute 'default nil :height 110)    ; Sets the font size to 11
+(set-face-attribute 'default nil :family "Hack") ; Sets the font to Hack
+(global-display-line-numbers-mode)               ; Sets the number line globally
+(line-number-mode t)                             ; Show the line number on modebar
+(column-number-mode t)                           ; Show column on modebar
+(size-indication-mode t)                         ; Show filesize on modebar
+(blinking-cursor-mode -1)                        ; Disables the blinking cursor
+(tool-bar-mode -1)                                ; Disables the toolbar
+(menu-bar-mode -1)                                ; Disables the menu bar
+(scroll-bar-mode -1)                             ; Disables the scrollbar
 #+END_SRC
 
-** Features
+** Theme
+
+Here I define the theme that I use.
+
+** Extensions
 
 These are Emacs-behaviour related! In other words, these extend the capabilities
 of Emacs as an editor, and do NOT add support to other languages or etc.
@@ -69,6 +85,15 @@ I still need to add:
 - [ ] dumb-jump
 - [ ] magit
 - [ ] flyspell
+- [ ] smex
+- [ ] ido
+- [ ] ido-vertical
+- [ ] straight
+- [ ] tramp
+- [ ] avy
+- [ ] compile
+- [ ] whitespace
+- [ ] beacon
 
 *** Package loading
 
@@ -102,12 +127,40 @@ editing keybindings to match the modal edit modes of vi and vim.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package evil-mode
-  )
+  :config
+  (evil-mode 1))
+#+END_SRC
+
+Also I use =evil-surround=, which is a port of =surround= from vim.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package evil-surround
+  :config
+  (global-evil-surround-mode 1))
+#+END_SRC
+
+=evil-org= adds a lot of useful keybindings to =org-mode=.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package evil-org
+  :after org
+  :config
+  (add-hook 'org-mode-hook 'evil-org-mode)
+  (add-hook 'evil-org-mode-hook
+            (lambda () (evil-org-set-key-theme)))
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
+#+END_SRC
+
+=evil-visualstar= enables searching visual selections with the =*= key.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package evil-visualstar)
 #+END_SRC
 
 **** Hydra
 
-=Hydra= is a package that allows keybindings to be activated under the pressing
+=hydra= is a package that allows keybindings to be activated under the pressing
 of a specific combination of keys. These will then be active as long as only
 them are being pressed, as on the moment a key which isn't part of the hydra is
 pressed the hydra is killed and the keybindings deactivated.
@@ -211,7 +264,7 @@ completion candidates.
 
 *** Buffers and windows
 
-- *TODO*: make a hydra to change buffers like tabs (=j= goes to previous buffer,
+- *TODO*: make a hydra to change buffers like tabs (=h= goes to previous buffer,
   =l= to the next)
 
 =windmove= is a package that creates commands to move around windows.
@@ -304,7 +357,7 @@ the structure of the current major mode.
 
 *** Indentation
 
-I use =aggressive-indent= to keep my code indented as I write.
+I use =aggressive-indent= to keep my code indented as I type.
 
 #+BEGIN_SRC emacs-lisp
 (use-package aggressive-indent
@@ -367,6 +420,22 @@ Here I'll store any package load and configurations related to languages.
 
 ** org
 
+=org-mode= is probably *the* killer mode and one of the main reasons as to why
+anyone should try Emacs.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package org
+  :config
+  (setq-default
+   org-return-follows-link t
+   org-highlight-latex-and-related '(latex script entities)
+   org-hide-leading-stars t
+   org-directory "~/org/"))
+#+END_SRC
+
+I make extensive use of blocks of source code inside my org notes, something
+Knuth goes to length about in "Literate Programming".
+
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package org-src
   :ensure nil
@@ -374,5 +443,11 @@ Here I'll store any package load and configurations related to languages.
   :config
   (setq-default
    org-edit-src-content-indentation 0
-   org-edit-src-persistent-message nil))
+   org-edit-src-persistent-message nil
+   org-src-fontify-natively t
+   org-src-tab-acts-natively t))
 #+END_SRC
+
+* Personal keybindings
+
+Here I'll define some of my personal keybindings.

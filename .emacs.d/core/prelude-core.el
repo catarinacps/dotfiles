@@ -62,6 +62,8 @@ PROMPT sets the `read-string prompt."
 (prelude-install-search-engine "github"     "https://github.com/search?q="                 "Search GitHub: ")
 (prelude-install-search-engine "duckduckgo" "https://duckduckgo.com/?t=lm&q="              "Search DuckDuckGo: ")
 
+
+
 (defun prelude-recompile-init ()
   "Byte-compile all your dotfiles again."
   (interactive)
