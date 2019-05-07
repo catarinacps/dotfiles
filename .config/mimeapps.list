@@ -33,9 +33,9 @@ application/x-extension-xht=userapp-chromium.desktop;
 image/jpeg=viewnior.desktop;gpicview.desktop;
 image/png=viewnior.desktop;gpicview.desktop;
 text/plain=mousepad.desktop;
-x-scheme-handler/mailto=userapp-Thunderbird.desktop;userapp-Thunderbird-BW27ZZ.desktop;
 message/rfc822=userapp-Thunderbird.desktop;userapp-Thunderbird-BW27ZZ.desktop;
 application/pdf=epdfview.desktop;
 application/x-bittorrent=deluge.desktop;
 inode/directory=exo-file-manager.desktop
 x-scheme-handler/trash=exo-file-manager.desktop
+

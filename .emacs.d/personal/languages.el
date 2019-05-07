@@ -4,8 +4,7 @@
 
 (defun insert-date-heading ()
   (interactive)
-  (and (org-insert-heading-respect-content)
-       (insert (concat (format-time-string "%F") "\n"))))
+  (insert (concat (format-time-string "%F") " ")))
 
 (setq-default org-display-custom-times t)
 
