@@ -19,8 +19,9 @@
 (setq display-line-numbers-type 'relative)
 
 ;; Font size
-(set-face-attribute 'default nil :font "Hack" :height 110)
-(setq-default line-spacing -1)
+;; (set-face-attribute 'default nil :font "Hack" :height 110)
+(setq default-frame-alist '((font . "Source Code Pro-12")))
+(setq-default line-spacing 0)
 
 ;; Key bindings
 (global-set-key [C-M-tab] 'clang-format-buffer)

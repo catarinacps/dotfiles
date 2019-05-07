@@ -11,58 +11,115 @@ possible.
 Cool Emacs configs from cool people:
 
 - [[https://github.com/caisah/emacs.dz][Lots of cool people]]
-- [[https://github.com/hrs/dotfiles][hrs]]  (he likes org-mode and evil)
+- [[https://github.com/hrs/dotfiles][hrs]] (he likes org-mode and evil)
 - [[https://app-learninglab.inria.fr/gitlab/learning-lab/mooc-rr-ressources/blob/master/module2/ressources/rr_org/init.org][Konrad's and Arnaud's]]
 
 * The editor
 
 Everything related to Emacs as the editor and platform.
 
-** Definitions
+** Definitions and preferences
 
-Defaults that are better other way.
+Defaults that are better if defined /other/ way.
+
+*** GUI elements
+
+Almost every GUI element of Emacs is useless and a waste of screen space.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+(scroll-bar-mode -1)
+
+(setq-default
+ inhibit-startup-screen t
+ initial-scratch-message "")
+#+END_SRC
+
+*** Font
+
+I use the =Source Code Pro= font in every editor I can set that on. Here's their
+[[https://github.com/source-foundry/Hack][GitHub]].
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq default-frame-alist '((font . "Source Code Pro-11")))
+#+END_SRC
+
+*** Text
+
+Here's every other setting relating to text editing I can't categorize any
+further.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq-default
+ fill-column 80
+ indent-tabs-mode nil
+ tab-width 4
+ line-spacing 0
+ require-final-newline t
+ x-stretch-cursor t
+ cursor-in-non-selected-windows t)
+
+(blinking-cursor-mode -1)
+#+END_SRC
+
+*** Mode-line
+
+Here's everything related to the mode-line.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq-default display-time-format "%H:%M")
+
+(display-time-mode 1)
+(line-number-mode t)
+(column-number-mode t)
+(size-indication-mode t)
+#+END_SRC
+
+*** Line numbering and scrolling
+
+I like the vim style of relative numbering of lines.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq-default display-line-numbers-type 'relative)
+
+(global-display-line-numbers-mode)
+#+END_SRC
+
+And I also like the vim style of scrolling better.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(setq-default
+ auto-window-vscroll nil
+ scroll-step 1
+ scroll-conservatively 10000)
+#+END_SRC
+
+*** Randoms
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (setq-default
  ad-redefinition-action 'accept                  ; Silence warnings for redefinition
- auto-window-vscroll nil                         ; Lighten vertical scroll
  confirm-kill-emacs 'yes-or-no-p                 ; Confirm before exiting Emacs
- cursor-in-non-selected-windows t                ; Hide the cursor in inactive windows
- display-time-format "%H:%M"                     ; Format the time string
- fill-column 80                                  ; Set width for automatic line breaks
  help-window-select t                            ; Focus new help windows when opened
- initial-scratch-message ""                      ; Empty the initial *scratch* buffer
  select-enable-clipboard t                       ; Merge system's and Emacs' clipboard
- indent-tabs-mode nil                            ; Never use tabs! TODO makefile uses tabs!
- tab-width 4                                     ; Set width for tabs
- line-spacing nil                                ; Set no extra line spacing
  uniquify-buffer-name-style 'forward             ; Uniquify buffer names
- display-line-numbers-type 'relative             ; Set relative line numbering
  window-combination-resize t                     ; Resize windows proportionally
- scroll-step 1                                   ; Vim-like scrolling
- scroll-conservatively 10000
- require-final-newline t                         ; Add a newline at the end
- inhibit-startup-screen t                        ; No startup screen
- ring-bell-function 'ignore                      ; No bell ring
- x-stretch-cursor t)                             ; Stretch cursor to the glyph width
+ ring-bell-function 'ignore)                     ; No bell ring
 
-(display-time-mode 1)                            ; Enable time in the mode-line
 (fset 'yes-or-no-p 'y-or-n-p)                    ; Replace yes/no prompts with y/n
-(set-face-attribute 'default nil :height 110)    ; Sets the font size to 11
-(set-face-attribute 'default nil :family "Hack") ; Sets the font to Hack
-(global-display-line-numbers-mode)               ; Sets the number line globally
-(line-number-mode t)                             ; Show the line number on modebar
-(column-number-mode t)                           ; Show column on modebar
-(size-indication-mode t)                         ; Show filesize on modebar
-(blinking-cursor-mode -1)                        ; Disables the blinking cursor
-(tool-bar-mode -1)                                ; Disables the toolbar
-(menu-bar-mode -1)                                ; Disables the menu bar
-(scroll-bar-mode -1)                             ; Disables the scrollbar
 #+END_SRC
 
 ** Theme
 
-Here I define the theme that I use.
+Here I define the theme that I use, which is =gruvbox=, as it provides nice
+support for a lot of packages and is very pleasant for the eyes.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package gruvbox-theme
+  :init
+  (load-theme gruvbox-dark-soft t))
+#+END_SRC
 
 ** Extensions
 
@@ -73,27 +130,29 @@ I still need to add:
 
 - [ ] ranger
 - [ ] neotree
-- [ ] smartparens
-- [ ] which-key
+- [ ] smartparens (prelude)
+- [ ] which-key (prelude)
 - [ ] smart-mode-line
 - [ ] helpful
-- [ ] gruvbox
+- [X] gruvbox
 - [ ] sensible-defaults
-- [ ] projectile
+- [ ] projectile (prelude)
 - [ ] minions
-- [ ] ivy
 - [ ] dumb-jump
-- [ ] magit
-- [ ] flyspell
+- [ ] magit (prelude)
+- [ ] flyspell (prelude)
 - [ ] smex
+- [ ] ivy (either this or ido!)
 - [ ] ido
 - [ ] ido-vertical
 - [ ] straight
 - [ ] tramp
 - [ ] avy
-- [ ] compile
-- [ ] whitespace
-- [ ] beacon
+- [ ] compile (prelude)
+- [ ] whitespace (prelude)
+- [ ] beacon (prelude)
+- [ ] autofill
+- [ ] undo-tree (prelude)
 
 *** Package loading
 
@@ -144,10 +203,10 @@ Also I use =evil-surround=, which is a port of =surround= from vim.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package evil-org
   :after org
+  :hook
+  ((org-mode . evil-org-mode)
+   (evil-org-mode . (lambda () (evil-org-set-key-theme))))
   :config
-  (add-hook 'org-mode-hook 'evil-org-mode)
-  (add-hook 'evil-org-mode-hook
-            (lambda () (evil-org-set-key-theme)))
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
 #+END_SRC
@@ -377,7 +436,55 @@ I use =aggressive-indent= to keep my code indented as I type.
 
 Random utilities that don't fit anywhere else.
 
-**** Date
+* Languages
+
+Here I'll store any package load and configurations related to languages.
+
+** org
+
+=org-mode= is probably *the* killer mode and one of the main reasons as to why
+anyone should try Emacs.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package org
+  :config
+  (setq-default
+   org-return-follows-link t
+   org-highlight-latex-and-related '(latex script entities)
+   org-hide-leading-stars t
+   org-directory "~/org/"))
+#+END_SRC
+
+I make extensive use of blocks of source code inside my org notes, something
+Knuth goes to length about in "Literate Programming".
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package org-src
+  :ensure nil
+  :after org
+  :config
+  (setq-default
+   org-edit-src-content-indentation 0
+   org-edit-src-persistent-message nil
+   org-src-fontify-natively t
+   org-src-tab-acts-natively t))
+#+END_SRC
+
+* Personal
+
+Stuff that isn't either a package nor a language nor downloadable: stuff you
+coded yourself.
+
+To-do:
+
+- [ ] Increase/decrease font size
+- [ ] Input date on command (and as a new heading in =org-mode=)
+
+** Functions
+
+Some very useful functions I got from other people or that I coded myself.
+
+*** Date
 
 Insert the current date.
 
@@ -414,40 +521,6 @@ Insert the current date.
 #+END_SRC
 
 
-* Languages
-
-Here I'll store any package load and configurations related to languages.
-
-** org
-
-=org-mode= is probably *the* killer mode and one of the main reasons as to why
-anyone should try Emacs.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-(use-package org
-  :config
-  (setq-default
-   org-return-follows-link t
-   org-highlight-latex-and-related '(latex script entities)
-   org-hide-leading-stars t
-   org-directory "~/org/"))
-#+END_SRC
-
-I make extensive use of blocks of source code inside my org notes, something
-Knuth goes to length about in "Literate Programming".
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-(use-package org-src
-  :ensure nil
-  :after org
-  :config
-  (setq-default
-   org-edit-src-content-indentation 0
-   org-edit-src-persistent-message nil
-   org-src-fontify-natively t
-   org-src-tab-acts-natively t))
-#+END_SRC
-
-* Personal keybindings
+** Keybindings
 
 Here I'll define some of my personal keybindings.
