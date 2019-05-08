@@ -152,6 +152,7 @@ I still need to add:
 - [ ] evil-nerd-commenter
 - [ ] evil-matchit
 - [ ] minimap
+- [ ] pdf-tools
 
 Also, =Prelude= packages that I like and still need to add:
 
@@ -453,6 +454,13 @@ Random utilities that don't fit anywhere else.
 * Languages
 
 Here I'll store any package load and configurations related to languages.
+
+I still need to add packages relating to these languages:
+
+- [ ] C/C++
+- [ ] Python
+- [ ] Scala
+- [ ] LaTeX
 
 ** org
 
