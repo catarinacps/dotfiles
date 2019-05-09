@@ -128,8 +128,8 @@ of Emacs as an editor, and do NOT add support to other languages or etc.
 
 I still need to add:
 
-- [ ] ranger
-- [ ] neotree
+- [X] ranger
+- [X] neotree
 - [ ] smart-mode-line
 - [ ] helpful
 - [X] gruvbox
@@ -140,7 +140,6 @@ I still need to add:
 - [ ] ivy (either this or ido or helm!)
 - [ ] ido and ido-vertical-mode
 - [ ] helm
-- [ ] straight
 - [ ] tramp
 - [ ] avy
 - [ ] autofill
@@ -185,10 +184,30 @@ Having that said, I too use =auto-compile= to always compile packages and to
 have their newest version always.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-(use-package auto-compile
-  :config (auto-compile-on-load-mode))
+  (use-package auto-compile
+    :config (auto-compile-on-load-mode))
 
-(setq load-prefer-newer t)
+  (setq load-prefer-newer t)
+#+END_SRC
+
+*** File management
+
+I use =ranger.el= to use a file explorer like =ranger= inside Emacs instead of
+the default =dired=.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package ranger
+  :config
+  (setq ranger-cleanup-on-disable t))
+#+END_SRC
+
+Also, I like to use =neotree.el= to navigate my project files, which is a clone
+from =neotree= from vim.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package neotree
+  :bind
+  ([f8] . 'neotree-toggle))
 #+END_SRC
 
 *** Keybindings
@@ -307,6 +326,22 @@ pressed the hydra is killed and the keybindings deactivated.
 
 
 *** Completion
+
+This section comprises of both text completion and fuzzy command and path
+completion.
+
+**** Path and command
+
+I use both =ido= and =smex= to complete my search and commands needs.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package ido
+  :config
+  (setq ido-enable-flex-matching t)
+  (setq ido-everywhere t)
+  (ido-mode 1))
+#+END_SRC
+**** Text
 
 I use =company= as my completion framework. In the words of Dmitry Gutov:
 
