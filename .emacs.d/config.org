@@ -153,6 +153,7 @@ I still need to add:
 - [ ] evil-matchit
 - [ ] minimap
 - [ ] pdf-tools
+- [ ] flycheck-pos-tip
 
 Also, =Prelude= packages that I like and still need to add:
 
