@@ -93,7 +93,8 @@ And I also like the vim style of scrolling better.
 (setq-default
  auto-window-vscroll nil
  scroll-step 1
- scroll-conservatively 10000)
+ scroll-conservatively 10000
+ scroll-margin 7)
 #+END_SRC
 
 *** =ssh= environment variables
