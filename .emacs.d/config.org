@@ -64,6 +64,14 @@ further.
 (blinking-cursor-mode -1)
 #+END_SRC
 
+Also, =auto-fill-mode= is very useful to justify paragraphs automatically while
+writing.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(add-hook 'text-mode-hook 'turn-on-auto-fill)
+(add-hook 'org-mode-hook 'turn-on-auto-fill)
+#+END_SRC
+
 *** Mode-line
 
 Here's everything related to the mode-line.
@@ -111,26 +119,15 @@ way, to =magit= work with =ssh= repos.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (setq-default
- ad-redefinition-action 'accept                  ; Silence warnings for redefinition
- confirm-kill-emacs 'yes-or-no-p                 ; Confirm before exiting Emacs
- help-window-select t                            ; Focus new help windows when opened
- select-enable-clipboard t                       ; Merge system's and Emacs' clipboard
- uniquify-buffer-name-style 'forward             ; Uniquify buffer names
- window-combination-resize t                     ; Resize windows proportionally
- ring-bell-function 'ignore)                     ; No bell ring
+ ad-redefinition-action 'accept          ; Silence warnings for redefinition
+ confirm-kill-emacs 'yes-or-no-p         ; Confirm before exiting Emacs
+ help-window-select t                    ; Focus new help windows when opened
+ select-enable-clipboard t               ; Merge system's and Emacs' clipboard
+ uniquify-buffer-name-style 'forward     ; Uniquify buffer names
+ window-combination-resize t             ; Resize windows proportionally
+ ring-bell-function 'ignore)             ; No bell ring
 
-(fset 'yes-or-no-p 'y-or-n-p)                    ; Replace yes/no prompts with y/n
-#+END_SRC
-
-** Theme
-
-Here I define the theme that I use, which is =gruvbox=, as it provides nice
-support for a lot of packages and is very pleasant for the eyes.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-(use-package gruvbox-theme
-  :init
-  (load-theme gruvbox-dark-soft t))
+(fset 'yes-or-no-p 'y-or-n-p)            ; Replace yes/no prompts with y/n
 #+END_SRC
 
 ** Extensions
@@ -143,27 +140,26 @@ I still need to add:
 - [X] ranger
 - [X] neotree
 - [X] smart-mode-line
-- [ ] helpful
+- [X] helpful
 - [X] gruvbox
-- [ ] sensible-defaults
 - [X] minions
-- [ ] dumb-jump
+- [X] dumb-jump
 - [X] smex
 - [X] ido and ido-vertical-mode
 - [X] tramp
 - [ ] avy
-- [ ] autofill
-- [ ] engine-mode
-- [ ] no-littering
+- [X] autofill
+- [X] engine-mode
+- [X] no-littering
 - [X] perspective
 - [ ] evil-mc
 - [X] evil-collection
 - [ ] evil-escape
 - [ ] evil-nerd-commenter
 - [ ] evil-matchit
-- [ ] minimap
-- [ ] pdf-tools
-- [ ] flycheck-pos-tip
+- [X] minimap
+- [X] pdf-tools
+- [X] flycheck-pos-tip
 
 Also, =Prelude= packages that I like and still need to add:
 
@@ -195,10 +191,11 @@ Having that said, I too use =auto-compile= to always compile packages and to
 have their newest version always.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-  (use-package auto-compile
-    :config (auto-compile-on-load-mode))
+(use-package auto-compile
+  :demand
+  :config (auto-compile-on-load-mode))
 
-  (setq load-prefer-newer t)
+(setq load-prefer-newer t)
 #+END_SRC
 
 *** File management
@@ -269,7 +266,7 @@ Also I use =evil-surround=, which is a port of =surround= from vim.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package evil-org
-  :after org evil-mode
+  :after (org evil-mode)
   :hook
   ((org-mode . evil-org-mode)
    (evil-org-mode . (lambda () (evil-org-set-key-theme))))
@@ -380,6 +377,7 @@ I use both =ido= and =smex= to complete my search and commands needs.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package ido
+  :demand
   :config
   (setq ido-enable-flex-matching t)
   (setq ido-everywhere t)
@@ -390,6 +388,7 @@ I use both =ido= and =smex= to complete my search and commands needs.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package ido-vertical-mode
+  :after ido
   :config
   (ido-vertical-mode 1))
 #+END_SRC
@@ -398,6 +397,7 @@ I use both =ido= and =smex= to complete my search and commands needs.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package smex
+  :after ido
   :bind
   ("M-x" . 'smex))
 #+END_SRC
@@ -480,6 +480,16 @@ buffers in each.
   (persp-mode))
 #+END_SRC
 
+*** Scrolling
+
+To help me locate myself in a file, I use =minimap=.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package minimap
+  :config
+  (minimap-mode))
+#+END_SRC
+
 *** Templates and snippets
 
 I use =YaSnippet= to handle my snippet needs.
@@ -534,6 +544,13 @@ Enables vim-like folding of regions.
    flycheck-display-errors-delay .3))
 #+END_SRC
 
+=flycheck-pos-tip= shows the =flycheck= tip in a popup under the cursor.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package flycheck-pos-tip
+  :after flycheck)
+#+END_SRC
+
 *** Regions and pointers
 
 Increase region by semantic units. It tries to be smart about it and adapt to
@@ -567,6 +584,76 @@ I use =aggressive-indent= to keep my code indented as I type.
 *** Utilities
 
 Random utilities that don't fit anywhere else.
+
+**** =helpful=
+
+=helpful= is a package that is overall an improvement over the default =help=
+windows.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package helpful
+  :demand
+  :bind
+  (("C-h f" . helpful-callable)
+   ("C-h v" . helpful-variable)
+   ("C-h k" . helpful-key)))
+#+END_SRC
+
+**** =dumb-jump=
+
+=dumb-jump= is a package that allows you to jump to definition with minimal
+setup (i.e. no TAG or RTAGS or etc.).
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package dumb-jump
+  :bind
+  (("M-g o" . dumb-jump-go-other-window)
+   ("M-g j" . dumb-jump-go)))
+#+END_SRC
+
+**** =engine-mode=
+
+=engine-mode= is a minor mode that allow you to easily make queries to the web
+without leaving Emacs.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package engine-mode
+  :demand
+  :config
+  (defengine google
+    "https://www.google.com/search?q="
+    :keybinding "g")
+  (engine-mode t))
+#+END_SRC
+
+**** =no-littering=
+
+=no-littering= is a package that helps to maintain your =.emacs.d/= clean.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package no-littering
+  :demand)
+#+END_SRC
+**** =pdf-tools=
+
+=pdf-tools= is what should be the default =pdf-mode= for Emacs.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package pdf-tools
+  :config
+  (pdf-loader-install))
+#+END_SRC
+
+** Theme
+
+Here I define the theme that I use, which is =gruvbox=, as it provides nice
+support for a lot of packages and is very pleasant for the eyes.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package gruvbox-theme
+  :init
+  (load-theme gruvbox-dark-soft t))
+#+END_SRC
 
 * Languages
 
