@@ -33,13 +33,14 @@ Almost every GUI element of Emacs is useless and a waste of screen space.
 
 (setq-default
  inhibit-startup-screen t
- initial-scratch-message "")
+ initial-scratch-message ""
+ initial-major-mode 'org-mode)
 #+END_SRC
 
 *** Font
 
 I use the =Source Code Pro= font in every editor I can set that on. Here's their
-[[https://github.com/source-foundry/Hack][GitHub]].
+[[https://github.com/adobe-fonts/source-code-pro][GitHub]].
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (setq default-frame-alist '((font . "Source Code Pro-11")))
@@ -95,6 +96,16 @@ And I also like the vim style of scrolling better.
  scroll-conservatively 10000)
 #+END_SRC
 
+*** =ssh= environment variables
+
+This is necessary in order to Emacs grab the =ssh-agent= variables and, that
+way, to =magit= work with =ssh= repos.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(exec-path-from-shell-copy-env "SSH_AGENT_PID")
+(exec-path-from-shell-copy-env "SSH_AUTH_SOCK")
+#+END_SRC
+
 *** Randoms
 
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -130,23 +141,22 @@ I still need to add:
 
 - [X] ranger
 - [X] neotree
-- [ ] smart-mode-line
+- [X] smart-mode-line
 - [ ] helpful
 - [X] gruvbox
 - [ ] sensible-defaults
-- [ ] minions
+- [X] minions
 - [ ] dumb-jump
-- [ ] smex
-- [ ] ivy (either this or ido or helm!)
-- [ ] ido and ido-vertical-mode
-- [ ] helm
-- [ ] tramp
+- [X] smex
+- [X] ido and ido-vertical-mode
+- [X] tramp
 - [ ] avy
 - [ ] autofill
 - [ ] engine-mode
 - [ ] no-littering
-- [ ] perspective
+- [X] perspective
 - [ ] evil-mc
+- [X] evil-collection
 - [ ] evil-escape
 - [ ] evil-nerd-commenter
 - [ ] evil-matchit
@@ -210,6 +220,26 @@ from =neotree= from vim.
   ([f8] . 'neotree-toggle))
 #+END_SRC
 
+*** Mode line
+
+I use =smart-mode-line= as it is very minimalist and informative.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package smart-mode-line
+  :init
+  (sml/setup))
+#+END_SRC
+
+Also, =minions= is useful to not show those pesky minor-modes all the time.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package minions
+  :config
+  (setq minions-mode-line-lighter ""
+        minions-mode-line-delimiters '("" . ""))
+  (minions-mode 1))
+#+END_SRC
+
 *** Keybindings
 
 These packages change keybindings and the default editing modes of Emacs.
@@ -229,6 +259,7 @@ Also I use =evil-surround=, which is a port of =surround= from vim.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package evil-surround
+  :after evil-mode
   :config
   (global-evil-surround-mode 1))
 #+END_SRC
@@ -237,7 +268,7 @@ Also I use =evil-surround=, which is a port of =surround= from vim.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package evil-org
-  :after org
+  :after org evil-mode
   :hook
   ((org-mode . evil-org-mode)
    (evil-org-mode . (lambda () (evil-org-set-key-theme))))
@@ -249,7 +280,19 @@ Also I use =evil-surround=, which is a port of =surround= from vim.
 =evil-visualstar= enables searching visual selections with the =*= key.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-(use-package evil-visualstar)
+(use-package evil-visualstar
+  :after evil-mode)
+#+END_SRC
+
+The package =evil-collection= adds a bunch of cool =evil= keybindings to other
+popular packages.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package evil-collection
+  :after evil-mode
+  :config
+  (setq evil-want-keybinding nil)
+  (evil-collection-init))
 #+END_SRC
 
 **** Hydra
@@ -341,6 +384,23 @@ I use both =ido= and =smex= to complete my search and commands needs.
   (setq ido-everywhere t)
   (ido-mode 1))
 #+END_SRC
+
+=ido-vertical-mode= helps to improve the readability of =ido='s suggestions.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package ido-vertical-mode
+  :config
+  (ido-vertical-mode 1))
+#+END_SRC
+
+=smex= is the equivalent of =ido= but for [M-x].
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package smex
+  :bind
+  ("M-x" . 'smex))
+#+END_SRC
+
 **** Text
 
 I use =company= as my completion framework. In the words of Dmitry Gutov:
@@ -372,6 +432,17 @@ completion candidates.
    company-tooltip-align-annotations t))
 #+END_SRC
 
+*** Remote editing
+
+=tramp=, which is included by default in Emacs, is very useful when it comes to
+editing remote files and to editing as super-user.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package tramp
+  :config
+  (setq tramp-default-method "ssh"))
+#+END_SRC
+
 *** Buffers and windows
 
 - *TODO*: make a hydra to change buffers like tabs (=h= goes to previous buffer,
@@ -397,6 +468,15 @@ kills old buffers.
   :ensure nil
   :config
   (setq-default clean-buffer-list-delay-general 1))
+#+END_SRC
+
+Also, I use perspective to maintain multiple workspaces open with different
+buffers in each.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package perspective
+  :init
+  (persp-mode))
 #+END_SRC
 
 *** Templates and snippets
@@ -510,7 +590,9 @@ anyone should try Emacs.
    org-return-follows-link t
    org-highlight-latex-and-related '(latex script entities)
    org-hide-leading-stars t
-   org-directory "~/org/"))
+   org-directory "~/org/")
+  :hook
+  (org-mode . org-indent-mode))
 #+END_SRC
 
 I make extensive use of blocks of source code inside my org notes, something
