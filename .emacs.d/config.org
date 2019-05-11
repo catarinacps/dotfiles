@@ -5,7 +5,7 @@
 #+INFOJS_OPT:
 
 These configurations represent my preferred version of Emacs, one that uses
-=evil-mode= everywhere it can and one that tries to be as minimalist as +I want+
+=evil= everywhere it can and one that tries to be as minimalist as +I want+
 possible.
 
 Cool Emacs configs from cool people:
@@ -180,16 +180,15 @@ I still need to add:
 - [X] smex
 - [X] ido and ido-vertical-mode
 - [X] tramp
-- [ ] avy
+- [X] avy
 - [X] autofill
 - [X] engine-mode
 - [X] no-littering
 - [X] perspective
-- [ ] evil-mc
+- [X] evil-mc
 - [X] evil-collection
-- [ ] evil-escape
-- [ ] evil-nerd-commenter
-- [ ] evil-matchit
+- [X] evil-nerd-commenter
+- [X] evil-matchit
 - [X] minimap
 - [X] pdf-tools
 - [X] flycheck-pos-tip
@@ -281,7 +280,9 @@ These packages change keybindings and the default editing modes of Emacs.
 editing keybindings to match the modal edit modes of vi and vim.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-(use-package evil-mode
+(use-package evil
+  :init
+  (setq evil-want-keybinding nil)
   :config
   (evil-mode 1))
 #+END_SRC
@@ -290,7 +291,7 @@ Also I use =evil-surround=, which is a port of =surround= from vim.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package evil-surround
-  :after evil-mode
+  :after evil
   :config
   (global-evil-surround-mode 1))
 #+END_SRC
@@ -299,12 +300,19 @@ Also I use =evil-surround=, which is a port of =surround= from vim.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package evil-org
-  :after (org evil-mode)
+  :after (org evil)
   :hook
   ((org-mode . evil-org-mode)
-   (evil-org-mode . (lambda () (evil-org-set-key-theme))))
+   (evil-org-mode . (lambda () (evil-org-set-key-theme)))))
+#+END_SRC
+
+Following the previous package, =evil-org-agenda= sets up cool =evil= keys to
+=org-agenda=.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package evil-org-agenda
+  :after evil-org
   :config
-  (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
 #+END_SRC
 
@@ -312,7 +320,7 @@ Also I use =evil-surround=, which is a port of =surround= from vim.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package evil-visualstar
-  :after evil-mode)
+  :after evil)
 #+END_SRC
 
 The package =evil-collection= adds a bunch of cool =evil= keybindings to other
@@ -320,10 +328,42 @@ popular packages.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package evil-collection
-  :after evil-mode
+  :after evil
   :config
-  (setq evil-want-keybinding nil)
   (evil-collection-init))
+#+END_SRC
+
+=evil-mc= implements the =multiple-cursors= functionality to =evil-mode=.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package evil-mc
+  :after evil
+  :config
+  (evil-define-key 'visual evil-mc-key-map
+    "A" #'evil-mc-make-cursor-in-visual-selection-end
+    "I" #'evil-mc-make-cursor-in-visual-selection-beg)
+  (global-evil-mc-mode 1))
+#+END_SRC
+
+=evil-matchit= allows you to jump between tags automatically!
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package evil-matchit
+  :after evil
+  :init
+  (setq evilmi-may-jump-by-percentage nil)
+  :config
+  (global-evil-matchit-mode 1))
+#+END_SRC
+
+=evil-nerd-commenter= is a port of =nerd-commenter= from =vim= and it helps you
+to be extremely efficient while commenting lines and text selections.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package evil-nerd-commenter
+  :after evil
+  :config
+  (evilnc-default-hotkeys nil t))
 #+END_SRC
 
 **** Hydra
@@ -449,7 +489,6 @@ completion candidates.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package company
-  :defer 1
   :bind
   (:map company-active-map
         ("RET" . nil)
@@ -473,6 +512,7 @@ editing remote files and to editing as super-user.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package tramp
+  :demand
   :config
   (setq tramp-default-method "ssh"))
 #+END_SRC
@@ -546,7 +586,6 @@ Enables vim-like folding of regions.
 
 #+BEGIN_SRC emacs-lisp
 (use-package vimish-fold
-  :defer 1
   :bind
   (:map vimish-fold-folded-keymap ("<tab>" . vimish-fold-unfold)
    :map vimish-fold-unfolded-keymap ("<tab>" . vimish-fold-refold))
@@ -592,6 +631,16 @@ the structure of the current major mode.
   :bind
   ("C-+" . er/contract-region)
   ("C-=" . er/expand-region))
+#+END_SRC
+
+=avy= offers a very efficient method of moving through your file with its
+=avy-goto-word-1=.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package avy
+  :bind
+  (:map evil-normal-state-map
+        ("SPC" . avy-goto-word-1)))
 #+END_SRC
 
 *** Indentation
@@ -682,6 +731,7 @@ support for a lot of packages and is very pleasant for the eyes.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package gruvbox-theme
+  :demand
   :init
   (load-theme gruvbox-dark-soft t))
 #+END_SRC
