@@ -14,6 +14,39 @@ Cool Emacs configs from cool people:
 - [[https://github.com/hrs/dotfiles][hrs]] (he likes org-mode and evil)
 - [[https://app-learninglab.inria.fr/gitlab/learning-lab/mooc-rr-ressources/blob/master/module2/ressources/rr_org/init.org][Konrad's and Arnaud's]]
 
+* Table of contents                                                   :TOC_3:
+- [[#the-editor][The editor]]
+  - [[#definitions-and-preferences][Definitions and preferences]]
+    - [[#gui-elements][GUI elements]]
+    - [[#font][Font]]
+    - [[#text][Text]]
+    - [[#mode-line][Mode-line]]
+    - [[#line-numbering-and-scrolling][Line numbering and scrolling]]
+    - [[#ssh-environment-variables][=ssh= environment variables]]
+    - [[#randoms][Randoms]]
+  - [[#extensions][Extensions]]
+    - [[#package-loading][Package loading]]
+    - [[#file-management][File management]]
+    - [[#mode-line-1][Mode line]]
+    - [[#keybindings][Keybindings]]
+    - [[#completion][Completion]]
+    - [[#remote-editing][Remote editing]]
+    - [[#buffers-and-windows][Buffers and windows]]
+    - [[#scrolling][Scrolling]]
+    - [[#templates-and-snippets][Templates and snippets]]
+    - [[#folding][Folding]]
+    - [[#syntax-checking][Syntax Checking]]
+    - [[#regions-and-pointers][Regions and pointers]]
+    - [[#indentation][Indentation]]
+    - [[#utilities][Utilities]]
+  - [[#theme][Theme]]
+- [[#languages][Languages]]
+  - [[#org][org]]
+- [[#personal][Personal]]
+  - [[#functions][Functions]]
+    - [[#date][Date]]
+  - [[#keybindings-1][Keybindings]]
+
 * The editor
 
 Everything related to Emacs as the editor and platform.
@@ -61,7 +94,7 @@ further.
  x-stretch-cursor t
  cursor-in-non-selected-windows t)
 
-(blinking-cursor-mode -1)
+(blink-cursor-mode -1)
 #+END_SRC
 
 Also, =auto-fill-mode= is very useful to justify paragraphs automatically while
@@ -101,8 +134,8 @@ And I also like the vim style of scrolling better.
 (setq-default
  auto-window-vscroll nil
  scroll-step 1
- scroll-conservatively 10000
- scroll-margin 7)
+ scroll-conservatively 1000
+ scroll-margin 9)
 #+END_SRC
 
 *** =ssh= environment variables
@@ -453,7 +486,6 @@ editing remote files and to editing as super-user.
 
 #+BEGIN_SRC emacs-lisp
 (use-package windmove
-  :ensure nil
   :bind
   ((C-M-<left>. windmove-left)
    ("C-M-<right>". windmove-right)
@@ -466,7 +498,6 @@ kills old buffers.
 
 #+BEGIN_SRC emacs-lisp
 (use-package midnight
-  :ensure nil
   :config
   (setq-default clean-buffer-list-delay-general 1))
 #+END_SRC
@@ -476,7 +507,7 @@ buffers in each.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package perspective
-  :init
+  :config
   (persp-mode))
 #+END_SRC
 
@@ -688,7 +719,6 @@ Knuth goes to length about in "Literate Programming".
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package org-src
-  :ensure nil
   :after org
   :config
   (setq-default
@@ -696,6 +726,16 @@ Knuth goes to length about in "Literate Programming".
    org-edit-src-persistent-message nil
    org-src-fontify-natively t
    org-src-tab-acts-natively t))
+#+END_SRC
+
+=org-toc= is an useful way to automatically maintain an updated table of
+contents of your =.org= file.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package toc-org
+  :after org
+  :hook
+  (org-mode . toc-org-mode))
 #+END_SRC
 
 * Personal
