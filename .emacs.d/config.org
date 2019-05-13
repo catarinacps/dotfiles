@@ -252,7 +252,8 @@ from =neotree= from vim.
 
 *** Mode line
 
-I use =smart-mode-line= as it is very minimalist and informative.
+I use =smart-mode-line= as it is very minimalist and informative (and it looks
+very pretty on =gruvbox=)
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package smart-mode-line
@@ -260,7 +261,8 @@ I use =smart-mode-line= as it is very minimalist and informative.
   (sml/setup))
 #+END_SRC
 
-Also, =minions= is useful to not show those pesky minor-modes all the time.
+Also, =minions= is useful to not show those pesky minor-modes all the time. No
+one wanna see what minor modes are active ALL of the time, right?
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package minions
@@ -277,7 +279,8 @@ These packages change keybindings and the default editing modes of Emacs.
 **** Evil
 
 =evil=, or /Extensible vi Layer/, is a minor mode that changes Emacs text
-editing keybindings to match the modal edit modes of vi and vim.
+editing keybindings to match the modal edit modes of vi and vim. Yes, you can
+have the best of both worlds!
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package evil
@@ -287,7 +290,9 @@ editing keybindings to match the modal edit modes of vi and vim.
   (evil-mode 1))
 #+END_SRC
 
-Also I use =evil-surround=, which is a port of =surround= from vim.
+Also I use =evil-surround=, which is a port of =surround= from vim and allow you
+to quickly delete or change surrounding ="= and ='= from words or paragraphs or
+whatever, as it integrates with vim's verb way of expressing actions.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package evil-surround
@@ -296,7 +301,9 @@ Also I use =evil-surround=, which is a port of =surround= from vim.
   (global-evil-surround-mode 1))
 #+END_SRC
 
-=evil-org= adds a lot of useful keybindings to =org-mode=.
+=evil-org= adds a lot of useful keybindings to =org-mode=. I'm still not aware
+of how much this adds or how similar they are to =prelude='s keys to org on
+=evil=.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package evil-org
@@ -453,7 +460,8 @@ completion.
   :demand)
 #+END_SRC
 
-=ivy= is like =ido= but better, I guess.
+=ivy= is like =ido= but better, I guess. It does fuzzy matching of searches to
+open files and such.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package ivy
@@ -466,48 +474,22 @@ completion.
   (ivy-mode 1))
 #+END_SRC
 
+=smex= helps =ivy= and =counsel= to get better candidate matching.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package smex
+  :demand)
+#+END_SRC
+
 =counsel= uses =ivy= to find files and commands.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package counsel
-  :after ivy
+  :after (ivy smex)
   :demand
   :bind
   (("M-x" . counsel-M-x)
    ("C-x C-f" . counsel-find-file)))
-#+END_SRC
-
-***** =ido=
-
-*OBS:* I use =ivy= now.
-
-I use both =ido= and =smex= to complete my search and commands needs.
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package ido
-  :demand
-  :config
-  (setq ido-enable-flex-matching t)
-  (setq ido-everywhere t)
-  (ido-mode 1))
-#+END_SRC
-
-=ido-vertical-mode= helps to improve the readability of =ido='s suggestions.
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package ido-vertical-mode
-  :after ido
-  :config
-  (ido-vertical-mode 1))
-#+END_SRC
-
-=smex= is the equivalent of =ido= but for [M-x].
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package smex
-  :after ido
-  :bind
-  ("M-x" . 'smex))
 #+END_SRC
 
 **** Text
@@ -562,14 +544,14 @@ editing remote files and to editing as super-user.
 #+BEGIN_SRC emacs-lisp
 (use-package windmove
   :bind
-  ((C-M-<left>. windmove-left)
-   ("C-M-<right>". windmove-right)
-   ("C-M-<up>". windmove-up)
-   ("C-M-<down>". windmove-down)))
+  (("C-M-<left>" . windmove-left)
+   ("C-M-<right>" . windmove-right)
+   ("C-M-<up>" . windmove-up)
+   ("C-M-<down>" . windmove-down)))
 #+END_SRC
 
-Originally, =midnight= is used to /run something at midnight/. I use its feature that
-kills old buffers.
+Originally, =midnight= is used to /run something at midnight/. I use its feature
+that kills old buffers.
 
 #+BEGIN_SRC emacs-lisp
 (use-package midnight
@@ -598,7 +580,7 @@ To help me locate myself in a file, I use =minimap=.
 
 *** Templates and snippets
 
-I use =YaSnippet= to handle my snippet needs.
+I use =yasnippet= to handle my snippet needs.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package yasnippet
@@ -638,10 +620,7 @@ Enables vim-like folding of regions.
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck
   :hook
-  ((css-mode . flycheck-mode)
-   (emacs-lisp-mode . flycheck-mode)
-   (js-mode . flycheck-mode)
-   (python-mode . flycheck-mode))
+  (after-init . global-flycheck-mode)
   :config
   (setq-default
    flycheck-check-syntax-automatically '(save mode-enabled)
@@ -654,6 +633,35 @@ Enables vim-like folding of regions.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package flycheck-pos-tip
   :after flycheck)
+#+END_SRC
+
+*** Project management
+
+For project management in Emacs, there's no better choice than =projectile=,
+which is widely loved by the community.
+
+It supports project-wide commands and actions, like killing all project buffers
+or searching the whole project and replacing something.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package projectile
+  :init
+  (setq projectile-completion-system 'ivy
+        projectile-switch-project-action 'neotree-projectile-action)
+  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+  :config
+  (projectile-global-mode))
+#+END_SRC
+
+And, as a further integration of =ivy= and =projectile=, there is a package that
+makes actions such as =switch-project= to use =counsel='s completion and
+ordering of results.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package counsel-projectile
+  :after (projectile counsel)
+  :init
+  (counsel-projectile-mode))
 #+END_SRC
 
 *** Regions and pointers
