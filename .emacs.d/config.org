@@ -178,7 +178,7 @@ I still need to add:
 - [X] minions
 - [X] dumb-jump
 - [X] smex
-- [X] ido and ido-vertical-mode
+- [X] ivy and counsel
 - [X] tramp
 - [X] avy
 - [X] autofill
@@ -446,9 +446,44 @@ completion.
 
 **** Path and command
 
-I use both =ido= and =smex= to complete my search and commands needs.
+=flx= helps =ivy= to sort its results better.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
+(use-package flx
+  :demand)
+#+END_SRC
+
+=ivy= is like =ido= but better, I guess.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package ivy
+  :after flx
+  :demand
+  :config
+  (setq ivy-use-virtual-buffers t
+        ivy-count-format "(%d/%d) "
+        ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
+  (ivy-mode 1))
+#+END_SRC
+
+=counsel= uses =ivy= to find files and commands.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package counsel
+  :after ivy
+  :demand
+  :bind
+  (("M-x" . counsel-M-x)
+   ("C-x C-f" . counsel-find-file)))
+#+END_SRC
+
+***** =ido=
+
+*OBS:* I use =ivy= now.
+
+I use both =ido= and =smex= to complete my search and commands needs.
+
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package ido
   :demand
   :config
@@ -459,7 +494,7 @@ I use both =ido= and =smex= to complete my search and commands needs.
 
 =ido-vertical-mode= helps to improve the readability of =ido='s suggestions.
 
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package ido-vertical-mode
   :after ido
   :config
@@ -468,7 +503,7 @@ I use both =ido= and =smex= to complete my search and commands needs.
 
 =smex= is the equivalent of =ido= but for [M-x].
 
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp :tangle no
 (use-package smex
   :after ido
   :bind
@@ -842,3 +877,7 @@ Insert the current date.
 ** Keybindings
 
 Here I'll define some of my personal keybindings.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(global-set-key (kbd "C-x k") 'kill-this-buffer)
+#+END_SRC
