@@ -29,9 +29,9 @@ Cool Emacs configs from cool people:
     - [[#environment][Environment]]
     - [[#find-and-replace][Find and replace]]
     - [[#mode-line-1][Mode line]]
-    - [[#keybindings][Keybindings]]
-    - [[#completion][Completion]]
     - [[#remote-editing][Remote editing]]
+    - [[#completion][Completion]]
+    - [[#keybindings][Keybindings]]
     - [[#buffers-and-windows][Buffers and windows]]
     - [[#scrolling][Scrolling]]
     - [[#templates-and-snippets][Templates and snippets]]
@@ -315,6 +315,122 @@ one wanna see what minor modes are active ALL of the time, right?
   (minions-mode 1))
 #+END_SRC
 
+*** Remote editing
+
+=tramp=, which is included by default in Emacs, is very useful when it comes to
+editing remote files and to editing as super-user.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package tramp
+  :demand
+  :init
+  (setq tramp-default-method "ssh"))
+#+END_SRC
+
+*** Completion
+
+This section comprises of both text completion and fuzzy command and path
+completion.
+
+**** Path and command
+
+=flx= helps =ivy= to sort its results better.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package flx)
+#+END_SRC
+
+=ivy= is like =ido= but better, I guess. It does fuzzy matching of searches to
+open files and such.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package ivy
+  :after flx
+  :demand
+  :preface
+  (defun hcps/ivy-open-current-typed-path ()
+    (interactive)
+    (when ivy--directory
+      (let* ((dir ivy--directory)
+             (text-typed ivy-text)
+             (path (concat dir text-typed)))
+        (delete-minibuffer-contents)
+        (ivy--done path))))
+  :init
+  (setq ivy-use-virtual-buffers t
+        ivy-count-format "(%d/%d) "
+        ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
+  :bind
+  (("C-x b" . ivy-switch-buffer)
+   :map ivy-minibuffer-map
+   ("<return>" . ivy-alt-done)
+   ("C-f" . hcps/ivy-open-current-typed-path))
+  :config
+  (ivy-mode 1))
+#+END_SRC
+
+=smex= helps =ivy= and =counsel= to get better candidate matching.
+
+#+BEGIN_SRC emacs-lisp :tangle no
+(use-package smex)
+#+END_SRC
+
+=counsel= uses =ivy= to find files and commands.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package counsel
+  :after (ivy smex)
+  :demand
+  :bind
+  (("M-x" . counsel-M-x)
+   ("C-x C-f" . counsel-find-file)))
+#+END_SRC
+
+As you may know, in Emacs we use =tramp= to edit files remotely using =ssh= and
+to edit local files as =root=. With the package =counsel-tramp= we have an
+=counsel=-powered interface to use that mechanism!
+
+This package looks up your servers defined in =~/.ssh/config= to generate a list
+with possible =ssh= connections, along with =sudo= possibilities (including
+=localhost=!).
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package counsel-tramp
+  :after counsel
+  :bind
+  ("C-c C-f" . counsel-tramp))
+#+END_SRC
+
+**** Text
+
+I use =company= as my completion framework. In the words of Dmitry Gutov:
+
+#+BEGIN_QUOTE
+Company is a text completion framework for Emacs. The name stands for "complete
+anything". It uses pluggable back-ends and front-ends to retrieve and display
+completion candidates.
+
+[[http://company-mode.github.io/][Dmitry Gutov]]
+#+END_QUOTE
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package company
+  :bind
+  (:map company-active-map
+        ("RET" . nil)
+        ([return] . nil)
+        ("TAB" . company-complete-selection)
+        ([tab] . company-complete-selection)
+        ("<right>" . company-complete-common))
+  :init
+  (setq company-idle-delay .2
+        company-minimum-prefix-length 1
+        company-require-match nil
+        company-tooltip-align-annotations t)
+  :config
+  (global-company-mode 1))
+#+END_SRC
+
 *** Keybindings
 
 These packages change keybindings and the default editing modes of Emacs.
@@ -336,7 +452,8 @@ that simplifies the setting of a leader key scheme alike to vim's leader key.
    "f" 'counsel-find-file
    "b" 'ivy-switch-buffer
    "k" 'kill-this-buffer
-   "r" 'anzu-replace-at-cursor-thing)
+   "r" 'anzu-replace-at-cursor-thing
+   "t" 'counsel-tramp)
   (global-evil-leader-mode))
 #+END_SRC
 
@@ -506,107 +623,6 @@ pressed the hydra is killed and the keybindings deactivated.
    ("v" flycheck-verify-setup :color blue))
  #+END_SRC
 
-
-*** Completion
-
-This section comprises of both text completion and fuzzy command and path
-completion.
-
-**** Path and command
-
-=flx= helps =ivy= to sort its results better.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-(use-package flx)
-#+END_SRC
-
-=ivy= is like =ido= but better, I guess. It does fuzzy matching of searches to
-open files and such.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-(use-package ivy
-  :after flx
-  :demand
-  :preface
-  (defun hcps/ivy-open-current-typed-path ()
-    (interactive)
-    (when ivy--directory
-      (let* ((dir ivy--directory)
-             (text-typed ivy-text)
-             (path (concat dir text-typed)))
-        (delete-minibuffer-contents)
-        (ivy--done path))))
-  :init
-  (setq ivy-use-virtual-buffers t
-        ivy-count-format "(%d/%d) "
-        ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
-  :bind
-  (("C-x b" . ivy-switch-buffer)
-   :map ivy-minibuffer-map
-   ("<return>" . ivy-alt-done)
-   ("C-f" . hcps/ivy-open-current-typed-path))
-  :config
-  (ivy-mode 1))
-#+END_SRC
-
-=smex= helps =ivy= and =counsel= to get better candidate matching.
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package smex)
-#+END_SRC
-
-=counsel= uses =ivy= to find files and commands.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-(use-package counsel
-  :after (ivy smex)
-  :demand
-  :bind
-  (("M-x" . counsel-M-x)
-   ("C-x C-f" . counsel-find-file)))
-#+END_SRC
-
-**** Text
-
-I use =company= as my completion framework. In the words of Dmitry Gutov:
-
-#+BEGIN_QUOTE
-Company is a text completion framework for Emacs. The name stands for "complete
-anything". It uses pluggable back-ends and front-ends to retrieve and display
-completion candidates.
-
-[[http://company-mode.github.io/][Dmitry Gutov]]
-#+END_QUOTE
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-(use-package company
-  :bind
-  (:map company-active-map
-        ("RET" . nil)
-        ([return] . nil)
-        ("TAB" . company-complete-selection)
-        ([tab] . company-complete-selection)
-        ("<right>" . company-complete-common))
-  :init
-  (setq company-idle-delay .2
-        company-minimum-prefix-length 1
-        company-require-match nil
-        company-tooltip-align-annotations t)
-  :config
-  (global-company-mode 1))
-#+END_SRC
-
-*** Remote editing
-
-=tramp=, which is included by default in Emacs, is very useful when it comes to
-editing remote files and to editing as super-user.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-(use-package tramp
-  :demand
-  :init
-  (setq tramp-default-method "ssh"))
-#+END_SRC
 
 *** Buffers and windows
 
