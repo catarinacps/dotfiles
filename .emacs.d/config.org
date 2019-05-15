@@ -22,11 +22,12 @@ Cool Emacs configs from cool people:
     - [[#text][Text]]
     - [[#mode-line][Mode-line]]
     - [[#line-numbering-and-scrolling][Line numbering and scrolling]]
-    - [[#ssh-environment-variables][=ssh= environment variables]]
     - [[#randoms][Randoms]]
   - [[#extensions][Extensions]]
     - [[#package-loading][Package loading]]
     - [[#file-management][File management]]
+    - [[#environment][Environment]]
+    - [[#find-and-replace][Find and replace]]
     - [[#mode-line-1][Mode line]]
     - [[#keybindings][Keybindings]]
     - [[#completion][Completion]]
@@ -36,6 +37,7 @@ Cool Emacs configs from cool people:
     - [[#templates-and-snippets][Templates and snippets]]
     - [[#folding][Folding]]
     - [[#syntax-checking][Syntax Checking]]
+    - [[#project-management][Project management]]
     - [[#regions-and-pointers][Regions and pointers]]
     - [[#indentation][Indentation]]
     - [[#utilities][Utilities]]
@@ -60,9 +62,9 @@ Defaults that are better if defined /other/ way.
 Almost every GUI element of Emacs is useless and a waste of screen space.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
+(tool-bar-mode 0)
+(menu-bar-mode 0)
+(scroll-bar-mode 0)
 
 (setq-default
  inhibit-startup-screen t
@@ -134,18 +136,8 @@ And I also like the vim style of scrolling better.
 (setq-default
  auto-window-vscroll nil
  scroll-step 1
- scroll-conservatively 1000
- scroll-margin 9)
-#+END_SRC
-
-*** =ssh= environment variables
-
-This is necessary in order to Emacs grab the =ssh-agent= variables and, that
-way, to =magit= work with =ssh= repos.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-(exec-path-from-shell-copy-env "SSH_AGENT_PID")
-(exec-path-from-shell-copy-env "SSH_AUTH_SOCK")
+ scroll-conservatively most-positive-fixnum
+ scroll-margin 10)
 #+END_SRC
 
 *** Randoms
@@ -160,7 +152,11 @@ way, to =magit= work with =ssh= repos.
  window-combination-resize t             ; Resize windows proportionally
  ring-bell-function 'ignore)             ; No bell ring
 
-(fset 'yes-or-no-p 'y-or-n-p)            ; Replace yes/no prompts with y/n
+; Replace yes/no prompts with y/n
+(fset 'yes-or-no-p 'y-or-n-p)
+
+; Set Emacs to call the garbage collector on focus-out
+(add-hook 'focus-out-hook #'garbage-collect)
 #+END_SRC
 
 ** Extensions
@@ -189,9 +185,12 @@ I still need to add:
 - [X] evil-collection
 - [X] evil-nerd-commenter
 - [X] evil-matchit
+- [X] evil-leader
 - [X] minimap
 - [X] pdf-tools
 - [X] flycheck-pos-tip
+- [X] exec-path-from-shell
+- [ ] anzu
 
 Also, =Prelude= packages that I like and still need to add:
 
@@ -250,6 +249,40 @@ from =neotree= from vim.
   ([f8] . 'neotree-toggle))
 #+END_SRC
 
+*** Environment
+
+To ensure that Emacs uses the same path and environment as =shell= uses, I use
+=exec-path-from-shell=. That way commands that work on the =shell= will
+certainly work on Emacs!
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package exec-path-from-shell
+  :if
+  (memq window-system '(mac ns))
+  :init
+  (setq exec-path-from-shell-arguments '("-l"))
+  :config
+  (exec-path-from-shell-initialize)
+  (exec-path-from-shell-copy-env "SSH_AGENT_PID")
+  (exec-path-from-shell-copy-env "SSH_AUTH_SOCK"))
+#+END_SRC
+
+*** Find and replace
+
+Besides the =isearch= from Emacs itself or the search function from =evil=, I
+also like to use =anzu=.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package anzu
+  :init
+  (setq anzu-cons-mode-line nil)
+  :config
+  (global-anzu-mode 1))
+#+END_SRC
+
+I use only the =anzu-replace-at-cursor-thing=, which is a very useful to replace
+multiple occurrences of a word fast.
+
 *** Mode line
 
 I use =smart-mode-line= as it is very minimalist and informative (and it looks
@@ -282,8 +315,25 @@ These packages change keybindings and the default editing modes of Emacs.
 editing keybindings to match the modal edit modes of vi and vim. Yes, you can
 have the best of both worlds!
 
+But! Before activating =evil=, I'll load up =evil-leader=, which is an package
+that simplifies the setting of a leader key scheme alike to vim's leader key.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package evil-leader
+  :init
+  (evil-leader/set-leader "<SPC>")
+  :config
+  (evil-leader/set-key
+   "e" 'counsel-find-file
+   "b" 'switch-to-buffer
+   "k" 'kill-buffer
+   "r" 'anzu-replace-at-cursor-thing)
+  (global-evil-leader-mode))
+#+END_SRC
+
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package evil
+  :after evil-leader
   :init
   (setq evil-want-keybinding nil)
   :config
@@ -797,14 +847,15 @@ anyone should try Emacs.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package org
+  :hook
+  (org-mode . org-indent-mode)
   :config
   (setq-default
    org-return-follows-link t
    org-highlight-latex-and-related '(latex script entities)
    org-hide-leading-stars t
-   org-directory "~/org/")
-  :hook
-  (org-mode . org-indent-mode))
+   org-support-shift-select nil
+   org-directory "~/org/"))
 #+END_SRC
 
 I make extensive use of blocks of source code inside my org notes, something
@@ -817,6 +868,7 @@ Knuth goes to length about in "Literate Programming".
   (setq-default
    org-edit-src-content-indentation 0
    org-edit-src-persistent-message nil
+   org-src-window-setup 'current-window
    org-src-fontify-natively t
    org-src-tab-acts-natively t))
 #+END_SRC
