@@ -96,7 +96,7 @@ further.
  x-stretch-cursor t
  cursor-in-non-selected-windows t)
 
-(blink-cursor-mode -1)
+(blink-cursor-mode 0)
 #+END_SRC
 
 Also, =auto-fill-mode= is very useful to justify paragraphs automatically while
@@ -112,7 +112,8 @@ writing.
 Here's everything related to the mode-line.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-(setq-default display-time-format "%H:%M")
+(setq-default display-time-format "%H:%M"
+              display-time-default-load-average nil)
 
 (display-time-mode 1)
 (line-number-mode t)
@@ -190,7 +191,7 @@ I still need to add:
 - [X] pdf-tools
 - [X] flycheck-pos-tip
 - [X] exec-path-from-shell
-- [ ] anzu
+- [X] anzu
 
 Also, =Prelude= packages that I like and still need to add:
 
@@ -334,6 +335,7 @@ that simplifies the setting of a leader key scheme alike to vim's leader key.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package evil
   :after evil-leader
+  :demand
   :init
   (setq evil-want-keybinding nil)
   :config
