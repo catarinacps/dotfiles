@@ -198,7 +198,7 @@ Also, =Prelude= packages that I like and still need to add:
 - [ ] smartparens
 - [ ] which-key
 - [ ] projectile
-- [ ] magit
+- [ ] magit and additionals
 - [ ] flyspell
 - [ ] undo-tree
 - [ ] compile
@@ -225,9 +225,10 @@ have their newest version always.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package auto-compile
   :demand
-  :config (auto-compile-on-load-mode))
-
-(setq load-prefer-newer t)
+  :init
+  (setq load-prefer-newer t)
+  :config
+  (auto-compile-on-load-mode))
 #+END_SRC
 
 *** File management
@@ -237,7 +238,7 @@ the default =dired=.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package ranger
-  :config
+  :init
   (setq ranger-cleanup-on-disable t))
 #+END_SRC
 
@@ -291,7 +292,8 @@ very pretty on =gruvbox=)
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package smart-mode-line
-  :init
+  :demand
+  :config
   (sml/setup))
 #+END_SRC
 
@@ -300,9 +302,11 @@ one wanna see what minor modes are active ALL of the time, right?
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package minions
-  :config
+  :after smart-mode-line
+  :init
   (setq minions-mode-line-lighter ""
         minions-mode-line-delimiters '("" . ""))
+  :config
   (minions-mode 1))
 #+END_SRC
 
@@ -321,13 +325,12 @@ that simplifies the setting of a leader key scheme alike to vim's leader key.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package evil-leader
-  :init
-  (evil-leader/set-leader "<SPC>")
   :config
+  (evil-leader/set-leader "<SPC>")
   (evil-leader/set-key
-   "e" 'counsel-find-file
-   "b" 'switch-to-buffer
-   "k" 'kill-buffer
+   "f" 'counsel-find-file
+   "b" 'ivy-switch-buffer
+   "k" 'kill-this-buffer
    "r" 'anzu-replace-at-cursor-thing)
   (global-evil-leader-mode))
 #+END_SRC
@@ -397,10 +400,11 @@ popular packages.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package evil-mc
   :after evil
-  :config
+  :init
   (evil-define-key 'visual evil-mc-key-map
     "A" #'evil-mc-make-cursor-in-visual-selection-end
     "I" #'evil-mc-make-cursor-in-visual-selection-beg)
+  :config
   (global-evil-mc-mode 1))
 #+END_SRC
 
@@ -508,8 +512,7 @@ completion.
 =flx= helps =ivy= to sort its results better.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-(use-package flx
-  :demand)
+(use-package flx)
 #+END_SRC
 
 =ivy= is like =ido= but better, I guess. It does fuzzy matching of searches to
@@ -519,18 +522,18 @@ open files and such.
 (use-package ivy
   :after flx
   :demand
-  :config
+  :init
   (setq ivy-use-virtual-buffers t
         ivy-count-format "(%d/%d) "
         ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
+  :config
   (ivy-mode 1))
 #+END_SRC
 
 =smex= helps =ivy= and =counsel= to get better candidate matching.
 
 #+BEGIN_SRC emacs-lisp :tangle no
-(use-package smex
-  :demand)
+(use-package smex)
 #+END_SRC
 
 =counsel= uses =ivy= to find files and commands.
@@ -565,13 +568,13 @@ completion candidates.
         ("TAB" . company-complete-selection)
         ([tab] . company-complete-selection)
         ("<right>" . company-complete-common))
+  :init
+  (setq company-idle-delay .2
+        company-minimum-prefix-length 1
+        company-require-match nil
+        company-tooltip-align-annotations t)
   :config
-  (global-company-mode 1)
-  (setq-default
-   company-idle-delay .2
-   company-minimum-prefix-length 1
-   company-require-match nil
-   company-tooltip-align-annotations t))
+  (global-company-mode 1))
 #+END_SRC
 
 *** Remote editing
@@ -582,7 +585,7 @@ editing remote files and to editing as super-user.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package tramp
   :demand
-  :config
+  :init
   (setq tramp-default-method "ssh"))
 #+END_SRC
 
@@ -607,8 +610,12 @@ that kills old buffers.
 
 #+BEGIN_SRC emacs-lisp
 (use-package midnight
-  :config
-  (setq-default clean-buffer-list-delay-general 1))
+  :init
+  (setq-default clean-buffer-list-delay-general 0.5
+                clean-buffer-list-delay-special (* 1 3600)
+                clean-buffer-list-kill-buffer-names (nconc clean-buffer-list-kill-buffer-names
+                                                           "*IBuffer*"
+                                                           "*Finder*")))
 #+END_SRC
 
 Also, I use perspective to maintain multiple workspaces open with different
@@ -659,10 +666,10 @@ Enables vim-like folding of regions.
   (:map vimish-fold-folded-keymap ("<tab>" . vimish-fold-unfold)
    :map vimish-fold-unfolded-keymap ("<tab>" . vimish-fold-refold))
   :init
-  (setq-default vimish-fold-dir (expand-file-name ".vimish-fold/" user-emacs-directory))
-  (vimish-fold-global-mode 1)
+  (setq vimish-fold-dir (expand-file-name ".vimish-fold/" user-emacs-directory)
+        vimish-fold-header-width 79)
   :config
-  (setq-default vimish-fold-header-width 79))
+  (vimish-fold-global-mode 1))
 #+END_SRC
 
 *** Syntax Checking
@@ -671,20 +678,23 @@ Enables vim-like folding of regions.
 
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck
-  :hook
-  (after-init . global-flycheck-mode)
-  :config
+  :demand
+  :init
   (setq-default
    flycheck-check-syntax-automatically '(save mode-enabled)
    flycheck-disabled-checkers '(emacs-lisp-checkdoc)
-   flycheck-display-errors-delay .3))
+   flycheck-display-errors-delay .3)
+  :config
+  (global-flycheck-mode))
 #+END_SRC
 
 =flycheck-pos-tip= shows the =flycheck= tip in a popup under the cursor.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package flycheck-pos-tip
-  :after flycheck)
+  :after flycheck
+  :config
+  (flycheck-pos-tip-mode))
 #+END_SRC
 
 *** Project management
@@ -712,7 +722,7 @@ ordering of results.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package counsel-projectile
   :after (projectile counsel)
-  :init
+  :config
   (counsel-projectile-mode))
 #+END_SRC
 
@@ -751,8 +761,8 @@ I use =aggressive-indent= to keep my code indented as I type.
   ((emacs-lisp-mode . aggressive-indent-mode)
    (lisp-mode . aggressive-indent-mode)
    (org-mode . aggressive-indent-mode))
-  :config
-  (setq-default aggressive-indent-comments-too t)
+  :init
+  (setq aggressive-indent-comments-too t)
   (add-to-list 'aggressive-indent-protected-commands 'comment-dwim))
 #+END_SRC
 
