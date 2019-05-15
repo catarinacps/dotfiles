@@ -239,7 +239,12 @@ the default =dired=.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package ranger
   :init
-  (setq ranger-cleanup-on-disable t))
+  (setq ranger-cleanup-on-disable t
+        ranger-preview-file t
+        ranger-dont-show-binary t
+        ranger-max-preview-size 10)
+  :config
+  (ranger-override-dired-mode t))
 #+END_SRC
 
 Also, I like to use =neotree.el= to navigate my project files, which is a clone
@@ -248,7 +253,7 @@ from =neotree= from vim.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package neotree
   :bind
-  ([f8] . 'neotree-toggle))
+  ([f8] . neotree-toggle))
 #+END_SRC
 
 *** Environment
