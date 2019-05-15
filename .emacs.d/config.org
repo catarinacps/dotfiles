@@ -522,10 +522,24 @@ open files and such.
 (use-package ivy
   :after flx
   :demand
+  :preface
+  (defun hcps/ivy-open-current-typed-path ()
+    (interactive)
+    (when ivy--directory
+      (let* ((dir ivy--directory)
+             (text-typed ivy-text)
+             (path (concat dir text-typed)))
+        (delete-minibuffer-contents)
+        (ivy--done path))))
   :init
   (setq ivy-use-virtual-buffers t
         ivy-count-format "(%d/%d) "
         ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
+  :bind
+  (("C-x b" . ivy-switch-buffer)
+   :map ivy-minibuffer-map
+   ("<return>" . ivy-alt-done)
+   ("C-f" . hcps/ivy-open-current-typed-path))
   :config
   (ivy-mode 1))
 #+END_SRC
