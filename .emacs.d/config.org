@@ -1011,7 +1011,7 @@ Here I'll store any package load and configurations related to languages.
 I still need to add packages relating to these languages:
 
 - [X] Org
-- [ ] C/C++
+- [X] C/C++
 - [ ] Python
 - [ ] Scala
 - [ ] LaTeX (use-package-ensure-system-package texlive-most)
@@ -1072,12 +1072,22 @@ compilations.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package cmake-ide
-  :ensure rtags
+  :ensure (rtags flycheck auto-complete-clang company-clang irony)
   :config
   (cmake-ide-setup))
 #+END_SRC
 
-Also, the package =cpputils-cmake=
+Also, the package =cpputils-cmake= sets up syntax highlighting to a bunch of
+useful packages. It goes pretty well with =cmake-ide=.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package cpputils-cmake
+  :hook
+  (c-mode-common-hook . (lambda ()
+                          (if (derived-mode-p 'c-mode 'c++-mode)
+                              (cppcm-reload-all)))))
+#+END_SRC
+
 * Personal
 
 Stuff that isn't either a package nor a language nor downloadable: stuff you
