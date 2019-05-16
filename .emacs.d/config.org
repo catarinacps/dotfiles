@@ -15,6 +15,14 @@ Cool Emacs configs from cool people:
 - [[https://app-learninglab.inria.fr/gitlab/learning-lab/mooc-rr-ressources/blob/master/module2/ressources/rr_org/init.org][Konrad's and Arnaud's]]
 
 * Table of contents                                                   :TOC_3:
+- [[#introduction][Introduction]]
+  - [[#use-package][=use-package=]]
+    - [[#ensure][:ensure]]
+    - [[#after][:after]]
+    - [[#defer][:defer]]
+    - [[#demand][:demand]]
+    - [[#init][:init]]
+    - [[#config][:config]]
 - [[#the-editor][The editor]]
   - [[#definitions-and-preferences][Definitions and preferences]]
     - [[#gui-elements][GUI elements]]
@@ -49,6 +57,117 @@ Cool Emacs configs from cool people:
     - [[#date][Date]]
   - [[#keybindings-1][Keybindings]]
 
+* Introduction
+
+First of all, welcome to my configuration file for Emacs. I built it from almost
+the ground up, picking up configs from several sources, some of which I've cited
+in the beginning of this file.
+
+As I'd like very much that this file be used as a source of inspiration for
+others, I wrote it in an =.org= file, using all of =org-mode='s black magic
+powers of tangling source blocks to intertwine both source =.el= and prose.
+
+Also, I've used in almost all sections of this document a package called
+=use-package= in order to organize all the additional packages that I use to get
+a better Emacs experience. So, I'll teach you to read a =use-package= statement!
+That way you can understand what's happening beneath all sugar syntax.
+
+** =use-package=
+
+Briefly, this package wraps your configuration for a given package in a neat
+little statement, which can include several useful categorizations and
+sub-tools.
+
+Here are all little keywords you can use to organize your configs:
+
+*** :ensure
+
+The =:ensure= keyword tells to =use-package= that this package should be
+installed in the system. Without it, =use-package= will tell you that the given
+package isn't installed and won't proceed.
+
+I define a flag to tell =use-package= to activate this keyword by default,
+because I want all packages that I use installed in the system! Still, I can
+turn off this behaviour if I set the keyword to =false=.
+
+#+BEGIN_SRC emacs-lisp
+(use-package foo
+  :ensure t)      ; I need this package installed!
+
+(use-package foo
+  :ensure f)      ; I don't NEED the package installed
+#+END_SRC
+
+You can also use this keyword to tell that your package need another installed
+before it loads!
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+  (use-package foo
+    :ensure bar)
+#+END_SRC
+
+*** :after
+
+The =:after= keyword sets a relation of dependency between the loading of two
+packages. In other words, you can tell =use-package= that a given package should
+only be loaded if that other package is already loaded.
+
+#+BEGIN_SRC emacs-lisp
+(use-package foo)
+
+(use-package bar
+  :after foo)
+
+(use-package moo
+  :after (foo bar))    ; Supports mmultiple dependencies!
+#+END_SRC
+
+*** :defer
+
+The =:defer= keyword tells =use-package= that it can defer the loading of your
+package until its absolutely needed. Its behaviour is the opposite of the
+keyword =:demand=.
+
+#+BEGIN_SRC emacs-lisp
+(use-package foo
+  :defer t)
+#+END_SRC
+
+*** :demand
+
+The =:demand= keyword says to =use-package= that this package must not be
+lazy-loaded, and should be loaded right away as Emacs loads.
+
+#+BEGIN_SRC emacs-lisp
+(use-package foo
+  :demand)
+#+END_SRC
+
+*** :init
+
+The =:init= keyword can tell =use-package= to execute said commands BEFORE the
+package is loaded. In reality, said execution will happen as soon as the
+=use-package= statement is processed on the Emacs loading process.
+
+#+BEGIN_SRC emacs-lisp
+(use-package foo
+  :init
+  (setq bar t))
+#+END_SRC
+
+*** :config
+
+The =:config= keyword, much like the =:init= keyword, tells =use-package= to
+execute commands. The difference is that commands defined with this keyword will
+only execute AFTER the package is loaded. There is an important difference here,
+as =use-package= uses what's called /lazy loading/, i.e. only load the package
+when you actually need it.
+
+#+BEGIN_SRC emacs-lisp
+(use-package foo
+  :config
+  (foo-init))
+#+END_SRC
 * The editor
 
 Everything related to Emacs as the editor and platform.
@@ -141,6 +260,12 @@ And I also like the vim style of scrolling better.
  scroll-margin 10)
 #+END_SRC
 
+Highlighting the current line is also very useful.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(global-hl-line-mode 1)
+#+END_SRC
+
 *** Randoms
 
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -176,8 +301,8 @@ I still need to add:
 - [X] dumb-jump
 - [X] smex
 - [X] ivy and counsel
+- [X] counsel-tramp
 - [X] tramp
-- [X] avy
 - [X] autofill
 - [X] engine-mode
 - [X] no-littering
@@ -193,13 +318,13 @@ I still need to add:
 - [X] exec-path-from-shell
 - [X] anzu
 
-Also, =Prelude= packages that I like and still need to add:
+Also, =prelude= packages that I like and still need to add:
 
 - [ ] smartparens
 - [ ] which-key
 - [ ] projectile
 - [ ] magit and additionals
-- [ ] flyspell
+- [ ] flyspell (with aspell)
 - [ ] undo-tree
 - [ ] compile
 - [ ] whitespace
@@ -207,6 +332,9 @@ Also, =Prelude= packages that I like and still need to add:
 - [ ] switch-window
 - [ ] rainbow-delimiters
 - [ ] browse-kill-ring
+- [ ] uniquify
+- [ ] recentf
+- [ ] supersave
 
 *** Package loading
 
@@ -217,10 +345,11 @@ eventually, using =use-package=.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (require 'use-package-ensure)
 (setq use-package-always-ensure t)
+(require 'bind-key)
 #+END_SRC
 
 Having that said, I too use =auto-compile= to always compile packages and to
-have their newest version always.
+have their newest version.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package auto-compile
@@ -334,18 +463,13 @@ completion.
 
 **** Path and command
 
-=flx= helps =ivy= to sort its results better.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-(use-package flx)
-#+END_SRC
-
 =ivy= is like =ido= but better, I guess. It does fuzzy matching of searches to
-open files and such.
+open files and such. =flx= is required here in order to have fuzzy matching and
+whatnot.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package ivy
-  :after flx
+  :ensure flx
   :demand
   :preface
   (defun hcps/ivy-open-current-typed-path ()
@@ -369,17 +493,13 @@ open files and such.
   (ivy-mode 1))
 #+END_SRC
 
-=smex= helps =ivy= and =counsel= to get better candidate matching.
-
-#+BEGIN_SRC emacs-lisp :tangle no
-(use-package smex)
-#+END_SRC
-
-=counsel= uses =ivy= to find files and commands.
+=counsel= uses =ivy= to find files and commands. =smex= is required here to
+make sure that =counsel-M-x= has decent candidate sorting.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package counsel
-  :after (ivy smex)
+  :ensure smex
+  :after ivy
   :demand
   :bind
   (("M-x" . counsel-M-x)
@@ -390,7 +510,7 @@ As you may know, in Emacs we use =tramp= to edit files remotely using =ssh= and
 to edit local files as =root=. With the package =counsel-tramp= we have an
 =counsel=-powered interface to use that mechanism!
 
-This package looks up your servers defined in =~/.ssh/config= to generate a list
+This package looks up your hosts defined in =~/.ssh/config= to generate a list
 with possible =ssh= connections, along with =sudo= possibilities (including
 =localhost=!).
 
@@ -453,7 +573,8 @@ that simplifies the setting of a leader key scheme alike to vim's leader key.
    "b" 'ivy-switch-buffer
    "k" 'kill-this-buffer
    "r" 'anzu-replace-at-cursor-thing
-   "t" 'counsel-tramp)
+   "t" 'counsel-tramp
+   "s" 'save-buffer)
   (global-evil-leader-mode))
 #+END_SRC
 
@@ -773,16 +894,6 @@ the structure of the current major mode.
   ("C-=" . er/expand-region))
 #+END_SRC
 
-=avy= offers a very efficient method of moving through your file with its
-=avy-goto-word-1=.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-(use-package avy
-  :bind
-  (:map evil-normal-state-map
-        ("SPC" . avy-goto-word-1)))
-#+END_SRC
-
 *** Indentation
 
 I use =aggressive-indent= to keep my code indented as I type.
@@ -886,6 +997,11 @@ I still need to add packages relating to these languages:
 - [ ] Python
 - [ ] Scala
 - [ ] LaTeX
+- [ ] R
+- [ ] Shell
+- [ ] Makefile
+- [ ] Dot (using Graphviz)
+- [ ] Elisp (duh)
 
 ** org
 
