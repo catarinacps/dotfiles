@@ -145,7 +145,7 @@ lazy-loaded, and should be loaded right away as Emacs loads.
 
 *** :init
 
-The =:init= keyword can tell =use-package= to execute said commands BEFORE the
+The =:init= keyword can tell =use-package= to execute said commands *BEFORE* the
 package is loaded. In reality, said execution will happen as soon as the
 =use-package= statement is processed on the Emacs loading process.
 
@@ -159,7 +159,7 @@ package is loaded. In reality, said execution will happen as soon as the
 
 The =:config= keyword, much like the =:init= keyword, tells =use-package= to
 execute commands. The difference is that commands defined with this keyword will
-only execute AFTER the package is loaded. There is an important difference here,
+only execute *AFTER* the package is loaded. There is an important difference here,
 as =use-package= uses what's called /lazy loading/, i.e. only load the package
 when you actually need it.
 
@@ -168,6 +168,7 @@ when you actually need it.
   :config
   (foo-init))
 #+END_SRC
+
 * The editor
 
 Everything related to Emacs as the editor and platform.
