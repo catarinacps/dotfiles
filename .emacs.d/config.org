@@ -101,7 +101,7 @@ turn off this behaviour if I set the keyword to =false=.
 You can also use this keyword to tell that your package need another installed
 before it loads!
 
-#+BEGIN_SRC emacs-lisp :tangle yes
+#+BEGIN_SRC emacs-lisp
   (use-package foo
     :ensure bar)
 #+END_SRC
@@ -186,10 +186,9 @@ Almost every GUI element of Emacs is useless and a waste of screen space.
 (menu-bar-mode 0)
 (scroll-bar-mode 0)
 
-(setq-default
- inhibit-startup-screen t
- initial-scratch-message ""
- initial-major-mode 'org-mode)
+(setq-default inhibit-startup-screen t
+              initial-scratch-message ""
+              initial-major-mode 'org-mode)
 #+END_SRC
 
 *** Font
@@ -207,14 +206,13 @@ Here's every other setting relating to text editing I can't categorize any
 further.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-(setq-default
- fill-column 80
- indent-tabs-mode nil
- tab-width 4
- line-spacing 0
- require-final-newline t
- x-stretch-cursor t
- cursor-in-non-selected-windows t)
+(setq-default fill-column 80
+              indent-tabs-mode nil
+              tab-width 4
+              line-spacing 0
+              require-final-newline t
+              x-stretch-cursor t
+              cursor-in-non-selected-windows t)
 
 (blink-cursor-mode 0)
 #+END_SRC
@@ -225,6 +223,7 @@ writing.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
 (add-hook 'org-mode-hook 'turn-on-auto-fill)
+(add-hook 'tex-mode-hook 'turn-on-auto-fill)
 #+END_SRC
 
 *** Mode-line
@@ -246,7 +245,8 @@ Here's everything related to the mode-line.
 I like the vim style of relative numbering of lines.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-(setq-default display-line-numbers-type 'relative)
+(setq-default display-line-numbers-type 'relative
+              display-line-numbers-width-start 4)
 
 (global-display-line-numbers-mode)
 #+END_SRC
@@ -254,11 +254,10 @@ I like the vim style of relative numbering of lines.
 And I also like the vim style of scrolling better.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-(setq-default
- auto-window-vscroll nil
- scroll-step 1
- scroll-conservatively most-positive-fixnum
- scroll-margin 10)
+(setq-default auto-window-vscroll nil
+              scroll-step 1
+              scroll-conservatively most-positive-fixnum
+              scroll-margin 10)
 #+END_SRC
 
 Highlighting the current line is also very useful.
@@ -269,15 +268,16 @@ Highlighting the current line is also very useful.
 
 *** Randoms
 
+Random configs and definitions that don't have a clear category.
+
 #+BEGIN_SRC emacs-lisp :tangle yes
-(setq-default
- ad-redefinition-action 'accept          ; Silence warnings for redefinition
- confirm-kill-emacs 'yes-or-no-p         ; Confirm before exiting Emacs
- help-window-select t                    ; Focus new help windows when opened
- select-enable-clipboard t               ; Merge system's and Emacs' clipboard
- uniquify-buffer-name-style 'forward     ; Uniquify buffer names
- window-combination-resize t             ; Resize windows proportionally
- ring-bell-function 'ignore)             ; No bell ring
+(setq-default ad-redefinition-action 'accept       ; Silence warnings for redefinition
+              confirm-kill-emacs 'yes-or-no-p      ; Confirm before exiting Emacs
+              help-window-select t                 ; Focus new help windows when opened
+              select-enable-clipboard t            ; Merge system's and Emacs' clipboard
+              uniquify-buffer-name-style 'forward  ; Uniquify buffer names
+              window-combination-resize t          ; Resize windows proportionally
+              ring-bell-function 'ignore)          ; No bell ring
 
 ; Replace yes/no prompts with y/n
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -336,6 +336,7 @@ Also, =prelude= packages that I like and still need to add:
 - [ ] uniquify
 - [ ] recentf
 - [ ] supersave
+- [ ] eval-expr
 
 *** Package loading
 
@@ -346,7 +347,22 @@ eventually, using =use-package=.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (require 'use-package-ensure)
 (setq use-package-always-ensure t)
-(require 'bind-key)
+#+END_SRC
+
+In order to demand that certain system packages are installed, I use the helper
+package called =use-package-ensure-system-package=. Installing it I can use the
+=:ensure-system-package= keywords and demand that certain packages are installed
+in the system before proceeding (useful to LaTeX, for example)!
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package use-package-ensure-system-package)
+#+END_SRC
+
+As we'll use the =:bind= and variants in our =use-package= statements, we'll
+have to demand the =bind-key= package.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package bind-key)
 #+END_SRC
 
 Having that said, I too use =auto-compile= to always compile packages and to
@@ -488,7 +504,7 @@ whatnot.
   :bind
   (("C-x b" . ivy-switch-buffer)
    :map ivy-minibuffer-map
-   ("<return>" . ivy-alt-done)
+   ("RET" . ivy-alt-done)
    ("C-f" . hcps/ivy-open-current-typed-path))
   :config
   (ivy-mode 1))
@@ -808,6 +824,7 @@ I use =yasnippet= to handle my snippet needs.
   ((emacs-lisp-mode . yas-minor-mode)
    (html-mode . yas-minor-mode)
    (org-mode . yas-minor-mode)
+   (tex-mode . yas-minor-mode)
    (python-mode . yas-minor-mode))
   :config
   (yas-reload-all))
@@ -837,7 +854,7 @@ Enables vim-like folding of regions.
 (use-package flycheck
   :demand
   :init
-  (setq-default
+  (setq
    flycheck-check-syntax-automatically '(save mode-enabled)
    flycheck-disabled-checkers '(emacs-lisp-checkdoc)
    flycheck-display-errors-delay .3)
@@ -867,7 +884,8 @@ or searching the whole project and replacing something.
   :init
   (setq projectile-completion-system 'ivy
         projectile-switch-project-action 'neotree-projectile-action)
-  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+  :bind-keymap
+  ("s-p" . projectile-command-map)
   :config
   (projectile-global-mode))
 #+END_SRC
@@ -924,7 +942,6 @@ windows.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package helpful
-  :demand
   :bind
   (("C-h f" . helpful-callable)
    ("C-h v" . helpful-variable)
@@ -950,7 +967,6 @@ without leaving Emacs.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package engine-mode
-  :demand
   :config
   (defengine google
     "https://www.google.com/search?q="
@@ -994,10 +1010,11 @@ Here I'll store any package load and configurations related to languages.
 
 I still need to add packages relating to these languages:
 
+- [X] Org
 - [ ] C/C++
 - [ ] Python
 - [ ] Scala
-- [ ] LaTeX
+- [ ] LaTeX (use-package-ensure-system-package texlive-most)
 - [ ] R
 - [ ] Shell
 - [ ] Makefile
@@ -1047,6 +1064,20 @@ contents of your =.org= file.
   (org-mode . toc-org-mode))
 #+END_SRC
 
+** c/c++
+
+A very useful package for C and C++ is =cmake-ide=. In CMake projects it really
+shines, as it uses CMake to get completion and syntax highlighting after
+compilations.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package cmake-ide
+  :ensure rtags
+  :config
+  (cmake-ide-setup))
+#+END_SRC
+
+Also, the package =cpputils-cmake=
 * Personal
 
 Stuff that isn't either a package nor a language nor downloadable: stuff you
