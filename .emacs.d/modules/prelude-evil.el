@@ -128,7 +128,7 @@
 ;;; snagged from Eric S. Fraga
 ;;; http://lists.gnu.org/archive/html/emacs-orgmode/2012-05/msg00153.html
 (defun prelude-evil-key-bindings-for-org ()
-  ;;(message "Defining evil key bindings for org")
+  "Defining evil key bindings for org."
   (evil-declare-key 'normal org-mode-map
     "gk" 'outline-up-heading
     "gj" 'outline-next-visible-heading
