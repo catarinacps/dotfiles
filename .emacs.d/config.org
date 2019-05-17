@@ -50,9 +50,9 @@ Cool Emacs configs from cool people:
     - [[#utilities][Utilities]]
   - [[#theme][Theme]]
 - [[#languages][Languages]]
-  - [[#org][org]]
-  - [[#cc][c/c++]]
-  - [[#r][r]]
+  - [[#org][Org]]
+  - [[#cc][C/C++]]
+  - [[#r][R]]
 - [[#personal][Personal]]
   - [[#functions][Functions]]
     - [[#date][Date]]
@@ -187,8 +187,11 @@ Almost every GUI element of Emacs is useless and a waste of screen space.
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
 
-(add-hook 'after-make-frame-functions (lambda ()
-                                        (scroll-bar-mode -1)))
+(defun my/disable-scroll-bars (frame)
+  (modify-frame-parameters frame
+                           '((vertical-scroll-bars . nil)
+                             (horizontal-scroll-bars . nil))))
+(add-hook 'after-make-frame-functions 'my/disable-scroll-bars)
 
 (setq-default inhibit-startup-screen t
               initial-scratch-message ""
@@ -235,7 +238,7 @@ writing.
 Here's everything related to the mode-line.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-(setq-default display-time-format "%H:%M"
+(setq-default display-time-format "%H:%M "
               display-time-default-load-average nil)
 
 (display-time-mode 1)
@@ -277,7 +280,6 @@ Random configs and definitions that don't have a clear category.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (setq-default ad-redefinition-action 'accept       ; Silence warnings for redefinition
               confirm-kill-emacs 'yes-or-no-p      ; Confirm before exiting Emacs
-              help-window-select t                 ; Focus new help windows when opened
               select-enable-clipboard t            ; Merge system's and Emacs' clipboard
               uniquify-buffer-name-style 'forward  ; Uniquify buffer names
               window-combination-resize t          ; Resize windows proportionally
@@ -348,6 +350,9 @@ file. I plan to gradually rip everything I want from =prelude= and put it here
 eventually, using =use-package=.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
+(when (not (package-installed-p 'use-package))
+  (package-install 'use-package))
+
 (require 'use-package-ensure)
 (setq use-package-always-ensure t)
 #+END_SRC
@@ -374,8 +379,8 @@ have their newest version.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package auto-compile
   :demand
-  :init
-  (setq load-prefer-newer t)
+  ; :init
+  ; (setq load-prefer-newer t)
   :config
   (auto-compile-on-load-mode))
 #+END_SRC
@@ -425,7 +430,7 @@ certainly work on Emacs!
 
 *** Find and replace
 
-Besides the =isearch= from Emacs itself or the search function from =evil=, I
+Besides the =ISearch= from Emacs itself or the search function from =evil=, I
 also like to use =anzu=.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
@@ -458,9 +463,10 @@ one wanna see what minor modes are active ALL of the time, right?
 (use-package minions
   :after smart-mode-line
   :init
-  (setq minions-mode-line-lighter ""
+  (setq minions-mode-line-lighter "..."
         minions-mode-line-delimiters '("" . ""))
   :config
+  (add-to-list 'minions-whitelist '(projectile-mode . t))
   (minions-mode 1))
 #+END_SRC
 
@@ -603,7 +609,7 @@ that simplifies the setting of a leader key scheme alike to vim's leader key.
 (use-package evil
   :after evil-leader
   :demand
-  :init
+  :preface
   (setq evil-want-keybinding nil)
   :config
   (evil-mode 1))
@@ -812,8 +818,10 @@ I use =yasnippet= to handle my snippet needs.
 (use-package yasnippet
   :bind
   (:map yas-minor-mode-map
-        ("TAB" . nil)
-        ("<tab>" . nil))
+        ("TAB" . yas-expand)
+        ("<tab>" . yas-expand))
+  :init
+  (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
   :hook
   ((emacs-lisp-mode . yas-minor-mode)
    (html-mode . yas-minor-mode)
@@ -821,6 +829,8 @@ I use =yasnippet= to handle my snippet needs.
    (tex-mode . yas-minor-mode)
    (python-mode . yas-minor-mode))
   :config
+  (evil-declare-key 'insert yas-minor-mode-map
+    (kbd "TAB") 'yas-expand)
   (yas-reload-all))
 #+END_SRC
 
@@ -831,8 +841,8 @@ Enables vim-like folding of regions.
 #+BEGIN_SRC emacs-lisp
 (use-package vimish-fold
   :bind
-  (:map vimish-fold-folded-keymap ("<tab>" . vimish-fold-unfold)
-   :map vimish-fold-unfolded-keymap ("<tab>" . vimish-fold-refold))
+  (:map vimish-fold-folded-keymap ("C-<tab>" . vimish-fold-unfold)
+   :map vimish-fold-unfolded-keymap ("C-<tab>" . vimish-fold-refold))
   :init
   (setq vimish-fold-dir (expand-file-name ".vimish-fold/" user-emacs-directory)
         vimish-fold-header-width 79)
@@ -918,10 +928,12 @@ I use =aggressive-indent= to keep my code indented as I type.
     (aggressive-indent-mode 0))
   :hook
   ((emacs-lisp-mode . aggressive-indent-mode)
-   (lisp-mode . aggressive-indent-mode))
-   :init
-   (setq aggressive-indent-comments-too t)
-   (add-to-list 'aggressive-indent-protected-commands 'comment-dwim))
+   (lisp-mode . aggressive-indent-mode)
+   (c-mode-common-hook . aggressive-indent-mode))
+  :init
+  (setq aggressive-indent-comments-too t)
+  :config
+  (add-to-list 'aggressive-indent-protected-commands 'comment-dwim))
 #+END_SRC
 
 *** Utilities
@@ -975,6 +987,7 @@ without leaving Emacs.
 (use-package no-littering
   :demand)
 #+END_SRC
+
 **** =pdf-tools=
 
 =pdf-tools= is what should be the default =pdf-mode= for Emacs.
@@ -994,7 +1007,7 @@ support for a lot of packages and is very pleasant for the eyes.
 (use-package gruvbox-theme
   :demand
   :config
-  (load-theme gruvbox-dark-soft t))
+  (load-theme 'gruvbox-dark-medium t))
 #+END_SRC
 
 * Languages
@@ -1014,7 +1027,7 @@ I still need to add packages relating to these languages:
 - [ ] Dot (using Graphviz)
 - [ ] Elisp (duh)
 
-** org
+** Org
 
 =org-mode= is probably *the* killer mode and one of the main reasons as to why
 anyone should try Emacs.
@@ -1041,7 +1054,7 @@ anyone should try Emacs.
     "L" 'org-end-of-line ; smarter behaviour on headlines etc.
     "t" 'org-todo ; mark a TODO item as DONE
     ",c" 'org-cycle
-    (kbd "TAB") 'org-cycle
+    (kbd "TAB") 'outline-toggle-children
     (kbd "S-TAB") 'org-global-cycle
     ",e" 'org-export-dispatch
     ",n" 'outline-next-visible-heading
@@ -1066,7 +1079,35 @@ contents of your =.org= file.
   (org-mode . toc-org-mode))
 #+END_SRC
 
-** c/c++
+** C/C++
+
+In a sea of C and C++ packages for Emacs, I must make a mention for =irony=.
+This package makes your low-level programming life way easier.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package irony
+  :ensure company-irony
+  :ensure flycheck-irony
+  :hook
+  ((c++-mode-hook . irony-mode)
+   (c-mode-hook . irony-mode)
+   (objc-mode-hook . irony-mode)
+   (flycheck-mode-hook . flycheck-irony)
+   (irony-mode-hook . irony-cdb-autosetup-compile-options))
+  :init
+  (add-to-list 'company-backends 'company-irony))
+#+END_SRC
+
+Also, =rtags= is a project that aims to set up tags for C and C++ projects so
+other tools can use them.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package rtags
+  :hook
+  (irony-mode-hook . rtags-start-process-unless-running)
+  :config
+  (rtags-enable-standard-keybindings))
+#+END_SRC
 
 A very useful package for C and C++ is =cmake-ide=. In CMake projects it really
 shines, as it uses CMake to get completion and syntax highlighting after
@@ -1074,11 +1115,7 @@ compilations.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package cmake-ide
-  :ensure rtags
-  :ensure flycheck
-  :ensure auto-complete-clang
-  :ensure company-clang
-  :ensure irony
+  :after (irony rtags)
   :config
   (cmake-ide-setup))
 #+END_SRC
@@ -1088,14 +1125,13 @@ useful packages. It goes pretty well with =cmake-ide=.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package cpputils-cmake
-  :ensure flymake
   :hook
   (c-mode-common-hook . (lambda ()
                           (if (derived-mode-p 'c-mode 'c++-mode)
                               (cppcm-reload-all)))))
 #+END_SRC
 
-** r
+** R
 
 For R you pretty much /need/ the =ess= package, i.e. /Emacs Speaks Statistics/.
 It provides you with everything you need from R.
@@ -1162,4 +1198,5 @@ Here I'll define some of my personal keybindings.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
+(global-set-key (kbd "C-c x") 'hcps/date-iso)
 #+END_SRC

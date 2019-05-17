@@ -1,1 +1,1 @@
-(setq prelude-theme 'gruvbox-dark-soft)
+(setq prelude-theme 'gruvbox-dark-medium)
