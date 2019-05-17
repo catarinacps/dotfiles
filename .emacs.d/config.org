@@ -1105,6 +1105,8 @@ other tools can use them.
 (use-package rtags
   :hook
   (irony-mode-hook . rtags-start-process-unless-running)
+  :init
+  (setq rtags-display-result-backend 'ivy)
   :config
   (rtags-enable-standard-keybindings))
 #+END_SRC
