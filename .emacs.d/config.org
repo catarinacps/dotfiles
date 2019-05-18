@@ -53,6 +53,7 @@ Cool Emacs configs from cool people:
   - [[#org][Org]]
   - [[#cc][C/C++]]
   - [[#r][R]]
+  - [[#shell][Shell]]
 - [[#personal][Personal]]
   - [[#functions][Functions]]
     - [[#date][Date]]
@@ -1022,7 +1023,7 @@ I still need to add packages relating to these languages:
 - [ ] Scala
 - [ ] LaTeX (use-package-ensure-system-package texlive-most)
 - [X] R
-- [ ] Shell
+- [X] Shell
 - [ ] Makefile
 - [ ] Dot (using Graphviz)
 - [ ] Elisp (duh)
@@ -1037,15 +1038,23 @@ anyone should try Emacs.
   :hook
   (org-mode . org-indent-mode)
   :config
-  (setq-default org-return-follows-link t
-                org-highlight-latex-and-related '(latex script entities)
-                org-hide-leading-stars t
-                org-support-shift-select nil
-                org-directory "~/org/"
-                org-cycle-emulate-tab nil)
-  (setq-default org-edit-src-content-indentation 0
-                org-edit-src-persistent-message nil
-                org-src-fontify-natively t)
+  (setq org-return-follows-link t
+        org-highlight-latex-and-related '(latex script entities)
+        org-hide-leading-stars t
+        org-support-shift-select nil
+        org-directory "~/org/"
+        org-cycle-emulate-tab nil
+        org-edit-src-content-indentation 0
+        org-edit-src-persistent-message nil
+        org-src-fontify-natively t)
+
+  (evil-leader/set-key-for-mode 'org-mode
+    "c" 'org-cycle
+    "e" 'org-export-dispatch
+    "n" 'outline-next-visible-heading
+    "p" 'outline-previous-visible-heading
+    "u" 'outline-up-heading
+    "q" 'org-set-tags-command)
 
   (evil-declare-key 'normal org-mode-map
     "gk" 'outline-up-heading
@@ -1053,20 +1062,14 @@ anyone should try Emacs.
     "H" 'org-beginning-of-line ; smarter behaviour on headlines etc.
     "L" 'org-end-of-line ; smarter behaviour on headlines etc.
     "t" 'org-todo ; mark a TODO item as DONE
-    ",c" 'org-cycle
     (kbd "TAB") 'outline-toggle-children
     (kbd "S-TAB") 'org-global-cycle
-    ",e" 'org-export-dispatch
-    ",n" 'outline-next-visible-heading
-    ",p" 'outline-previous-visible-heading
-    ",t" 'org-set-tags-command
-    ",u" 'outline-up-heading
+    (kbd "RET") 'org-open-at-point
     "$" 'org-end-of-line ; smarter behaviour on headlines etc.
     "^" 'org-beginning-of-line ; ditto
     "-" 'org-ctrl-c-minus ; change bullet style
     "<" 'org-metaleft ; out-dent
-    ">" 'org-metaright ; indent
-    ))
+    ">" 'org-metaright)) ; indent
 #+END_SRC
 
 =org-toc= is an useful way to automatically maintain an updated table of
@@ -1133,6 +1136,27 @@ useful packages. It goes pretty well with =cmake-ide=.
                               (cppcm-reload-all)))))
 #+END_SRC
 
+In the department of code formatting, =clang-format= is a lovely tool that can
+really be of great use while editing C and C++ code.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package clang-format
+  :ensure-system-package clang
+  :preface
+  (defun cc-format-on-save-hook ()
+    (when c-buffer-is-cc-mode
+      (clang-format-buffer)))
+  :bind
+  (:map c-mode-base-map
+        ("C-M-<tab>" . clang-format-buffer))
+  :hook
+  (before-save-hook . #'cc-format-on-save-hook)
+  :config
+  (evil-leader/set-key-for-mode 'c-mode-base-map
+    "c" 'clang-format-region
+    "C" 'clang-format-buffer))
+#+END_SRC
+
 ** R
 
 For R you pretty much /need/ the =ess= package, i.e. /Emacs Speaks Statistics/.
@@ -1142,6 +1166,17 @@ It provides you with everything you need from R.
 (use-package ess
   :config
   (require 'ess-r-mode))
+#+END_SRC
+
+** Shell
+
+For =shell= completion I use =bash-complete=, which auto completes several
+=bash= functions.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package bash-completion
+  :hook
+  (shell-dynamic-complete-funtions . bash-completion-dynamic-complete))
 #+END_SRC
 
 * Personal
