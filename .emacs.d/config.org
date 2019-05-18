@@ -241,6 +241,8 @@ You can find the following packages in this configuration file:
 - yasnippet
 #+end_example
 
+But anyway, enough chit-chat, lets start with the configurations!
+
 * The editor
 
 Everything related to Emacs as the editor and platform.
