@@ -23,6 +23,7 @@ Cool Emacs configs from cool people:
     - [[#demand][:demand]]
     - [[#init][:init]]
     - [[#config][:config]]
+- [[#what-packages-you-can-find-here][What packages you can find here]]
 - [[#the-editor][The editor]]
   - [[#definitions-and-preferences][Definitions and preferences]]
     - [[#gui-elements][GUI elements]]
@@ -170,6 +171,20 @@ when you actually need it.
   :config
   (foo-init))
 #+END_SRC
+
+* What packages you can find here
+
+#+BEGIN_SRC emacs-lisp :export none
+(shell-command
+ "cat config.org |
+  awk '$1 == \"(use-package\" {print $2}' |
+  sed s/\")\"//g |
+  awk '$1 != \"foo\" && $1 != \"moo\" && $1 != \"bar\" {print \"- \"$1}' |
+  sort > package-list.txt")
+#+END_SRC
+
+You can find the following packages in this configuration file:
+#+INCLUDE: "./package-list.txt"
 
 * The editor
 
@@ -610,9 +625,17 @@ that simplifies the setting of a leader key scheme alike to vim's leader key.
 (use-package evil
   :after evil-leader
   :demand
-  :preface
+  :init
   (setq evil-want-keybinding nil)
   :config
+  (setq evil-mode-line-format 'before)
+
+  (setq evil-emacs-state-cursor  '("red" box))
+  (setq evil-normal-state-cursor '("gray" box))
+  (setq evil-visual-state-cursor '("gray" hollow))
+  (setq evil-insert-state-cursor '("gray" bar))
+  (setq evil-motion-state-cursor '("gray" box))
+
   (evil-mode 1))
 #+END_SRC
 
