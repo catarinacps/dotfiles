@@ -174,17 +174,72 @@ when you actually need it.
 
 * What packages you can find here
 
-#+BEGIN_SRC emacs-lisp :export none
+You can find the following packages in this configuration file:
+
+#+BEGIN_SRC emacs-lisp :exports results
 (shell-command
  "cat config.org |
   awk '$1 == \"(use-package\" {print $2}' |
   sed s/\")\"//g |
   awk '$1 != \"foo\" && $1 != \"moo\" && $1 != \"bar\" {print \"- \"$1}' |
   sort > package-list.txt")
+(shell-command-to-string "cat ./package-list.txt")
 #+END_SRC
 
-You can find the following packages in this configuration file:
-#+INCLUDE: "./package-list.txt"
+#+RESULTS:
+#+begin_example
+- aggressive-indent
+- anzu
+- auto-compile
+- bash-completion
+- bind-key
+- clang-format
+- cmake-ide
+- company
+- counsel
+- counsel-projectile
+- counsel-tramp
+- cpputils-cmake
+- dumb-jump
+- engine-mode
+- ess
+- evil
+- evil-collection
+- evil-leader
+- evil-matchit
+- evil-mc
+- evil-nerd-commenter
+- evil-org
+- evil-org-agenda
+- evil-surround
+- evil-visualstar
+- exec-path-from-shell
+- expand-region
+- flycheck
+- flycheck-pos-tip
+- gruvbox-theme
+- helpful
+- hydra
+- irony
+- ivy
+- midnight
+- minions
+- neotree
+- no-littering
+- org
+- pdf-tools
+- perspective
+- projectile
+- ranger
+- rtags
+- smart-mode-line
+- toc-org
+- tramp
+- use-package-ensure-system-package
+- vimish-fold
+- windmove
+- yasnippet
+#+end_example
 
 * The editor
 
