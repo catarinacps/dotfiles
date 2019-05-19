@@ -260,7 +260,7 @@ Almost every GUI element of Emacs is useless and a waste of screen space.
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
 
-(defun my/disable-scroll-bars (frame)
+(defun hcps/disable-scroll-bars (frame)
   (modify-frame-parameters frame
                            '((vertical-scroll-bars . nil)
                              (horizontal-scroll-bars . nil))))
