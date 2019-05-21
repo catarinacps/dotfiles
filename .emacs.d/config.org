@@ -178,12 +178,12 @@ You can find the following packages in this configuration file:
 
 #+BEGIN_SRC emacs-lisp :exports results
 (shell-command
- "cat config.org |
-  awk '$1 == \"(use-package\" {print $2}' |
-  sed s/\")\"//g |
-  awk '$1 != \"foo\" && $1 != \"moo\" && $1 != \"bar\" {print \"- \"$1}' |
+ "grep '\<use-package .*$' < config.org |
+  awk '{print \"- \"$2}' |
+  tr -d ')' |
+  sed '1,10d' |
   sort > package-list.txt")
-(shell-command-to-string "cat ./package-list.txt")
+(shell-command-to-string "cat package-list.txt")
 #+END_SRC
 
 #+RESULTS:
@@ -264,7 +264,7 @@ Almost every GUI element of Emacs is useless and a waste of screen space.
   (modify-frame-parameters frame
                            '((vertical-scroll-bars . nil)
                              (horizontal-scroll-bars . nil))))
-(add-hook 'after-make-frame-functions 'my/disable-scroll-bars)
+(add-hook 'after-make-frame-functions 'hcps/disable-scroll-bars)
 
 (setq-default inhibit-startup-screen t
               initial-scratch-message ""
