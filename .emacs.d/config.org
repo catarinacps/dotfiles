@@ -35,7 +35,7 @@ Cool Emacs configs from cool people:
   - [[#extensions][Extensions]]
     - [[#package-loading][Package loading]]
     - [[#file-management][File management]]
-    - [[#environment][Environment]]
+    - [[#environment-variables][Environment variables]]
     - [[#find-and-replace][Find and replace]]
     - [[#mode-line-1][Mode line]]
     - [[#remote-editing][Remote editing]]
@@ -483,7 +483,7 @@ from =neotree= from vim.
   ([f8] . neotree-toggle))
 #+END_SRC
 
-*** Environment
+*** Environment variables
 
 To ensure that Emacs uses the same path and environment as =shell= uses, I use
 =exec-path-from-shell=. That way commands that work on the =shell= will
@@ -647,6 +647,7 @@ completion candidates.
         company-require-match nil
         company-tooltip-align-annotations t)
   :config
+  (add-to-list 'company-backends 'company-cmake)
   (global-company-mode 1))
 #+END_SRC
 
@@ -674,7 +675,9 @@ that simplifies the setting of a leader key scheme alike to vim's leader key.
     "r" 'anzu-replace-at-cursor-thing
     "t" 'counsel-tramp
     "s" 'save-buffer
-    "d" 'ranger)
+    "d" 'ranger
+    "P" 'counsel-projectile-switch-project
+    "w" 'delete-window)
   (global-evil-leader-mode))
 #+END_SRC
 
@@ -685,14 +688,12 @@ that simplifies the setting of a leader key scheme alike to vim's leader key.
   :init
   (setq evil-want-keybinding nil)
   :config
-  (setq evil-mode-line-format 'before)
-
-  (setq evil-emacs-state-cursor  '("red" box))
-  (setq evil-normal-state-cursor '("gray" box))
-  (setq evil-visual-state-cursor '("gray" hollow))
-  (setq evil-insert-state-cursor '("gray" bar))
-  (setq evil-motion-state-cursor '("gray" box))
-
+  (setq evil-emacs-state-cursor  '("red" box)
+        evil-normal-state-cursor '("gray" box)
+        evil-visual-state-cursor '("gray" hollow)
+        evil-insert-state-cursor '("gray" bar)
+        evil-motion-state-cursor '("gray" box)
+        evil-mode-line-format 'before)
   (evil-mode 1))
 #+END_SRC
 
@@ -1170,15 +1171,23 @@ This package makes your low-level programming life way easier.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package irony
   :ensure company-irony
+  :ensure company-irony-c-headers
   :ensure flycheck-irony
+  :preface
+  (defun hcps/irony-mode-hook ()
+    (define-key irony-mode-map [remap completion-at-point]
+      'irony-completion-at-point-async)
+    (define-key irony-mode-map [remap complete-symbol]
+      'irony-completion-at-point-async))
   :hook
   ((c++-mode-hook . irony-mode)
    (c-mode-hook . irony-mode)
    (objc-mode-hook . irony-mode)
    (flycheck-mode-hook . flycheck-irony)
-   (irony-mode-hook . irony-cdb-autosetup-compile-options))
+   (irony-mode-hook . irony-cdb-autosetup-compile-options)
+   (irony-mode-hook . hcps/irony-mode-hook))
   :init
-  (add-to-list 'company-backends 'company-irony))
+  (add-to-list 'company-backends '(company-irony company-irony-c-headers)))
 #+END_SRC
 
 Also, =rtags= is a project that aims to set up tags for C and C++ projects so
@@ -1186,11 +1195,14 @@ other tools can use them.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package rtags
+  :ensure company-rtags
   :hook
   (irony-mode-hook . rtags-start-process-unless-running)
   :init
-  (setq rtags-display-result-backend 'ivy)
+  (setq rtags-display-result-backend 'ivy
+        rtags-completions-enabled t)
   :config
+  (add-to-list 'company-backends 'company-rtags)
   (rtags-enable-standard-keybindings))
 #+END_SRC
 
