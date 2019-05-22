@@ -580,8 +580,7 @@ whatnot.
         (delete-minibuffer-contents)
         (ivy--done path))))
   :init
-  (setq ivy-use-virtual-buffers t
-        ivy-count-format "(%d/%d) "
+  (setq ivy-count-format "(%d/%d) "
         ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
   :bind
   (("C-x b" . ivy-switch-buffer)
@@ -677,7 +676,8 @@ that simplifies the setting of a leader key scheme alike to vim's leader key.
     "s" 'save-buffer
     "d" 'ranger
     "P" 'counsel-projectile-switch-project
-    "w" 'delete-window)
+    "w" 'delete-window
+    "g" 'magit-status)
   (global-evil-leader-mode))
 #+END_SRC
 
