@@ -55,6 +55,7 @@ Cool Emacs configs from cool people:
   - [[#cc][C/C++]]
   - [[#r][R]]
   - [[#shell][Shell]]
+  - [[#makefile][Makefile]]
 - [[#personal][Personal]]
   - [[#functions][Functions]]
     - [[#date][Date]]
@@ -601,7 +602,8 @@ make sure that =counsel-M-x= has decent candidate sorting.
   :demand
   :bind
   (("M-x" . counsel-M-x)
-   ("C-x C-f" . counsel-find-file)))
+   ("C-x C-f" . counsel-find-file)
+   ("C-x r b" . counsel-bookmark)))
 #+END_SRC
 
 As you may know, in Emacs we use =tramp= to edit files remotely using =ssh= and
@@ -671,13 +673,17 @@ that simplifies the setting of a leader key scheme alike to vim's leader key.
     "f" 'counsel-find-file
     "b" 'ivy-switch-buffer
     "k" 'kill-this-buffer
+    "K" 'kill-buffer
     "r" 'anzu-replace-at-cursor-thing
     "t" 'counsel-tramp
     "s" 'save-buffer
     "d" 'ranger
     "p" 'counsel-projectile-switch-project
     "w" 'delete-window
-    "g" 'magit-status)
+    "g" 'magit-status
+    "o" 'ace-window
+    "B" 'counsel-bookmark
+    "y" 'counsel-yank-pop)
   (global-evil-leader-mode))
 #+END_SRC
 
@@ -1105,7 +1111,7 @@ I still need to add packages relating to these languages:
 - [ ] LaTeX (use-package-ensure-system-package texlive-most)
 - [X] R
 - [X] Shell
-- [ ] Makefile
+- [X] Makefile
 - [ ] Dot (using Graphviz)
 - [ ] Elisp (duh)
 
@@ -1160,6 +1166,21 @@ contents of your =.org= file.
 #+END_SRC
 
 ** C/C++
+
+Here I set some defaults I appreciate for cc-mode.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(defun c-mode-defaults ()
+  (setq c-default-style "linux"
+        c-basic-offset 4)
+  (c-set-offset 'substatement-open 0))
+
+(setq c-mode-defaults-hook 'c-mode-defaults)
+
+;; this will affect all modes derived from cc-mode, like
+;; java-mode, php-mode, etc
+(add-hook 'c-mode-common-hook (lambda () (run-hooks 'c-mode-defaults-hook)))
+#+END_SRC
 
 In a sea of C and C++ packages for Emacs, I must make a mention for =irony=.
 This package makes your low-level programming life way easier.
@@ -1266,6 +1287,21 @@ For =shell= completion I use =bash-complete=, which auto completes several
 (use-package bash-completion
   :hook
   (shell-dynamic-complete-funtions . bash-completion-dynamic-complete))
+#+END_SRC
+
+** Makefile
+
+In Makefile files we have a special case: it /needs/ tabulators to work. So,
+we'll set that up.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(defun makefile-mode-defaults ()
+  (whitespace-toggle-options '(tabs))
+  (setq indent-tabs-mode t ))
+
+(setq makefile-mode-hook 'makefile-mode-defaults)
+
+(add-hook 'makefile-mode-hook (lambda () (run-hooks 'makefile-mode-hook)))
 #+END_SRC
 
 * Personal
