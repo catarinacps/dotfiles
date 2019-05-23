@@ -675,7 +675,7 @@ that simplifies the setting of a leader key scheme alike to vim's leader key.
     "t" 'counsel-tramp
     "s" 'save-buffer
     "d" 'ranger
-    "P" 'counsel-projectile-switch-project
+    "p" 'counsel-projectile-switch-project
     "w" 'delete-window
     "g" 'magit-status)
   (global-evil-leader-mode))
@@ -1132,22 +1132,18 @@ anyone should try Emacs.
   (evil-leader/set-key-for-mode 'org-mode
     "c" 'org-cycle
     "e" 'org-export-dispatch
-    "n" 'outline-next-visible-heading
-    "p" 'outline-previous-visible-heading
-    "u" 'outline-up-heading
-    "q" 'org-set-tags-command)
+    "q" 'org-set-tags-command
+    "a" 'org-attach)
 
   (evil-declare-key 'normal org-mode-map
     "gk" 'outline-up-heading
     "gj" 'outline-next-visible-heading
-    "H" 'org-beginning-of-line ; smarter behaviour on headlines etc.
-    "L" 'org-end-of-line ; smarter behaviour on headlines etc.
     "t" 'org-todo ; mark a TODO item as DONE
     (kbd "TAB") 'outline-toggle-children
     (kbd "S-TAB") 'org-global-cycle
     (kbd "RET") 'org-open-at-point
     "$" 'org-end-of-line ; smarter behaviour on headlines etc.
-    "^" 'org-beginning-of-line ; ditto
+    "0" 'org-beginning-of-line ; ditto
     "-" 'org-ctrl-c-minus ; change bullet style
     "<" 'org-metaleft ; out-dent
     ">" 'org-metaright)) ; indent
@@ -1244,6 +1240,7 @@ really be of great use while editing C and C++ code.
   :hook
   (before-save-hook . #'cc-format-on-save-hook)
   :config
+  (setq clang-format-style "webkit")
   (evil-leader/set-key-for-mode 'c-mode-base-map
     "c" 'clang-format-region
     "C" 'clang-format-buffer))

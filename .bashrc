@@ -147,3 +147,5 @@ export YAOURT_COLORS="nb=1:pkg=1:ver=1;32:lver=1;45:installed=1;42:grp=1;34:od=1
 if [[ -z "$TMUX" ]] && [ "$SSH_CONNECTION" != "" ]; then
     tmux attach-session -t ssh_s || tmux new-session -s ssh_s
 fi
+
+alias clang-format='clang-format -fallback-style=WebKit'
