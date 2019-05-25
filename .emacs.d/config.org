@@ -56,6 +56,8 @@ Cool Emacs configs from cool people:
   - [[#r][R]]
   - [[#shell][Shell]]
   - [[#makefile][Makefile]]
+  - [[#plantuml][PlantUML]]
+  - [[#lisp][Lisp]]
 - [[#personal][Personal]]
   - [[#functions][Functions]]
     - [[#date][Date]]
@@ -452,11 +454,21 @@ have their newest version.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package auto-compile
+  :disabled
   :demand
-  ; :init
-  ; (setq load-prefer-newer t)
+  :init
+  (setq load-prefer-newer t)
   :config
   (auto-compile-on-load-mode))
+#+END_SRC
+
+To add facilitate my keybinding issues, I also use =general.el=. It adds some
+very welcome keywords to =use-package=, in which I'll use extensively throughout
+this file.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package general
+  :demand)
 #+END_SRC
 
 *** File management
@@ -480,8 +492,8 @@ from =neotree= from vim.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package neotree
-  :bind
-  ([f8] . neotree-toggle))
+  :general
+  ("<f8>" 'neotree-toggle))
 #+END_SRC
 
 *** Environment variables
@@ -583,11 +595,11 @@ whatnot.
   :custom
   (ivy-count-format "(%d/%d) ")
   (ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
-  :bind
-  (("C-x b" . ivy-switch-buffer)
-   :map ivy-minibuffer-map
-   ("RET" . ivy-alt-done)
-   ("C-f" . hcps/ivy-open-current-typed-path))
+  :general
+  ("C-x b" 'ivy-switch-buffer)
+  (:keymaps 'ivy-minibuffer-map
+   "RET" 'ivy-alt-done
+   "C-f" 'hcps/ivy-open-current-typed-path)
   :config
   (ivy-mode 1))
 #+END_SRC
@@ -600,10 +612,10 @@ make sure that =counsel-M-x= has decent candidate sorting.
   :ensure smex
   :after ivy
   :demand
-  :bind
-  (("M-x" . counsel-M-x)
-   ("C-x C-f" . counsel-find-file)
-   ("C-x r b" . counsel-bookmark)))
+  :general
+  ("M-x" 'counsel-M-x)
+  ("C-x C-f" 'counsel-find-file)
+  ("C-x r b" 'counsel-bookmark))
 #+END_SRC
 
 As you may know, in Emacs we use =tramp= to edit files remotely using =ssh= and
@@ -617,8 +629,8 @@ with possible =ssh= connections, along with =sudo= possibilities (including
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package counsel-tramp
   :after counsel
-  :bind
-  ("C-c C-f" . counsel-tramp))
+  :general
+  ("C-c C-f" 'counsel-tramp))
 #+END_SRC
 
 **** Text
@@ -635,13 +647,10 @@ completion candidates.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package company
-  :bind
-  (:map company-active-map
-        ("RET" . nil)
-        ([return] . nil)
-        ("TAB" . company-complete-selection)
-        ([tab] . company-complete-selection)
-        ("<right>" . company-complete-common))
+  :general
+  (:keymaps 'company-active-map
+   "TAB" 'company-complete-selection
+   "<right>" 'company-complete-common)
   :custom
   (company-idle-delay .2)
   (company-minimum-prefix-length 1)
@@ -662,35 +671,30 @@ These packages change keybindings and the default editing modes of Emacs.
 editing keybindings to match the modal edit modes of vi and vim. Yes, you can
 have the best of both worlds!
 
-But! Before activating =evil=, I'll load up =evil-leader=, which is an package
-that simplifies the setting of a leader key scheme alike to vim's leader key.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-(use-package evil-leader
-  :config
-  (evil-leader/set-leader "<SPC>")
-  (evil-leader/set-key
-    "f" 'counsel-find-file
-    "b" 'ivy-switch-buffer
-    "k" 'kill-this-buffer
-    "K" 'kill-buffer
-    "r" 'anzu-replace-at-cursor-thing
-    "t" 'counsel-tramp
-    "s" 'save-buffer
-    "d" 'ranger
-    "p" 'counsel-projectile-switch-project
-    "w" 'delete-window
-    "g" 'magit-status
-    "o" 'ace-window
-    "B" 'counsel-bookmark
-    "y" 'counsel-yank-pop)
-  (global-evil-leader-mode))
-#+END_SRC
-
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package evil
-  :after evil-leader
   :demand
+  :init
+  (defconst hcps/leader-key "SPC")
+  :general
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   ""  nil
+   "f" 'counsel-find-file
+   "b" 'ivy-switch-buffer
+   "k" 'kill-this-buffer
+   "K" 'kill-buffer
+   "r" 'counsel-recentf
+   "R" 'anzu-replace-at-cursor-thing
+   "t" 'counsel-tramp
+   "s" 'save-buffer
+   "d" 'ranger
+   "p" 'counsel-projectile-switch-project
+   "w" 'delete-window
+   "g" 'magit-status
+   "o" 'ace-window
+   "B" 'counsel-bookmark
+   "y" 'counsel-yank-pop)
   :custom
   (evil-want-keybinding nil)
   (evil-emacs-state-cursor  '("red" box))
@@ -759,10 +763,10 @@ popular packages.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package evil-mc
   :after evil
-  :init
-  (evil-define-key 'visual evil-mc-key-map
-    "A" #'evil-mc-make-cursor-in-visual-selection-end
-    "I" #'evil-mc-make-cursor-in-visual-selection-beg)
+  :general
+  (:states 'visual
+   "A" 'evil-mc-make-cursor-in-visual-selection-end
+   "I" 'evil-mc-make-cursor-in-visual-selection-beg)
   :config
   (global-evil-mc-mode 1))
 #+END_SRC
@@ -804,9 +808,9 @@ pressed the hydra is killed and the keybindings deactivated.
     (if me/ongoing-hydra-body
         (funcall me/ongoing-hydra-body)
       (user-error "me/ongoing-hydra: me/ongoing-hydra-body is not set")))
-  :bind
-  ("C-c e" . hydra-eyebrowse/body)
-  ("C-c f" . hydra-flycheck/body)
+  :general
+  ("C-c e" 'hydra-eyebrowse/body)
+  ("C-c f" 'hydra-flycheck/body)
   :custom
   (hydra-default-hint nil))
 #+END_SRC
@@ -870,11 +874,11 @@ pressed the hydra is killed and the keybindings deactivated.
 
 #+BEGIN_SRC emacs-lisp
 (use-package windmove
-  :bind
-  (("C-M-<left>" . windmove-left)
-   ("C-M-<right>" . windmove-right)
-   ("C-M-<up>" . windmove-up)
-   ("C-M-<down>" . windmove-down)))
+  :general
+  ("C-M-<left>" 'windmove-left)
+  ("C-M-<right>" 'windmove-right)
+  ("C-M-<up>" 'windmove-up)
+  ("C-M-<down>" 'windmove-down))
 #+END_SRC
 
 Originally, =midnight= is used to /run something at midnight/. I use its feature
@@ -904,10 +908,11 @@ I use =yasnippet= to handle my snippet needs.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package yasnippet
-  :bind
-  (:map yas-minor-mode-map
-        ("TAB" . yas-expand)
-        ("<tab>" . yas-expand))
+  :general
+  (:keymaps 'yas-minor-mode-map
+   "TAB" 'yas-expand)
+  (:states 'insert
+   "TAB" 'yas-expand)
   :custom
   (yas-snippet-dirs '("~/.emacs.d/snippets"))
   :hook
@@ -917,8 +922,6 @@ I use =yasnippet= to handle my snippet needs.
    (tex-mode . yas-minor-mode)
    (python-mode . yas-minor-mode))
   :config
-  (evil-declare-key 'insert yas-minor-mode-map
-    (kbd "TAB") 'yas-expand)
   (yas-reload-all))
 #+END_SRC
 
@@ -928,10 +931,12 @@ Enables vim-like folding of regions.
 
 #+BEGIN_SRC emacs-lisp
 (use-package vimish-fold
-  :bind
-  (:map vimish-fold-folded-keymap ("C-<tab>" . vimish-fold-unfold)
-        :map vimish-fold-unfolded-keymap ("C-<tab>" . vimish-fold-refold))
-  :init
+  :general
+  (:keymaps 'vimish-fold-folded-keymap
+   "C-<tab>" 'vimish-fold-unfold)
+  (:keymaps 'vimish-fold-unfolded-keymap
+   "C-<tab>" 'vimish-fold-refold)
+  :custom
   (vimish-fold-dir (expand-file-name ".vimish-fold/" user-emacs-directory))
   (vimish-fold-header-width 79)
   :config
@@ -975,8 +980,8 @@ or searching the whole project and replacing something.
   :custom
   (projectile-completion-system 'ivy)
   (projectile-switch-project-action 'neotree-projectile-action)
-  :bind-keymap
-  ("s-p" . projectile-command-map)
+  :general
+  ("s-p" '(:keymap projectile-command-map :package projectile))
   :config
   (projectile-global-mode))
 #+END_SRC
@@ -999,9 +1004,9 @@ the structure of the current major mode.
 
 #+BEGIN_SRC emacs-lisp
 (use-package expand-region
-  :bind
-  ("C-+" . er/contract-region)
-  ("C-=" . er/expand-region))
+  :general
+  ("C-+" 'er/contract-region)
+  ("C-=" 'er/expand-region))
 #+END_SRC
 
 *** Indentation
@@ -1034,10 +1039,10 @@ windows.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package helpful
-  :bind
-  (("C-h f" . helpful-callable)
-   ("C-h v" . helpful-variable)
-   ("C-h k" . helpful-key)))
+  :general
+  ("C-h f" 'helpful-callable)
+  ("C-h v" 'helpful-variable)
+  ("C-h k" 'helpful-key))
 #+END_SRC
 
 **** =dumb-jump=
@@ -1047,9 +1052,9 @@ setup (i.e. no TAG or RTAGS or etc.).
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package dumb-jump
-  :bind
-  (("M-g o" . dumb-jump-go-other-window)
-   ("M-g j" . dumb-jump-go)))
+  :general
+  ("M-g o" 'dumb-jump-go-other-window)
+  ("M-g j" 'dumb-jump-go))
 #+END_SRC
 
 **** =engine-mode=
@@ -1112,7 +1117,8 @@ I still need to add packages relating to these languages:
 - [X] Shell
 - [X] Makefile
 - [ ] Dot (using Graphviz)
-- [ ] Elisp (duh)
+- [ ] Lisp (duh)
+- [X] PlantUML
 
 ** Org
 
@@ -1121,6 +1127,7 @@ anyone should try Emacs.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package org
+  :mode (("\\.org$" . org-mode))
   :hook
   (org-mode . org-indent-mode)
   :custom
@@ -1133,24 +1140,28 @@ anyone should try Emacs.
   (org-edit-src-content-indentation 0)
   (org-edit-src-persistent-message nil)
   (org-src-fontify-natively t)
-  :config
-  (evil-leader/set-key-for-mode 'org-mode
-    "c" 'org-cycle
-    "e" 'org-export-dispatch
-    "q" 'org-set-tags-command
-    "a" 'org-attach)
-  (evil-declare-key 'normal org-mode-map
-    "gk" 'outline-up-heading
-    "gj" 'outline-next-visible-heading
-    "t" 'org-todo ; mark a TODO item as DONE
-    (kbd "TAB") 'outline-toggle-children
-    (kbd "S-TAB") 'org-global-cycle
-    (kbd "RET") 'org-open-at-point
-    "$" 'org-end-of-line ; smarter behaviour on headlines etc.
-    "0" 'org-beginning-of-line ; ditto
-    "-" 'org-ctrl-c-minus ; change bullet style
-    "<" 'org-metaleft ; out-dent
-    ">" 'org-metaright)) ; indent
+  :general
+  (:states '(normal visual)
+   :keymaps 'org-mode-map
+   "gk" 'outline-up-heading
+   "gj" 'outline-next-visible-heading
+   "t" 'org-todo ; mark a TODO item as DONE
+   "TAB" 'outline-toggle-children
+   "S-TAB" 'org-global-cycle
+   "RET" 'org-open-at-point
+   "$" 'org-end-of-line ; smarter behaviour on headlines etc.
+   "0" 'org-beginning-of-line ; ditto
+   "-" 'org-ctrl-c-minus ; change bullet style
+   "<" 'org-metaleft ; out-dent
+   ">" 'org-metaright)
+  (:states '(normal visual)
+   :keymaps 'org-mode-map
+   :prefix hcps/leader-key
+   "c" 'org-cycle
+   "e" 'org-export-dispatch
+   "q" 'org-set-tags-command
+   "a" 'org-attach
+   "i" 'org-toggle-inline-images))
 #+END_SRC
 
 =org-journal= is a powerful tool to journal your day.
@@ -1163,8 +1174,8 @@ anyone should try Emacs.
   (org-journal-file-format "%Y%m%d")
   (org-journal-date-format "%e %b %Y (%A)")
   (org-journal-time-format "")
-  :bind
-  ("C-c t" . org-journal-new-entry))
+  :general
+  ("C-c t" 'org-journal-new-entry))
 #+END_SRC
 
 =org-toc= is an useful way to automatically maintain an updated table of
@@ -1267,17 +1278,17 @@ really be of great use while editing C and C++ code.
   (defun cc-format-on-save-hook ()
     (when c-buffer-is-cc-mode
       (clang-format-buffer)))
-  :bind
-  (:map c-mode-base-map
-        ("C-M-<tab>" . clang-format-buffer))
+  :general
+  (:keymaps 'c-mode-base-map
+   "C-M-<tab>" 'clang-format-buffer
+   :states '(normal visual)
+   :prefix hcps/leader-key
+   "c" 'clang-format-region
+   "C" 'clang-format-buffer)
   :hook
   (before-save-hook . #'cc-format-on-save-hook)
   :custom
-  (clang-format-style "webkit")
-  :config
-  (evil-leader/set-key-for-mode 'c-mode-base-map
-    "c" 'clang-format-region
-    "C" 'clang-format-buffer))
+  (clang-format-style "webkit"))
 #+END_SRC
 
 ** R
@@ -1315,6 +1326,100 @@ we'll set that up.
 (setq makefile-mode-hook 'makefile-mode-defaults)
 
 (add-hook 'makefile-mode-hook (lambda () (run-hooks 'makefile-mode-hook)))
+#+END_SRC
+
+** PlantUML
+
+/PlantUML/ is a graph language that describes loads of different diagram types,
+mainly focusing on /UML/, of course.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package plantuml-mode
+  :mode "\\.plantuml\\'"
+  :interpreter "plantuml")
+#+END_SRC
+
+** Lisp
+
+Fix for the annoying keyword default indentation:
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(defun fuco1/lisp-indent-function (indent-point state)
+  "This function is the normal value of the variable `lisp-indent-function'.
+The function `calculate-lisp-indent' calls this to determine
+if the arguments of a Lisp function call should be indented specially.
+INDENT-POINT is the position at which the line being indented begins.
+Point is located at the point to indent under (for default indentation);
+STATE is the `parse-partial-sexp' state for that position.
+If the current line is in a call to a Lisp function that has a non-nil
+property `lisp-indent-function' (or the deprecated `lisp-indent-hook'),
+it specifies how to indent.  The property value can be:
+,* `defun', meaning indent `defun'-style
+  \(this is also the case if there is no property and the function
+  has a name that begins with \"def\", and three or more arguments);
+,* an integer N, meaning indent the first N arguments specially
+  (like ordinary function arguments), and then indent any further
+  arguments like a body;
+,* a function to call that returns the indentation (or nil).
+  `lisp-indent-function' calls this function with the same two arguments
+  that it itself received.
+This function returns either the indentation to use, or nil if the
+Lisp function does not specify a special indentation."
+  (let ((normal-indent (current-column))
+        (orig-point (point)))
+    (goto-char (1+ (elt state 1)))
+    (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t)
+    (cond
+     ;; car of form doesn't seem to be a symbol, or is a keyword
+     ((and (elt state 2)
+           (or (not (looking-at "\\sw\\|\\s_"))
+               (looking-at ":")))
+      (if (not (> (save-excursion (forward-line 1) (point))
+                  calculate-lisp-indent-last-sexp))
+          (progn (goto-char calculate-lisp-indent-last-sexp)
+                 (beginning-of-line)
+                 (parse-partial-sexp (point)
+                                     calculate-lisp-indent-last-sexp 0 t)))
+      ;; Indent under the list or under the first sexp on the same
+      ;; line as calculate-lisp-indent-last-sexp.  Note that first
+      ;; thing on that line has to be complete sexp since we are
+      ;; inside the innermost containing sexp.
+      (backward-prefix-chars)
+      (current-column))
+     ((and (save-excursion
+             (goto-char indent-point)
+             (skip-syntax-forward " ")
+             (not (looking-at ":")))
+           (save-excursion
+             (goto-char orig-point)
+             (looking-at ":")))
+      (save-excursion
+        (goto-char (+ 2 (elt state 1)))
+        (current-column)))
+     (t
+      (let ((function (buffer-substring (point)
+                                        (progn (forward-sexp 1) (point))))
+            method)
+        (setq method (or (function-get (intern-soft function)
+                                       'lisp-indent-function)
+                         (get (intern-soft function) 'lisp-indent-hook)))
+        (cond ((or (eq method 'defun)
+                   (and (null method)
+                        (> (length function) 3)
+                        (string-match "\\`def" function)))
+               (lisp-indent-defform state indent-point))
+              ((integerp method)
+               (lisp-indent-specform method state
+                                     indent-point normal-indent))
+              (method
+               (funcall method indent-point state))))))))
+#+END_SRC
+
+And the necessary hook:
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(add-hook 'emacs-lisp-mode-hook
+          (lambda () (setq-local lisp-indent-function #'fuco1/lisp-indent-function)))
 #+END_SRC
 
 * Personal
