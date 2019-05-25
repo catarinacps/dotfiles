@@ -466,11 +466,11 @@ the default =dired=.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package ranger
-  :init
-  (setq ranger-cleanup-on-disable t
-        ranger-preview-file t
-        ranger-dont-show-binary t
-        ranger-max-preview-size 10)
+  :custom
+  (ranger-cleanup-on-disable t)
+  (ranger-preview-file t)
+  (ranger-dont-show-binary t)
+  (ranger-max-preview-size 10)
   :config
   (ranger-override-dired-mode t))
 #+END_SRC
@@ -494,8 +494,8 @@ certainly work on Emacs!
 (use-package exec-path-from-shell
   :if
   (memq window-system '(mac ns))
-  :init
-  (setq exec-path-from-shell-arguments '("-l"))
+  :custom
+  (exec-path-from-shell-arguments '("-l"))
   :config
   (exec-path-from-shell-initialize)
   (exec-path-from-shell-copy-env "SSH_AGENT_PID")
@@ -509,8 +509,8 @@ also like to use =anzu=.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package anzu
-  :init
-  (setq anzu-cons-mode-line nil)
+  :custom
+  (anzu-cons-mode-line nil)
   :config
   (global-anzu-mode 1))
 #+END_SRC
@@ -536,9 +536,9 @@ one wanna see what minor modes are active ALL of the time, right?
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package minions
   :after smart-mode-line
-  :init
-  (setq minions-mode-line-lighter "..."
-        minions-mode-line-delimiters '("" . ""))
+  :custom
+  (minions-mode-line-lighter "...")
+  (minions-mode-line-delimiters '("" . ""))
   :config
   (add-to-list 'minions-whitelist '(projectile-mode . t))
   (minions-mode 1))
@@ -552,8 +552,8 @@ editing remote files and to editing as super-user.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package tramp
   :demand
-  :init
-  (setq tramp-default-method "ssh"))
+  :custom
+  (tramp-default-method "ssh"))
 #+END_SRC
 
 *** Completion
@@ -580,9 +580,9 @@ whatnot.
              (path (concat dir text-typed)))
         (delete-minibuffer-contents)
         (ivy--done path))))
-  :init
-  (setq ivy-count-format "(%d/%d) "
-        ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
+  :custom
+  (ivy-count-format "(%d/%d) ")
+  (ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
   :bind
   (("C-x b" . ivy-switch-buffer)
    :map ivy-minibuffer-map
@@ -642,11 +642,11 @@ completion candidates.
         ("TAB" . company-complete-selection)
         ([tab] . company-complete-selection)
         ("<right>" . company-complete-common))
-  :init
-  (setq company-idle-delay .2
-        company-minimum-prefix-length 1
-        company-require-match nil
-        company-tooltip-align-annotations t)
+  :custom
+  (company-idle-delay .2)
+  (company-minimum-prefix-length 1)
+  (company-require-match nil)
+  (company-tooltip-align-annotations t)
   :config
   (add-to-list 'company-backends 'company-cmake)
   (global-company-mode 1))
@@ -691,15 +691,15 @@ that simplifies the setting of a leader key scheme alike to vim's leader key.
 (use-package evil
   :after evil-leader
   :demand
-  :init
-  (setq evil-want-keybinding nil)
+  :custom
+  (evil-want-keybinding nil)
+  (evil-emacs-state-cursor  '("red" box))
+  (evil-normal-state-cursor '("gray" box))
+  (evil-visual-state-cursor '("gray" hollow))
+  (evil-insert-state-cursor '("gray" bar))
+  (evil-motion-state-cursor '("gray" box))
+  (evil-mode-line-format 'before)
   :config
-  (setq evil-emacs-state-cursor  '("red" box)
-        evil-normal-state-cursor '("gray" box)
-        evil-visual-state-cursor '("gray" hollow)
-        evil-insert-state-cursor '("gray" bar)
-        evil-motion-state-cursor '("gray" box)
-        evil-mode-line-format 'before)
   (evil-mode 1))
 #+END_SRC
 
@@ -772,8 +772,8 @@ popular packages.
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package evil-matchit
   :after evil
-  :init
-  (setq evilmi-may-jump-by-percentage nil)
+  :custom
+  (evilmi-may-jump-by-percentage nil)
   :config
   (global-evil-matchit-mode 1))
 #+END_SRC
@@ -807,7 +807,8 @@ pressed the hydra is killed and the keybindings deactivated.
   :bind
   ("C-c e" . hydra-eyebrowse/body)
   ("C-c f" . hydra-flycheck/body)
-  :config (setq-default hydra-default-hint nil))
+  :custom
+  (hydra-default-hint nil))
 #+END_SRC
 
 ***** Eyebrowse
@@ -881,12 +882,11 @@ that kills old buffers.
 
 #+BEGIN_SRC emacs-lisp
 (use-package midnight
-  :init
-  (setq-default clean-buffer-list-delay-general 0.5
-                clean-buffer-list-delay-special (* 1 3600)
-                clean-buffer-list-kill-buffer-names (nconc clean-buffer-list-kill-buffer-names
-                                                           "*IBuffer*"
-                                                           "*Finder*")))
+  :custom
+  (clean-buffer-list-delay-general 0.5)
+  (clean-buffer-list-delay-special (* 1 3600))
+  (clean-buffer-list-kill-buffer-names
+   (nconc clean-buffer-list-kill-buffer-names "*IBuffer*" "*Finder*")))
 #+END_SRC
 
 Also, I use perspective to maintain multiple workspaces open with different
@@ -908,8 +908,8 @@ I use =yasnippet= to handle my snippet needs.
   (:map yas-minor-mode-map
         ("TAB" . yas-expand)
         ("<tab>" . yas-expand))
-  :init
-  (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
+  :custom
+  (yas-snippet-dirs '("~/.emacs.d/snippets"))
   :hook
   ((emacs-lisp-mode . yas-minor-mode)
    (html-mode . yas-minor-mode)
@@ -930,10 +930,10 @@ Enables vim-like folding of regions.
 (use-package vimish-fold
   :bind
   (:map vimish-fold-folded-keymap ("C-<tab>" . vimish-fold-unfold)
-   :map vimish-fold-unfolded-keymap ("C-<tab>" . vimish-fold-refold))
+        :map vimish-fold-unfolded-keymap ("C-<tab>" . vimish-fold-refold))
   :init
-  (setq vimish-fold-dir (expand-file-name ".vimish-fold/" user-emacs-directory)
-        vimish-fold-header-width 79)
+  (vimish-fold-dir (expand-file-name ".vimish-fold/" user-emacs-directory))
+  (vimish-fold-header-width 79)
   :config
   (vimish-fold-global-mode 1))
 #+END_SRC
@@ -945,11 +945,10 @@ Enables vim-like folding of regions.
 #+BEGIN_SRC emacs-lisp
 (use-package flycheck
   :demand
-  :init
-  (setq
-   flycheck-check-syntax-automatically '(save mode-enabled)
-   flycheck-disabled-checkers '(emacs-lisp-checkdoc)
-   flycheck-display-errors-delay .3)
+  :custom
+  (flycheck-check-syntax-automatically '(save mode-enabled))
+  (flycheck-disabled-checkers '(emacs-lisp-checkdoc))
+  (flycheck-display-errors-delay .3)
   :config
   (global-flycheck-mode))
 #+END_SRC
@@ -973,9 +972,9 @@ or searching the whole project and replacing something.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package projectile
-  :init
-  (setq projectile-completion-system 'ivy
-        projectile-switch-project-action 'neotree-projectile-action)
+  :custom
+  (projectile-completion-system 'ivy)
+  (projectile-switch-project-action 'neotree-projectile-action)
   :bind-keymap
   ("s-p" . projectile-command-map)
   :config
@@ -1018,8 +1017,8 @@ I use =aggressive-indent= to keep my code indented as I type.
   ((emacs-lisp-mode . aggressive-indent-mode)
    (lisp-mode . aggressive-indent-mode)
    (c-mode-common-hook . aggressive-indent-mode))
-  :init
-  (setq aggressive-indent-comments-too t)
+  :custom
+  (aggressive-indent-comments-too t)
   :config
   (add-to-list 'aggressive-indent-protected-commands 'comment-dwim))
 #+END_SRC
@@ -1124,23 +1123,22 @@ anyone should try Emacs.
 (use-package org
   :hook
   (org-mode . org-indent-mode)
+  :custom
+  (org-return-follows-link t)
+  (org-highlight-latex-and-related '(latex script entities))
+  (org-hide-leading-stars t)
+  (org-support-shift-select nil)
+  (org-directory "~/org/")
+  (org-cycle-emulate-tab nil)
+  (org-edit-src-content-indentation 0)
+  (org-edit-src-persistent-message nil)
+  (org-src-fontify-natively t)
   :config
-  (setq org-return-follows-link t
-        org-highlight-latex-and-related '(latex script entities)
-        org-hide-leading-stars t
-        org-support-shift-select nil
-        org-directory "~/org/"
-        org-cycle-emulate-tab nil
-        org-edit-src-content-indentation 0
-        org-edit-src-persistent-message nil
-        org-src-fontify-natively t)
-
   (evil-leader/set-key-for-mode 'org-mode
     "c" 'org-cycle
     "e" 'org-export-dispatch
     "q" 'org-set-tags-command
     "a" 'org-attach)
-
   (evil-declare-key 'normal org-mode-map
     "gk" 'outline-up-heading
     "gj" 'outline-next-visible-heading
@@ -1153,6 +1151,20 @@ anyone should try Emacs.
     "-" 'org-ctrl-c-minus ; change bullet style
     "<" 'org-metaleft ; out-dent
     ">" 'org-metaright)) ; indent
+#+END_SRC
+
+=org-journal= is a powerful tool to journal your day.
+
+#+BEGIN_SRC emacs-lisp :tangle yes
+(use-package org-journal
+  :after org
+  :custom
+  (org-journal-dir (format-time-string "~/OneDrive/Documentos/.journal/%Y"))
+  (org-journal-file-format "%Y%m%d")
+  (org-journal-date-format "%e %b %Y (%A)")
+  (org-journal-time-format "")
+  :bind
+  ("C-c t" . org-journal-new-entry))
 #+END_SRC
 
 =org-toc= is an useful way to automatically maintain an updated table of
@@ -1215,9 +1227,9 @@ other tools can use them.
   :ensure company-rtags
   :hook
   (irony-mode-hook . rtags-start-process-unless-running)
-  :init
-  (setq rtags-display-result-backend 'ivy
-        rtags-completions-enabled t)
+  :custom
+  (rtags-display-result-backend 'ivy)
+  (rtags-completions-enabled t)
   :config
   (add-to-list 'company-backends 'company-rtags)
   (rtags-enable-standard-keybindings))
@@ -1260,8 +1272,9 @@ really be of great use while editing C and C++ code.
         ("C-M-<tab>" . clang-format-buffer))
   :hook
   (before-save-hook . #'cc-format-on-save-hook)
+  :custom
+  (clang-format-style "webkit")
   :config
-  (setq clang-format-style "webkit")
   (evil-leader/set-key-for-mode 'c-mode-base-map
     "c" 'clang-format-region
     "C" 'clang-format-buffer))
