@@ -1147,7 +1147,7 @@ anyone should try Emacs.
    "gj" 'outline-next-visible-heading
    "t" 'org-todo ; mark a TODO item as DONE
    "TAB" 'outline-toggle-children
-   "S-TAB" 'org-global-cycle
+   "<backtab>" 'org-global-cycle
    "RET" 'org-open-at-point
    "$" 'org-end-of-line ; smarter behaviour on headlines etc.
    "0" 'org-beginning-of-line ; ditto
@@ -1280,8 +1280,9 @@ really be of great use while editing C and C++ code.
       (clang-format-buffer)))
   :general
   (:keymaps 'c-mode-base-map
-   "C-M-<tab>" 'clang-format-buffer
-   :states '(normal visual)
+   "C-M-<tab>" 'clang-format-buffer)
+  (:states '(normal visual)
+   :keymaps 'c-mode-base-map
    :prefix hcps/leader-key
    "c" 'clang-format-region
    "C" 'clang-format-buffer)
