@@ -29,7 +29,7 @@ Cool Emacs configs from cool people:
     - [[#gui-elements][GUI elements]]
     - [[#font][Font]]
     - [[#text][Text]]
-    - [[#mode-line][Mode-line]]
+    - [[#mode-line][Mode line]]
     - [[#line-numbering-and-scrolling][Line numbering and scrolling]]
     - [[#randoms][Randoms]]
   - [[#extensions][Extensions]]
@@ -180,13 +180,12 @@ when you actually need it.
 You can find the following packages in this configuration file:
 
 #+BEGIN_SRC emacs-lisp :exports results
-(shell-command
- "grep '\<use-package .*$' < config.org |
-  awk '{print \"- \"$2}' |
+(shell-command-to-string
+ "grep -w '^(use-package[[:space:]].*$' < config.org |
+  awk '{print $2}' |
   tr -d ')' |
-  sed '1,10d' |
-  sort > package-list.txt")
-(shell-command-to-string "cat package-list.txt")
+  sed '1,10d;s/^/- /' |
+  sort")
 #+END_SRC
 
 #+RESULTS:
@@ -208,7 +207,6 @@ You can find the following packages in this configuration file:
 - ess
 - evil
 - evil-collection
-- evil-leader
 - evil-matchit
 - evil-mc
 - evil-nerd-commenter
@@ -220,6 +218,7 @@ You can find the following packages in this configuration file:
 - expand-region
 - flycheck
 - flycheck-pos-tip
+- general
 - gruvbox-theme
 - helpful
 - hydra
@@ -230,15 +229,16 @@ You can find the following packages in this configuration file:
 - neotree
 - no-littering
 - org
+- org-journal
 - pdf-tools
 - perspective
+- plantuml-mode
 - projectile
 - ranger
 - rtags
 - smart-mode-line
 - toc-org
 - tramp
-- use-package-ensure-system-package
 - vimish-fold
 - windmove
 - yasnippet
@@ -280,7 +280,7 @@ I use the =Source Code Pro= font in every editor I can set that on. Here's their
 [[https://github.com/adobe-fonts/source-code-pro][GitHub]].
 
 #+BEGIN_SRC emacs-lisp :tangle yes
-(setq default-frame-alist '((font . "Source Code Pro-12")))
+(setq-default default-frame-alist '((font . "Source Code Pro-12")))
 #+END_SRC
 
 *** Text
@@ -309,7 +309,7 @@ writing.
 (add-hook 'tex-mode-hook 'turn-on-auto-fill)
 #+END_SRC
 
-*** Mode-line
+*** Mode line
 
 Here's everything related to the mode-line.
 
@@ -765,8 +765,11 @@ popular packages.
   :after evil
   :general
   (:states 'visual
+   :keymaps 'evil-mc-key-map
    "A" 'evil-mc-make-cursor-in-visual-selection-end
    "I" 'evil-mc-make-cursor-in-visual-selection-beg)
+  (:keymaps 'evil-mc-key-map
+   "C-g" 'evil-mc-undo-all-cursors)
   :config
   (global-evil-mc-mode 1))
 #+END_SRC
@@ -1123,13 +1126,16 @@ I still need to add packages relating to these languages:
 ** Org
 
 =org-mode= is probably *the* killer mode and one of the main reasons as to why
-anyone should try Emacs.
+anyone should try Emacs. With it I also use =toc-org=, which is an useful way to
+automatically maintain an updated table of contents of your =.org= file.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package org
   :mode (("\\.org$" . org-mode))
+  :ensure toc-org
   :hook
-  (org-mode . org-indent-mode)
+  ((org-mode . org-indent-mode)
+   (org-mode . toc-org-mode))
   :custom
   (org-return-follows-link t)
   (org-highlight-latex-and-related '(latex script entities))
@@ -1140,20 +1146,28 @@ anyone should try Emacs.
   (org-edit-src-content-indentation 0)
   (org-edit-src-persistent-message nil)
   (org-src-fontify-natively t)
+  (org-export-allow-bind-keywords t)
+  (org-export-with-latex t)
+  (org-latex-listings 'minted)
+  (org-latex-pdf-process
+   '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+     "bibtex `basename %f | sed 's/\.tex//'`"
+     "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+     "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
   :general
   (:states '(normal visual)
    :keymaps 'org-mode-map
    "gk" 'outline-up-heading
    "gj" 'outline-next-visible-heading
    "t" 'org-todo ; mark a TODO item as DONE
-   "TAB" 'outline-toggle-children
+   "<tab>" 'outline-toggle-children
    "<backtab>" 'org-global-cycle
-   "RET" 'org-open-at-point
+   "<return>" 'org-open-at-point
    "$" 'org-end-of-line ; smarter behaviour on headlines etc.
    "0" 'org-beginning-of-line ; ditto
    "-" 'org-ctrl-c-minus ; change bullet style
-   "<" 'org-metaleft ; out-dent
-   ">" 'org-metaright)
+   "<" 'org-metaleft ; outdent
+   ">" 'org-metaright) ; indent
   (:states '(normal visual)
    :keymaps 'org-mode-map
    :prefix hcps/leader-key
@@ -1170,22 +1184,12 @@ anyone should try Emacs.
 (use-package org-journal
   :after org
   :custom
-  (org-journal-dir (format-time-string "~/OneDrive/Documentos/.journal/%Y"))
+  (org-journal-dir (format-time-string "~/OneDrive/Documentos/.journal/%Y/"))
   (org-journal-file-format "%Y%m%d")
   (org-journal-date-format "%e %b %Y (%A)")
   (org-journal-time-format "")
   :general
   ("C-c t" 'org-journal-new-entry))
-#+END_SRC
-
-=org-toc= is an useful way to automatically maintain an updated table of
-contents of your =.org= file.
-
-#+BEGIN_SRC emacs-lisp :tangle yes
-(use-package toc-org
-  :after org
-  :hook
-  (org-mode . toc-org-mode))
 #+END_SRC
 
 ** C/C++
