@@ -31,31 +31,31 @@ location), you should use [[./.scripts/install_dotfiles.sh][this script]].
 Here is it, by the way:
 
 #+BEGIN_SRC shell :tangle yes
-  # This script is supposed to be downloaded and ran BEFORE the cloning of
-  # this repository, i.e. run this script to clone
-  # Example usage: chmod +x ./clone_repo.sh; $SHELL ./clone_repo.sh
+# This script is supposed to be downloaded and ran BEFORE the cloning of
+# this repository, i.e. run this script to clone
+# Example usage: chmod +x ./clone_repo.sh; $SHELL ./clone_repo.sh
 
 
-  gitdir="~/.cfg/"
-  gitrepo='git@github.com:hcpsilva/dotfiles.git'
-  gitalias="git --git-dir=$gitdir --work-tree=$HOME"
+gitdir="~/.cfg/"
+gitrepo='git@github.com:hcpsilva/dotfiles.git'
+gitalias="git --git-dir=$gitdir --work-tree=$HOME"
 
-  # Set-up
-  alias dotgit="'$gitalias'"
-  echo "alias dotgit='$gitalias'" >> $HOME/.$(basename $SHELL)rc
-  echo $gitdir >> $HOME/.gitignore
+# Set-up
+alias dotgit="'$gitalias'"
+echo "alias dotgit='$gitalias'" >> $HOME/.$(basename $SHELL)rc
+echo $gitdir >> $HOME/.gitignore
 
-  # Cloning
-  git clone --bare $gitrepo $gitdir
+# Cloning
+git clone --bare $gitrepo $gitdir
 
-  # Make sure we checkout (if before where any duplicates)
-  dotgit checkout -f
+# Make sure we checkout (if before where any duplicates)
+dotgit checkout -f
 
-  # Set so that this repo can't see untracked files (otherwise madness)
-  dotgit config --local status.showUntrackedFiles no
+# Set so that this repo can't see untracked files (otherwise madness)
+dotgit config --local status.showUntrackedFiles no
 
-  # Load up the alias
-  source $HOME/.$(basename $SHELL)rc
+# Load up the alias
+source $HOME/.$(basename $SHELL)rc
 #+END_SRC
 
 It ensures that the repo is cloned the right way and puts an useful alias

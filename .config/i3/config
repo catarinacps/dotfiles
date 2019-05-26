@@ -381,7 +381,7 @@ client.background       #2B2C2B
 #############################
 
 # Set inner/outer gaps
-gaps inner 10
+gaps inner 17
 gaps outer -2
 
 # Additionally, you can issue commands with the following syntax. This is useful

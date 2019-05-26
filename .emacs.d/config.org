@@ -694,14 +694,15 @@ have the best of both worlds!
    "g" 'magit-status
    "o" 'ace-window
    "B" 'counsel-bookmark
-   "y" 'counsel-yank-pop)
+   "y" 'counsel-yank-pop
+   "n" 'neotree-toggle)
   :custom
   (evil-want-keybinding nil)
   (evil-emacs-state-cursor  '("red" box))
   (evil-normal-state-cursor '("gray" box))
   (evil-visual-state-cursor '("gray" hollow))
   (evil-insert-state-cursor '("gray" bar))
-  (evil-motion-state-cursor '("gray" box))
+  (evil-motion-state-cursor '("gray" hbar))
   (evil-mode-line-format 'before)
   :config
   (evil-mode 1))
