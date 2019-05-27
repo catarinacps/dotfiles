@@ -695,7 +695,8 @@ have the best of both worlds!
    "o" 'ace-window
    "B" 'counsel-bookmark
    "y" 'counsel-yank-pop
-   "n" 'neotree-toggle)
+   "n" 'neotree-toggle
+   "ESC" 'evil-mc-undo-all-cursors)
   :custom
   (evil-want-keybinding nil)
   (evil-emacs-state-cursor  '("red" box))
@@ -766,11 +767,8 @@ popular packages.
   :after evil
   :general
   (:states 'visual
-   :keymaps 'evil-mc-key-map
    "A" 'evil-mc-make-cursor-in-visual-selection-end
    "I" 'evil-mc-make-cursor-in-visual-selection-beg)
-  (:keymaps 'evil-mc-key-map
-   "C-g" 'evil-mc-undo-all-cursors)
   :config
   (global-evil-mc-mode 1))
 #+END_SRC
