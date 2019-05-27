@@ -16,6 +16,7 @@ Cool Emacs configs from cool people:
 
 * Table of contents                                                   :TOC_3:
 - [[#introduction][Introduction]]
+  - [[#what-packages-you-can-find-here][What packages you can find here]]
   - [[#use-package][=use-package=]]
     - [[#ensure][:ensure]]
     - [[#after][:after]]
@@ -23,7 +24,6 @@ Cool Emacs configs from cool people:
     - [[#demand][:demand]]
     - [[#init][:init]]
     - [[#config][:config]]
-- [[#what-packages-you-can-find-here][What packages you can find here]]
 - [[#the-editor][The editor]]
   - [[#definitions-and-preferences][Definitions and preferences]]
     - [[#gui-elements][GUI elements]]
@@ -77,6 +77,75 @@ Also, I've used in almost all sections of this document a package called
 =use-package= in order to organize all the additional packages that I use to get
 a better Emacs experience. So, I'll teach you to read a =use-package= statement!
 That way you can understand what's happening beneath all sugar syntax.
+
+** What packages you can find here
+
+You can find the following packages in this configuration file:
+
+#+BEGIN_SRC emacs-lisp :exports results
+(shell-command-to-string
+ "grep -w '^(use-package[[:space:]].*$' < config.org |
+  awk '{print $2}' |
+  tr -d ')' |
+  sed '1,10d;s/^/- /' |
+  sort")
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+- aggressive-indent
+- anzu
+- auto-compile
+- bash-completion
+- bind-key
+- clang-format
+- cmake-ide
+- company
+- counsel
+- counsel-projectile
+- counsel-tramp
+- cpputils-cmake
+- dumb-jump
+- engine-mode
+- ess
+- evil
+- evil-collection
+- evil-matchit
+- evil-mc
+- evil-nerd-commenter
+- evil-org
+- evil-org-agenda
+- evil-surround
+- evil-visualstar
+- exec-path-from-shell
+- expand-region
+- flycheck
+- flycheck-pos-tip
+- general
+- gruvbox-theme
+- helpful
+- hydra
+- irony
+- ivy
+- midnight
+- minions
+- neotree
+- no-littering
+- org
+- org-journal
+- pdf-tools
+- perspective
+- plantuml-mode
+- projectile
+- ranger
+- rtags
+- smart-mode-line
+- toc-org
+- tramp
+- vimish-fold
+- windmove
+- yasnippet
+#+end_example
 
 ** =use-package=
 
@@ -174,77 +243,6 @@ when you actually need it.
   :config
   (foo-init))
 #+END_SRC
-
-* What packages you can find here
-
-You can find the following packages in this configuration file:
-
-#+BEGIN_SRC emacs-lisp :exports results
-(shell-command-to-string
- "grep -w '^(use-package[[:space:]].*$' < config.org |
-  awk '{print $2}' |
-  tr -d ')' |
-  sed '1,10d;s/^/- /' |
-  sort")
-#+END_SRC
-
-#+RESULTS:
-#+begin_example
-- aggressive-indent
-- anzu
-- auto-compile
-- bash-completion
-- bind-key
-- clang-format
-- cmake-ide
-- company
-- counsel
-- counsel-projectile
-- counsel-tramp
-- cpputils-cmake
-- dumb-jump
-- engine-mode
-- ess
-- evil
-- evil-collection
-- evil-matchit
-- evil-mc
-- evil-nerd-commenter
-- evil-org
-- evil-org-agenda
-- evil-surround
-- evil-visualstar
-- exec-path-from-shell
-- expand-region
-- flycheck
-- flycheck-pos-tip
-- general
-- gruvbox-theme
-- helpful
-- hydra
-- irony
-- ivy
-- midnight
-- minions
-- neotree
-- no-littering
-- org
-- org-journal
-- pdf-tools
-- perspective
-- plantuml-mode
-- projectile
-- ranger
-- rtags
-- smart-mode-line
-- toc-org
-- tramp
-- vimish-fold
-- windmove
-- yasnippet
-#+end_example
-
-But anyway, enough chit-chat, lets start with the configurations!
 
 * The editor
 
