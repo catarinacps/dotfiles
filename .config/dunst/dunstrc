@@ -6,7 +6,7 @@
 
     follow = mouse
 
-    geometry = "250x50-20+20"
+    geometry = "350x50-19+66"
 
     indicate_hidden = yes
 
@@ -22,7 +22,7 @@
 
     horizontal_padding = 16
 
-    frame_width = 0
+    frame_width = 3
 
     frame_color = "#BE302F"
 
@@ -32,7 +32,7 @@
 
     idle_threshold = 120
 
-    font = Misc Termsyn 10
+    font = xos4 Terminus 14
 
     line_height = 4
 
@@ -54,12 +54,10 @@
 
     show_indicators = yes
 
-    icon_position = off
-
-    max_icon_size = 32
-
     # Paths to default icons.
-    #icon_folders = /usr/share/icons/gnome/16x16/status/:/usr/share/icons/gnome/16x16/devices/
+    icon_folders = /usr/share/icons/Adwaita/16x16/status/:/usr/share/icons/Adwaita/16x16/devices/
+    icon_position = left
+    max_icon_size = 64
 
     sticky_history = yes
 
@@ -77,7 +75,7 @@
 
     startup_notification = false
 
-    force_xinerama = false
+    # force_xinerama = false
 
 # Experimental features that may or may not work correctly. Do not expect them
 # to have a consistent behaviour across releases.
@@ -116,14 +114,14 @@
     # Otherwise the "#" and following would be interpreted as a comment.
     background = "#272727"
     foreground = "#CACACA"
-    timeout = 1
+    timeout = 5
     # Icon for notifications with low urgency, uncomment to enable
     #icon = /path/to/icon
 
 [urgency_normal]
     background = "#272727"
     foreground = "#CACACA"
-    timeout = 4
+    timeout = 5
     # Icon for notifications with normal urgency, uncomment to enable
     #icon = /path/to/icon
 

@@ -55,7 +55,6 @@
     # Ignore newlines '\n' in notifications.
     ignore_newline = no
     
-    
     # The geometry of the window:
     #   [{width}]x{height}[+/-{x}+/-{y}]
     # The geometry of the message window.
