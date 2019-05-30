@@ -33,7 +33,8 @@ bindsym $mod+Return exec terminal
 bindsym $mod+Shift+q kill
 
 # start program launcher
-bindsym $mod+d exec --no-startup-id "dmenu_recency -h 24"
+# bindsym $mod+d exec --no-startup-id "dmenu_recency -h 24"
+bindsym $mod+d exec --no-startup-id "rofi -modi run,drun -show drun -line-padding 4 -width 40 -padding 30 -hide-scrollbar -show-icons -drun-icon-theme 'Papirus'"
 
 # launch categorized menu
 bindsym $mod+z exec --no-startup-id morc_menu
@@ -293,15 +294,16 @@ exec --no-startup-id pamac-tray
 exec --no-startup-id clipit
 # exec --no-startup-id blueman-applet
 # exec_always --no-startup-id sbxkb
-exec --no-startup-id start_conky_maia
+# exec --no-startup-id start_conky_maia
 # exec --no-startup-id start_conky_green
 exec --no-startup-id xautolock -time 10 -locker blurlock
 exec --no-startup-id redshift
 exec --no-startup-id caffeine
 exec --no-startup-id emacs --daemon
+exec --no-startup-id xrandr --output HDMI1 --auto --right-of eDP1
+exec_always --no-startup-id ~/.config/polybar/launch.sh
 exec_always --no-startup-id ff-theme-util
 exec_always --no-startup-id fix_xcursor
-exec --no-startup-id xrandr --output HDMI1 --auto --right-of eDP1
 
 # Color palette used for the terminal ( ~/.Xresources file )
 # Colors are gathered based on the documentation:
@@ -335,33 +337,33 @@ set_from_resource $term_color14    color14
 set_from_resource $term_color15    color15
 
 # Start i3bar to display a workspace bar (plus the system information i3status if available)
-bar {
-    i3bar_command i3bar -t
-    status_command i3status
-    position top
+# bar {
+#     i3bar_command i3bar -t
+#     status_command i3status
+#     position top
 
-## please set your primary output first. Example: 'xrandr --output eDP1 --primary'
-#   tray_output primary
-#   tray_output eDP1
+# ## please set your primary output first. Example: 'xrandr --output eDP1 --primary'
+# #   tray_output primary
+# #   tray_output eDP1
 
-    bindsym button4 nop
-    bindsym button5 nop
-#   font xft:URWGothic-Book 11
-    strip_workspace_numbers yes
+#     bindsym button4 nop
+#     bindsym button5 nop
+# #   font xft:URWGothic-Book 11
+#     strip_workspace_numbers yes
 
-    colors {
-        background #222D31A0
-        statusline #F9FAF9
-        separator  #454947
+#     colors {
+#         background #222D31A0
+#         statusline #F9FAF9
+#         separator  #454947
 
-#                      border  backgr. text
-        focused_workspace  #EC0000 #222D31D0 #EC0000
-        active_workspace   #222D31 #222D31D0 #FDF6E3
-        inactive_workspace #222D31 #222D31D0 #BBB6A7
-        urgent_workspace   #222D31 #EC0000D0 #F9FAF9
-        binding_mode       #C80000 #FDF6E3D0 #EC0000
-    }
-}
+# #                      border  backgr. text
+#         focused_workspace  #EC0000 #222D31D0 #EC0000
+#         active_workspace   #222D31 #222D31D0 #FDF6E3
+#         inactive_workspace #222D31 #222D31D0 #BBB6A7
+#         urgent_workspace   #222D31 #EC0000D0 #F9FAF9
+#         binding_mode       #C80000 #FDF6E3D0 #EC0000
+#     }
+# }
 
 # hide/unhide i3status bar
 bindsym $mod+m bar mode toggle
