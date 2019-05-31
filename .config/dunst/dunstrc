@@ -6,7 +6,7 @@
 
     follow = mouse
 
-    geometry = "400x50-19+66"
+    geometry = "400x5-19+66"
 
     indicate_hidden = yes
 
@@ -32,13 +32,13 @@
 
     idle_threshold = 120
 
-    font = xos4 Terminus 14
+    font = xos4 Terminus 12
 
     line_height = 4
 
     markup = full
 
-    format = "<b>%s</b>\n%b"
+    format = "<u>%s</u>\n%b"
 
     alignment = left
 
