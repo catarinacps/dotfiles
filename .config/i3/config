@@ -300,7 +300,7 @@ exec --no-startup-id xautolock -time 10 -locker blurlock
 exec --no-startup-id redshift
 exec --no-startup-id caffeine
 exec --no-startup-id emacs --daemon
-exec --no-startup-id xrandr --output HDMI1 --auto --right-of eDP1
+exec_always --no-startup-id autorandr --change --force
 exec_always --no-startup-id ~/.config/polybar/launch.sh
 exec_always --no-startup-id ff-theme-util
 exec_always --no-startup-id fix_xcursor

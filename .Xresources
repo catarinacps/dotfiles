@@ -16,7 +16,7 @@ XTerm*selectToClipboard: true
 
 ! special
 *.foreground:   #eff0eb
-*.background:   #282a36
+*.background:   #272727
 *.cursorColor:  #eff0eb
 
 ! black
@@ -108,7 +108,7 @@ URxvt.letterSpace:                0
 !! terminus names see end of file!
 
 URxvt.depth:                      32
-URxvt.background:                 [90]#222D31
+URxvt.background:                 [90]#272727
 URxvt*scrollBar:                  false
 URxvt*mouseWheelScrollPage:       false
 URxvt*cursorBlink:                true
