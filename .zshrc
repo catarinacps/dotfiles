@@ -75,17 +75,13 @@ source $ZSH/oh-my-zsh.sh
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
 
-# ssh-agent startup
-if ! pgrep -u "$USER" ssh-agent > /dev/null; then
-    ssh-agent > ~/.ssh-agent-output
-fi
-if [[ ! "$SSH_AUTH_SOCK" ]]; then
-    eval "$(<~/.ssh-agent-output)" > /dev/null
-fi
-
 # Start a tmux session automatically if coming in from ssh.
 if [[ -z "$TMUX" ]] && [ "$SSH_CONNECTION" != "" ]; then
     tmux attach-session -t ssh_tmux || tmux new-session -s ssh_tmux
+fi
+
+if [[ ! "$SSH_AUTH_SOCK" ]]; then
+    eval "$(<~/.ssh-agent-output)" > /dev/null
 fi
 
 # Preferred editor for local and remote sessions
@@ -95,7 +91,7 @@ fi
 #   export EDITOR='mvim'
 # fi
 
-export EDITOR=emacsclient
+export EDITOR="emacsclient"
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
