@@ -1094,6 +1094,8 @@ without leaving Emacs.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package pdf-tools
+  :custom
+  (auto-revert-interval 0.5)
   :config
   (pdf-loader-install))
 #+END_SRC
