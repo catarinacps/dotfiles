@@ -57,6 +57,7 @@ bindsym $mod+Ctrl+m exec terminal -e 'alsamixer'
 
 # Start Applications
 bindsym $mod+Ctrl+b exec terminal -e 'bmenu'
+bindsym $mod+F1 exec terminal -e 'neomutt'
 bindsym $mod+F2 exec chromium
 # bindsym $mod+F3 exec pcmanfm
 bindsym $mod+F3 exec terminal -e 'ranger'
