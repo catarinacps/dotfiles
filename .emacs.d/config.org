@@ -1094,8 +1094,6 @@ without leaving Emacs.
 
 #+BEGIN_SRC emacs-lisp :tangle yes
 (use-package pdf-tools
-  :custom
-  (auto-revert-interval 0.5)
   :config
   (pdf-loader-install))
 #+END_SRC
@@ -1140,6 +1138,13 @@ automatically maintain an updated table of contents of your =.org= file.
 (use-package org
   :mode (("\\.org$" . org-mode))
   :ensure toc-org
+  :preface
+  (defun org-export-output-file-name-modified (orig-fun extension &optional subtreep pub-dir)
+    (unless pub-dir
+      (setq pub-dir "org-exports")
+      (unless (file-directory-p pub-dir)
+        (make-directory pub-dir)))
+    (apply orig-fun extension subtreep pub-dir nil))
   :hook
   ((org-mode . org-indent-mode)
    (org-mode . toc-org-mode))
@@ -1182,7 +1187,9 @@ automatically maintain an updated table of contents of your =.org= file.
    "e" 'org-export-dispatch
    "q" 'org-set-tags-command
    "a" 'org-attach
-   "i" 'org-toggle-inline-images))
+   "i" 'org-toggle-inline-images)
+  :config
+  (advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified))
 #+END_SRC
 
 =org-journal= is a powerful tool to journal your day.
@@ -1191,7 +1198,7 @@ automatically maintain an updated table of contents of your =.org= file.
 (use-package org-journal
   :after org
   :custom
-  (org-journal-dir (format-time-string "~/OneDrive/Documentos/.journal/%Y/"))
+  (org-journal-dir (format-time-string "~/OneDrive/Documentos/Journal/%Y/"))
   (org-journal-file-format "%Y%m%d")
   (org-journal-date-format "%e %b %Y (%A)")
   (org-journal-time-format "")
