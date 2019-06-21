@@ -401,7 +401,7 @@ Also, =prelude= packages that I like and still need to add:
 
 - [ ] smartparens
 - [ ] which-key
-- [ ] projectile
+- [X] projectile
 - [ ] magit and additionals
 - [ ] flyspell (with aspell)
 - [ ] undo-tree
@@ -423,7 +423,7 @@ file. I plan to gradually rip everything I want from =prelude= and put it here
 eventually, using =use-package=.
 
 #+begin_src emacs-lisp :tangle yes
-(when (not (package-installed-p 'use-package))
+(unless (package-installed-p 'use-package)
   (package-install 'use-package))
 
 (require 'use-package-ensure)
@@ -452,9 +452,8 @@ have their newest version.
 #+begin_src emacs-lisp :tangle yes
 (use-package auto-compile
   :disabled
-  :demand
-  :init
-  (setq load-prefer-newer t)
+  :custom
+  (load-prefer-newer t)
   :config
   (auto-compile-on-load-mode))
 #+end_src
@@ -539,7 +538,7 @@ multiple occurrences of a word fast.
 *** Mode line
 
 I use =smart-mode-line= as it is very minimalist and informative (and it looks
-very pretty on =gruvbox=)
+very pretty on =gruvbox=).
 
 #+begin_src emacs-lisp :tangle yes
 (use-package smart-mode-line
@@ -1366,7 +1365,7 @@ we'll set that up.
 ** PlantUML
 
 /PlantUML/ is a graph language that describes loads of different diagram types,
-mainly focusing on /uml/, of course.
+mainly focusing on /UML/, of course.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package plantuml-mode
