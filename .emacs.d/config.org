@@ -1153,6 +1153,7 @@ automatically maintain an updated table of contents of your =.org= file.
 (use-package org
   :mode (("\\.org$" . org-mode))
   :ensure toc-org
+  :ensure org-tempo
   :preface
   (defun org-export-output-file-name-modified (orig-fun extension &optional subtreep pub-dir)
     (unless pub-dir
