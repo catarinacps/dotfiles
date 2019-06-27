@@ -796,6 +796,16 @@ to be extremely efficient while commenting lines and text selections.
 #+begin_src emacs-lisp :tangle yes
 (use-package evil-nerd-commenter
   :after evil
+  :general
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   ",i" 'evilnc-comment-or-uncomment-lines
+   ",l" 'evilnc-quick-comment-or-uncomment-to-the-line
+   "ll" 'evilnc-quick-comment-or-uncomment-to-the-line
+   ",c" 'evilnc-copy-and-comment-lines
+   ",p" 'evilnc-comment-or-uncomment-paragraphs
+   ",r" 'comment-or-uncomment-region
+   ",v" 'evilnc-toggle-invert-comment-line-by-line)
   :config
   (evilnc-default-hotkeys nil t))
 #+end_src
