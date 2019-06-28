@@ -1162,7 +1162,6 @@ automatically maintain an updated table of contents of your =.org= file.
 (use-package org
   :mode (("\\.org$" . org-mode))
   :ensure toc-org
-  :ensure org-tempo
   :preface
   (defun org-export-output-file-name-modified (orig-fun extension &optional subtreep pub-dir)
     (unless pub-dir
@@ -1214,7 +1213,8 @@ automatically maintain an updated table of contents of your =.org= file.
    "a" 'org-attach
    "i" 'org-toggle-inline-images)
   :config
-  (advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified))
+  (advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified)
+  (require 'org-tempo))
 #+end_src
 
 =org-journal= is a powerful tool to journal your day.
@@ -1473,8 +1473,9 @@ which provides a nice interface for the Merriam-Webster thesaurus.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package mw-thesaurus
+  :after evil
   :general
-  (:states normal
+  (:states '(normal visual)
    :prefix hcps/leader-key
    "T" 'mw-thesaurus-lookup-at-point))
 #+end_src
