@@ -58,6 +58,7 @@ Cool Emacs configs from cool people:
   - [[#makefile][Makefile]]
   - [[#plantuml][PlantUML]]
   - [[#lisp][Lisp]]
+  - [[#english][English]]
 - [[#personal][Personal]]
   - [[#functions][Functions]]
     - [[#date][Date]]
@@ -120,7 +121,6 @@ You can find the following packages in this configuration file:
 - exec-path-from-shell
 - expand-region
 - flycheck
-- flycheck-pos-tip
 - general
 - gruvbox-theme
 - helpful
@@ -393,7 +393,6 @@ I still need to add:
 - [X] evil-matchit
 - [X] evil-leader
 - [X] pdf-tools
-- [X] flycheck-pos-tip
 - [X] exec-path-from-shell
 - [X] anzu
 
@@ -962,26 +961,26 @@ Enables vim-like folding of regions.
 
 *** Syntax Checking
 
-=Flycheck= provides a reliable source to syntax checking in emacs.
+=Flycheck= provides a reliable source to syntax checking in Emacs.
 
 #+begin_src emacs-lisp
 (use-package flycheck
   :demand
+  :init (global-flycheck-mode)
   :custom
   (flycheck-check-syntax-automatically '(save mode-enabled))
   (flycheck-disabled-checkers '(emacs-lisp-checkdoc))
   (flycheck-display-errors-delay .3)
   :config
-  (global-flycheck-mode))
-#+end_src
-
-=flycheck-pos-tip= shows the =flycheck= tip in a popup under the cursor.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package flycheck-pos-tip
-  :after flycheck
-  :config
-  (flycheck-pos-tip-mode))
+  (flycheck-define-checker proselint
+    "A linter for prose."
+    :command ("proselint" source-inplace)
+    :error-patterns
+    ((warning line-start (file-name) ":" line ":" column ": "
+              (id (one-or-more (not (any " "))))
+              (message) line-end))
+    :modes (text-mode markdown-mode gfm-mode org-mode))
+  (add-to-list 'flycheck-checkers 'proselint))
 #+end_src
 
 *** Project management
@@ -1151,6 +1150,7 @@ I still need to add packages relating to these languages:
 - [ ] Dot (using Graphviz)
 - [ ] Lisp (duh)
 - [X] PlantUML
+- [ ] English (as in literal english)
 
 ** Org
 
@@ -1464,6 +1464,19 @@ and the necessary hook:
 #+begin_src emacs-lisp :tangle yes
 (add-hook 'emacs-lisp-mode-hook
           (lambda () (setq-local lisp-indent-function #'fuco1/lisp-indent-function)))
+#+end_src
+
+** English
+
+Something I found out while scrolling /Github/ is the =mw-thesaurus= package,
+which provides a nice interface for the Merriam-Webster thesaurus.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package mw-thesaurus
+  :general
+  (:states normal
+   :prefix hcps/leader-key
+   "T" 'mw-thesaurus-lookup-at-point))
 #+end_src
 
 * Personal
