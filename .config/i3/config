@@ -62,7 +62,7 @@ bindsym $mod+F2 exec chromium
 # bindsym $mod+F3 exec pcmanfm
 bindsym $mod+F3 exec terminal -e 'ranger'
 bindsym $mod+F4 --release exec emacsclient -c
-bindsym $mod+Shift+F3 exec gksu pcmanfm
+bindsym $mod+Shift+F3 exec pcmanfm
 bindsym $mod+F5 exec terminal -e 'mocp'
 bindsym $mod+t exec --no-startup-id pkill compton
 bindsym $mod+Ctrl+t exec --no-startup-id compton -b
@@ -199,6 +199,7 @@ bindsym XF86TouchpadToggle exec ~/.scripts/touch_toggle.sh
 
 # Open specific applications in floating mode
 for_window [title="alsamixer"] floating enable
+for_window [title="pcmanfm"] floating enable
 for_window [class="calamares"] floating enable
 for_window [class="Clipgrab"] floating enable
 for_window [title="File Transfer*"] floating enable
@@ -213,7 +214,6 @@ for_window [title="MuseScore: Play Panel"] floating enable
 for_window [class="Nitrogen"] floating enable sticky enable
 for_window [class="Oblogout"] fullscreen enable
 for_window [class="octopi"] floating enable
-for_window [title="About Pale Moon"] floating enable
 for_window [class="Pamac-manager"] floating enable
 for_window [class="Pavucontrol"] floating enable
 for_window [class="qt5ct"] floating enable sticky enable
