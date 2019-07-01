@@ -59,6 +59,7 @@ Cool Emacs configs from cool people:
   - [[#plantuml][PlantUML]]
   - [[#lisp][Lisp]]
   - [[#english][English]]
+  - [[#python][Python]]
 - [[#personal][Personal]]
   - [[#functions][Functions]]
     - [[#date][Date]]
@@ -700,6 +701,7 @@ have the best of both worlds!
    "B" 'counsel-bookmark
    "y" 'counsel-yank-pop
    "n" 'neotree-toggle
+   "j" 'org-journal-new-entry
    "ESC" 'evil-mc-undo-all-cursors)
   :custom
   (evil-want-keybinding nil)
@@ -734,15 +736,7 @@ of how much this adds or how similar they are to =prelude='s keys to org on
   :after (org evil)
   :hook
   ((org-mode . evil-org-mode)
-   (evil-org-mode . (lambda () (evil-org-set-key-theme)))))
-#+end_src
-
-Following the previous package, =evil-org-agenda= sets up cool =evil= keys to
-=org-agenda=.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package evil-org-agenda
-  :after evil-org
+   (evil-org-mode . (lambda () (evil-org-set-key-theme))))
   :config
   (evil-org-agenda-set-keys))
 #+end_src
@@ -1044,6 +1038,23 @@ I use =aggressive-indent= to keep my code indented as I type.
   (add-to-list 'aggressive-indent-protected-commands 'comment-dwim))
 #+end_src
 
+Also =highligh-indent-guides= is very useful, as Emacs doesn't come with it out
+of the box.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package highlight-indent-guides
+  :demand
+  :custom
+  (highlight-indent-guides-method 'character)
+  (highlight-indent-guides-responsive 'stack)
+  (highlight-indent-guides-delay 0.05)
+  (highlight-indent-guides-auto-odd-face-perc 15)
+  (highlight-indent-guides-auto-even-face-perc 15)
+  (highlight-indent-guides-auto-character-face-perc 20)
+  :hook
+  (prog-mode-hook . highlight-indent-guides-mode))
+#+end_src
+
 *** Utilities
 
 Random utilities that don't fit anywhere else.
@@ -1141,7 +1152,7 @@ I still need to add packages relating to these languages:
 
 - [X] Org
 - [X] C/C++
-- [ ] Python
+- [X] Python
 - [ ] Scala
 - [ ] LaTeX (use-package-ensure-system-package texlive-most)
 - [X] R
@@ -1478,6 +1489,22 @@ which provides a nice interface for the Merriam-Webster thesaurus.
   (:states '(normal visual)
    :prefix hcps/leader-key
    "T" 'mw-thesaurus-lookup-at-point))
+#+end_src
+
+** Python
+
+#+begin_quote
+Elpy is an Emacs package to bring powerful Python editing to Emacs. It combines
+and configures a number of other packages, both written in Emacs Lisp as well as
+Python.
+#+end_quote
+
+#+begin_src emacs-lisp :tangle yes
+(use-package elpy
+  :ensure
+  :defer t
+  :init
+  (advice-add 'python-mode :before 'elpy-enable))
 #+end_src
 
 * Personal
