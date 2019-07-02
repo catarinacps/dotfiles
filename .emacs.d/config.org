@@ -60,6 +60,7 @@ Cool Emacs configs from cool people:
   - [[#lisp][Lisp]]
   - [[#english][English]]
   - [[#python][Python]]
+  - [[#cmake][CMake]]
 - [[#personal][Personal]]
   - [[#functions][Functions]]
     - [[#date][Date]]
@@ -1162,6 +1163,7 @@ I still need to add packages relating to these languages:
 - [ ] Lisp (duh)
 - [X] PlantUML
 - [ ] English (as in literal english)
+- [X] CMake
 
 ** Org
 
@@ -1505,6 +1507,19 @@ Python.
   :defer t
   :init
   (advice-add 'python-mode :before 'elpy-enable))
+#+end_src
+
+** CMake
+
+Just as a bonus, this package helps me to read CMake code. As CMake is very
+simple, each word carries a load of meaning and importance. This little mode
+colors them accordingly.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package cmake-font-lock
+  :commands cmake-font-lock-activate
+  :hook
+  (cmake-mode . cmake-font-lock-activate))
 #+end_src
 
 * Personal
