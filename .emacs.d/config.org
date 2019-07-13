@@ -1226,6 +1226,21 @@ automatically maintain an updated table of contents of your =.org= file.
    "a" 'org-attach
    "i" 'org-toggle-inline-images)
   :config
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((shell . t)
+     (python . t)
+     (R . t)
+     (C . t)
+     (ruby . t)
+     (ditaa . t)
+     (dot . t)
+     (octave . t)
+     (sqlite . t)
+     (perl . t)
+     (screen . t)
+     (plantuml . t)
+     (lilypond . t)))
   (advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified)
   (require 'org-tempo))
 #+end_src
