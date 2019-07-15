@@ -1222,6 +1222,7 @@ automatically maintain an updated table of contents of your =.org= file.
    :prefix hcps/leader-key
    "c" 'org-cycle
    "e" 'org-export-dispatch
+   "x" 'org-babel-execute-buffer
    "q" 'org-set-tags-command
    "a" 'org-attach
    "i" 'org-toggle-inline-images)
