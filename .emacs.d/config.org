@@ -61,6 +61,7 @@ Cool Emacs configs from cool people:
   - [[#english][English]]
   - [[#python][Python]]
   - [[#cmake][CMake]]
+  - [[#dockerfile][Dockerfile]]
 - [[#personal][Personal]]
   - [[#functions][Functions]]
     - [[#date][Date]]
@@ -1164,6 +1165,7 @@ I still need to add packages relating to these languages:
 - [X] PlantUML
 - [ ] English (as in literal english)
 - [X] CMake
+- [X] Dockerfile
 
 ** Org
 
@@ -1534,8 +1536,18 @@ colors them accordingly.
 #+begin_src emacs-lisp :tangle yes
 (use-package cmake-font-lock
   :commands cmake-font-lock-activate
-  :hook
-  (cmake-mode . cmake-font-lock-activate))
+  :init
+  (advice-add 'cmake-mode :after 'cmake-font-lock-activate))
+#+end_src
+
+** Dockerfile
+
+=dockerfile-mode= adds support to syntax highlighting and to build the image
+directly from the buffer using =C-c C-b=.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package dockerfile-mode
+  :mode "Dockerfile\\'")
 #+end_src
 
 * Personal
