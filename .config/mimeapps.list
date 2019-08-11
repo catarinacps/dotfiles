@@ -36,5 +36,6 @@ text/plain=mousepad.desktop;
 message/rfc822=userapp-Thunderbird.desktop;userapp-Thunderbird-BW27ZZ.desktop;
 application/pdf=org.pwmt.zathura.desktop;epdfview.desktop;
 application/x-bittorrent=deluge.desktop;
-inode/directory=exo-file-manager.desktop
-x-scheme-handler/trash=exo-file-manager.desktop
+inode/directory=exo-file-manager.desktop;
+x-scheme-handler/trash=exo-file-manager.desktop;
+
