@@ -62,6 +62,7 @@ Cool Emacs configs from cool people:
   - [[#python][Python]]
   - [[#cmake][CMake]]
   - [[#dockerfile][Dockerfile]]
+  - [[#gmpl][GMPL]]
 - [[#personal][Personal]]
   - [[#functions][Functions]]
     - [[#date][Date]]
@@ -1166,6 +1167,7 @@ I still need to add packages relating to these languages:
 - [ ] English (as in literal english)
 - [X] CMake
 - [X] Dockerfile
+- [X] GMPL
 
 ** Org
 
@@ -1548,6 +1550,13 @@ directly from the buffer using =C-c C-b=.
 #+begin_src emacs-lisp :tangle yes
 (use-package dockerfile-mode
   :mode "Dockerfile\\'")
+#+end_src
+
+** GMPL
+
+#+begin_src emacs-lisp :tangle yes
+(use-package gmpl-mode
+  :mode "\\.mod$")
 #+end_src
 
 * Personal
