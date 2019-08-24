@@ -1110,17 +1110,6 @@ without leaving Emacs.
   :demand)
 #+end_src
 
-**** =pdf-tools=
-
-=pdf-tools= is what should be the default =pdf-mode= for Emacs.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package pdf-tools
-  :disabled
-  :config
-  (pdf-loader-install))
-#+end_src
-
 **** =openwith=
 
 =openwith= is a small and useful tool to set how you want to open your files
@@ -1235,6 +1224,7 @@ automatically maintain an updated table of contents of your =.org= file.
    'org-babel-load-languages
    '((shell . t)
      (python . t)
+     (makefile . t)
      (R . t)
      (C . t)
      (ruby . t)

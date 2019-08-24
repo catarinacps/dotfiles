@@ -63,7 +63,13 @@ HYPHEN_INSENSITIVE="true"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  git
+    git
+    cp
+    colored-man-pages
+    zsh-syntax-highlighting
+    zsh-completions
+    command-not-found
+    extract
 )
 
 source $ZSH/oh-my-zsh.sh
