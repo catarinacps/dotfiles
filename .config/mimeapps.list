@@ -39,3 +39,4 @@ application/x-bittorrent=deluge.desktop;
 inode/directory=exo-file-manager.desktop;
 x-scheme-handler/trash=exo-file-manager.desktop;
 
+application/epub+zip=org.pwmt.zathura-pdf-mupdf.desktop;
