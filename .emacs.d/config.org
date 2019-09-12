@@ -63,6 +63,8 @@ Cool Emacs configs from cool people:
   - [[#cmake][CMake]]
   - [[#dockerfile][Dockerfile]]
   - [[#gmpl][GMPL]]
+  - [[#julia][Julia]]
+  - [[#jupyter][Jupyter]]
 - [[#personal][Personal]]
   - [[#functions][Functions]]
     - [[#date][Date]]
@@ -1157,6 +1159,8 @@ I still need to add packages relating to these languages:
 - [X] CMake
 - [X] Dockerfile
 - [X] GMPL
+- [X] Julia
+- [X] Jupyter
 
 ** Org
 
@@ -1167,7 +1171,9 @@ automatically maintain an updated table of contents of your =.org= file.
 #+begin_src emacs-lisp :tangle yes
 (use-package org
   :mode (("\\.org$" . org-mode))
+  :ensure org-plus-contrib
   :ensure toc-org
+  :ensure ob-async
   :preface
   (defun org-export-output-file-name-modified (orig-fun extension &optional subtreep pub-dir)
     (unless pub-dir
@@ -1196,6 +1202,20 @@ automatically maintain an updated table of contents of your =.org= file.
      "bibtex `basename %f | sed 's/\.tex//'`"
      "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
      "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+  (org-babel-default-header-args:jupyter-julia
+   '((:async . "yes")
+     (:session . "default")
+     (:eval . "no-export")
+     (:exports . "both")
+     (:kernel . "julia-1.2")))
+  (org-babel-default-header-args:jupyter-python
+   '((:async . "yes")
+     (:session . "default")
+     (:eval . "no-export")
+     (:exports . "both")
+     (:kernel . "python3")))
+  (ob-async-no-async-languages-alist
+   '("ipython" "jupyter-julia" "jupyter-julia"))
   :general
   (:states '(normal visual)
    :keymaps 'org-mode-map
@@ -1220,6 +1240,7 @@ automatically maintain an updated table of contents of your =.org= file.
    "a" 'org-attach
    "i" 'org-toggle-inline-images)
   :config
+  (require 'org-tempo)
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((shell . t)
@@ -1235,9 +1256,13 @@ automatically maintain an updated table of contents of your =.org= file.
      (perl . t)
      (screen . t)
      (plantuml . t)
+     (julia . t)
+     (jupyter . t)
      (lilypond . t)))
-  (advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified)
-  (require 'org-tempo))
+  (add-to-list 'org-src-lang-modes '("jupyter" . julia))
+  (org-babel-jupyter-override-src-block "julia")
+  (org-babel-jupyter-aliases-from-kernelspecs)
+  (advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified))
 #+end_src
 
 =org-journal= is a powerful tool to journal your day.
@@ -1547,6 +1572,27 @@ directly from the buffer using =C-c C-b=.
 #+begin_src emacs-lisp :tangle yes
 (use-package gmpl-mode
   :mode "\\.mod$")
+#+end_src
+
+** Julia
+
+A package to write Julia source code in Emacs.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package julia-mode)
+#+end_src
+
+** Jupyter
+
+An interface to communicate with Jupyter kernels in Emacs.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package jupyter
+  :after org
+  :ensure zmq
+  :ensure websockets
+  :config
+  (require 'ob-jupyter))
 #+end_src
 
 * Personal
