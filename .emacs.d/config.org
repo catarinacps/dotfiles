@@ -1215,7 +1215,7 @@ automatically maintain an updated table of contents of your =.org= file.
      (:exports . "both")
      (:kernel . "python3")))
   (ob-async-no-async-languages-alist
-   '("ipython" "jupyter-julia" "jupyter-julia"))
+   '("ipython" "jupyter-julia" "jupyter-python"))
   :general
   (:states '(normal visual)
    :keymaps 'org-mode-map
@@ -1579,7 +1579,8 @@ directly from the buffer using =C-c C-b=.
 A package to write Julia source code in Emacs.
 
 #+begin_src emacs-lisp :tangle yes
-(use-package julia-mode)
+(use-package julia-mode
+  :mode "\\.jl$")
 #+end_src
 
 ** Jupyter
@@ -1590,7 +1591,7 @@ An interface to communicate with Jupyter kernels in Emacs.
 (use-package jupyter
   :after org
   :ensure zmq
-  :ensure websockets
+  :ensure websocket
   :config
   (require 'ob-jupyter))
 #+end_src
