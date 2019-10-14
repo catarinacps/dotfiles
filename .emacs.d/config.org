@@ -1188,9 +1188,24 @@ automatically maintain an updated table of contents of your =.org= file.
       (unless (file-directory-p pub-dir)
         (make-directory pub-dir)))
     (apply orig-fun extension subtreep pub-dir nil))
+  (defun org-auto-tex-cmd ()
+    "When exporting from .org with latex, automatically run latex,
+     pdflatex, or xelatex as appropriate, using latexmk."
+    (let ((texcmd)))
+    ;; default command: oldstyle latex via dvi
+    (setq texcmd "latexmk -dvi -pdfps -quiet %f")
+    ;; pdflatex -> .pdf
+    (if (string-match "latex_cmd: pdflatex" (buffer-string))
+        (setq texcmd "latexmk -pdf -quiet %f"))
+    ;; xelatex -> .pdf
+    (if (string-match "latex_cmd: xelatex" (buffer-string))
+        (setq texcmd "latexmk -pdflatex=xelatex -pdf -quiet %f"))
+    ;; LaTeX compilation command
+    (setq org-latex-to-pdf-process (list texcmd)))
   :hook
   ((org-mode . org-indent-mode)
-   (org-mode . toc-org-mode))
+   (org-mode . toc-org-mode)
+   (org-export-latex-after-initial-vars . org-auto-tex-cmd))
   :custom
   (org-return-follows-link t)
   (org-highlight-latex-and-related '(latex script entities))
@@ -1203,22 +1218,33 @@ automatically maintain an updated table of contents of your =.org= file.
   (org-src-fontify-natively t)
   (org-export-allow-bind-keywords t)
   (org-export-with-latex t)
+  (org-latex-packages-alist
+   '(("" "minted")
+     ("utf8" "inputenc")
+     ("brazilian" "babel")))
   (org-latex-listings 'minted)
-  (org-latex-pdf-process
-   '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-     "bibtex `basename %f | sed 's/\.tex//'`"
-     "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-     "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
-  (org-babel-default-header-args:jupyter-julia
+  (org-latex-minted-options
+   '(("bgcolor" "mintedbg")
+     ("frame" "single")
+     ("framesep" "6pt")
+     ("mathescape" "true")
+     ("fontsize" "\\footnotesize")))
+  (org-babel-default-header-args
    '((:async . "yes")
      (:session . "default")
-     (:eval . "no-export")
+     (:results . "value replace")
+     (:exports . "code")
+     (:cache . "none")
+     (:noweb . "no")
+     (:hlines . "no")
+     (:tangle . "no")
+     ()))
+  (org-babel-default-header-args:jupyter-julia
+   '((:eval . "no-export")
      (:exports . "both")
      (:kernel . "julia-1.2")))
   (org-babel-default-header-args:jupyter-python
-   '((:async . "yes")
-     (:session . "default")
-     (:eval . "no-export")
+   '((:eval . "no-export")
      (:exports . "both")
      (:kernel . "python3")))
   (ob-async-no-async-languages-alist
@@ -1264,6 +1290,7 @@ automatically maintain an updated table of contents of your =.org= file.
      (screen . t)
      (plantuml . t)
      (julia . t)
+     (latex . t)
      (jupyter . t)
      (lilypond . t)))
   (add-to-list 'org-src-lang-modes '("jupyter" . julia))
@@ -1271,6 +1298,9 @@ automatically maintain an updated table of contents of your =.org= file.
   (org-babel-jupyter-aliases-from-kernelspecs)
   (advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified))
 #+end_src
+
+#+RESULTS:
+: 837be1984c1d3c424ff3467dc038c07c
 
 =org-journal= is a powerful tool to journal your day.
 
