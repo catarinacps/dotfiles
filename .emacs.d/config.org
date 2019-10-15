@@ -65,6 +65,7 @@ Cool Emacs configs from cool people:
   - [[#gmpl][GMPL]]
   - [[#julia][Julia]]
   - [[#jupyter][Jupyter]]
+  - [[#latex][LaTeX]]
 - [[#personal][Personal]]
   - [[#functions][Functions]]
     - [[#date][Date]]
@@ -317,6 +318,7 @@ writing.
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
 (add-hook 'org-mode-hook 'turn-on-auto-fill)
 (add-hook 'tex-mode-hook 'turn-on-auto-fill)
+(add-hook 'LaTeX-mode-hook 'turn-on-auto-fill)
 #+end_src
 
 *** Mode line
@@ -1155,7 +1157,7 @@ I still need to add packages relating to these languages:
 - [X] C/C++
 - [X] Python
 - [ ] Scala
-- [ ] LaTeX (use-package-ensure-system-package texlive-most)
+- [X] LaTeX (use-package-ensure-system-package texlive-most)
 - [X] R
 - [X] Shell
 - [X] Makefile
@@ -1632,6 +1634,66 @@ An interface to communicate with Jupyter kernels in Emacs.
   :config
   (require 'ob-jupyter))
 #+end_src
+
+** LaTeX
+
+Let's start with some basic =auctex= editing so it starts the way I want (as
+theoretically it should come bundled with Emacs).
+
+#+begin_src emacs-lisp :tangle yes
+(use-package auctex
+  :ensure company-auctex
+  :ensure company-reftex
+  :mode (("\\.tex$" . latex-mode))
+  :hook
+  ((LaTeX-mode . turn-on-reftex)
+   (LaTeX-mode . company-auctex-init)
+   (LaTeX-mode . rainbow-delimiters-mode))
+  :custom
+  (TeX-auto-save t)
+  (TeX-parse-self t)
+  (TeX-save-query nil)
+  (TeX-source-correlate-method 'synctex)
+  (TeX-master nil)
+  (reftex-plug-into-AUCTeX t)
+  (reftex-bibliography-commands '("bibliography" "nobibliography" "addbibresource"))
+  :config
+  (add-to-list 'company-backends 'company-math-symbols-latex)
+  (add-to-list 'company-backends 'company-latex-commands))
+#+end_src
+
+So, for my LaTeX config I'll mainly use =latexmk= as it's way simpler to use.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package auctex-latexmk
+  :after (tex auctex)
+  :preface
+  (defun hcps/set-latexmk-as-default ()
+    (add-to-list
+     'TeX-expand-list
+     '("%(-PDF)"
+       (lambda ()
+         (cond ((string-match "TeX-engine: pdftex" (buffer-string)) "-pdf")
+               ((string-match "TeX-engine: luatex" (buffer-string)) "-pdflatex=lualatex -pdf")
+               ((string-match "TeX-engine: xetex" (buffer-string)) "-pdflatex=xelatex -pdf")
+               (t "-dvi -pdfps")))))
+    (add-to-list
+     'TeX-command-list
+     '("Latexmk" "latexmk %(-PDF) -synctex=1 %s"
+       TeX-run-TeX nil t
+       :help "Run Latexmk on file to build everything."))
+    (setq TeX-command-default "Latexmk"))
+  :init
+  (auctex-latexmk-setup)
+  :hook
+  ((TeX-mode . hcps/set-latexmk-as-default)
+   (LaTeX-mode . hcps/set-latexmk-as-default))
+  :custom
+  (auctex-latexmk-inherit-TeX-PDF-mode t))
+#+end_src
+
+The hook stuff is because all =TeX= get defined when the mode starts, so we need
+to redefine them then.
 
 * Personal
 
