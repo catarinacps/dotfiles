@@ -1204,11 +1204,7 @@ automatically maintain an updated table of contents of your =.org= file.
   (org-export-allow-bind-keywords t)
   (org-export-with-latex t)
   (org-latex-listings 'minted)
-  (org-latex-pdf-process
-   '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-     "bibtex `basename %f | sed 's/\.tex//'`"
-     "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-     "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+  (org-latex-pdf-process '("latexmk -f -pdf -outdir=%o %f"))
   (org-babel-default-header-args:jupyter-julia
    '((:async . "yes")
      (:session . "default")
