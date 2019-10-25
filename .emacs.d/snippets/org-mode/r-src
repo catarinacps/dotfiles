@@ -2,6 +2,6 @@
 # name: r-src
 # key: <r
 # --
-#+begin_src R :tangle yes :session :results
+#+begin_src R :session :results output :exports both
 $0
 #+end_src

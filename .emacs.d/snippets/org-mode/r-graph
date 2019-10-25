@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: r-graph
+# key: <rg
+# --
+#+begin_src R :session :results output graphics :file (org-babel-temp-file "figure" ".png") :exports both :width 600 :height 400
+$0
+#+end_src
