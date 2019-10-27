@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: sh-src
+# key: <sh
+# --
+#+begin_src bash :exports both :results output
+$0
+#+end_src

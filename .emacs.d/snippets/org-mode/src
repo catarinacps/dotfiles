@@ -2,6 +2,6 @@
 # name: src
 # key: <s
 # --
-#+begin_src :tangle yes
+#+begin_src :exports both
 $0
 #+end_src

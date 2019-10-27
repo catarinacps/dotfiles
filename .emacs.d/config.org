@@ -1177,7 +1177,7 @@ I still need to add packages relating to these languages:
 anyone should try Emacs. With it I also use =toc-org=, which is an useful way to
 automatically maintain an updated table of contents of your =.org= file.
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :tangle yes :results none
 (use-package org
   :mode (("\\.org$" . org-mode))
   :ensure org-plus-contrib
@@ -1206,20 +1206,17 @@ automatically maintain an updated table of contents of your =.org= file.
   (org-export-allow-bind-keywords t)
   (org-export-with-latex t)
   (org-latex-packages-alist
-   '(("" "minted")
-     ("utf8" "inputenc")
-     ("brazilian" "babel")))
+   '(("cache=false" "minted")
+     ("T1" "fontenc")
+     ("utf8" "inputenx")))
   (org-latex-listings 'minted)
-  (org-latex-pdf-process '("latexmk -f -pdf -quiet -outdir=%o %f"))
-  (org-latex-minted-options
-   '(("bgcolor" "mintedbg")
-     ("frame" "single")
-     ("framesep" "6pt")
-     ("mathescape" "true")
-     ("fontsize" "\\footnotesize")))
+  (org-latex-pdf-process
+   '("latexmk -pdflatex='pdflatex -shell-escape' -f -pdf -outdir=%o %f"))
+  ;; (org-latex-minted-options
+  ;;  '(("style" "pastie")))
   (org-babel-default-header-args
    '((:async . "yes")
-     (:session . "default")
+     (:session . "none")
      (:results . "value replace")
      (:exports . "code")
      (:cache . "none")
