@@ -1177,7 +1177,7 @@ I still need to add packages relating to these languages:
 anyone should try Emacs. With it I also use =toc-org=, which is an useful way to
 automatically maintain an updated table of contents of your =.org= file.
 
-#+begin_src emacs-lisp :tangle yes :results none
+#+begin_src emacs-lisp :tangle yes :results output
 (use-package org
   :mode (("\\.org$" . org-mode))
   :ensure org-plus-contrib
@@ -1190,9 +1190,18 @@ automatically maintain an updated table of contents of your =.org= file.
       (unless (file-directory-p pub-dir)
         (make-directory pub-dir)))
     (apply orig-fun extension subtreep pub-dir nil))
+  (defun org-babel-tangle-block ()
+    (interactive)
+    (let ((current-prefix-arg '(4)))
+      (call-interactively 'org-babel-tangle)))
+  :init
+  (advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified)
   :hook
   ((org-mode . org-indent-mode)
-   (org-mode . toc-org-mode))
+   (org-mode . toc-org-mode)
+   (org-mode . (lambda () (ox-extras-activate '(ignore-headlines))))
+   (ob-async-pre-execute-src-block . (lambda ()
+                                       (setq inferior-julia-program-name "/usr/bin/julia"))))
   :custom
   (org-return-follows-link t)
   (org-highlight-latex-and-related '(latex script entities))
@@ -1203,17 +1212,18 @@ automatically maintain an updated table of contents of your =.org= file.
   (org-edit-src-content-indentation 0)
   (org-edit-src-persistent-message nil)
   (org-src-fontify-natively t)
+  (org-modules (append org-modules '(org-tempo ox-extra)))
   (org-export-allow-bind-keywords t)
   (org-export-with-latex t)
+  (org-export-babel-evaluate t)
+  (org-latex-image-default-width "1\\linewidth")
   (org-latex-packages-alist
    '(("cache=false" "minted")
      ("T1" "fontenc")
      ("utf8" "inputenx")))
   (org-latex-listings 'minted)
   (org-latex-pdf-process
-   '("latexmk -pdflatex='pdflatex -shell-escape' -f -pdf -outdir=%o %f"))
-  ;; (org-latex-minted-options
-  ;;  '(("style" "pastie")))
+   '("latexmk -pdflatex='pdflatex -shell-escape -interaction=nonstopmode' -f -pdf -outdir=%o %f"))
   (org-babel-default-header-args
    '((:async . "yes")
      (:session . "none")
@@ -1255,9 +1265,10 @@ automatically maintain an updated table of contents of your =.org= file.
    "x" 'org-babel-execute-buffer
    "q" 'org-set-tags-command
    "a" 'org-attach
+   "z" 'org-babel-tangle-block
+   "Z" 'org-babel-tangle
    "i" 'org-toggle-inline-images)
   :config
-  (require 'org-tempo)
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((shell . t)
@@ -1276,11 +1287,28 @@ automatically maintain an updated table of contents of your =.org= file.
      (julia . t)
      (latex . t)
      (jupyter . t)
-     (lilypond . t)))
-  (add-to-list 'org-src-lang-modes '("jupyter" . julia))
-  (org-babel-jupyter-override-src-block "julia")
-  (org-babel-jupyter-aliases-from-kernelspecs)
-  (advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified))
+     (lilypond . t))))
+#+end_src
+
+And here I'll put some LaTeX classes that aren't default in org:
+
+#+begin_src emacs-lisp :tangle yes
+(add-to-list 'org-latex-classes
+             '("iiufrgs"
+               "\\documentclass{iiufrgs}"
+               ("\\chapter{%s}" . "\\chapter*{%s}")
+               ("\\section{%s}" . "\\section*{%s}")
+               ("\\subsection{%s}" . "\\subsection*{%s}")
+               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+               ("\\paragraph{%s}" . "\\paragraph*{%s}")))
+
+(add-to-list 'org-latex-classes
+             '("newlfm"
+               "\\documentclass{newlfm}"
+               ("\\chapter{%s}" . "\\chapter*{%s}")
+               ("\\section{%s}" . "\\section*{%s}")
+               ("\\subsection{%s}" . "\\subsection*{%s}")
+               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
 #+end_src
 
 =org-journal= is a powerful tool to journal your day.
