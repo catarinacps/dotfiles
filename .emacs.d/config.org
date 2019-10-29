@@ -1200,6 +1200,7 @@ automatically maintain an updated table of contents of your =.org= file.
   ((org-mode . org-indent-mode)
    (org-mode . toc-org-mode)
    (org-mode . (lambda () (ox-extras-activate '(ignore-headlines))))
+   (org-babel-after-execute . org-redisplay-inline-images)
    (ob-async-pre-execute-src-block . (lambda ()
                                        (setq inferior-julia-program-name "/usr/bin/julia"))))
   :custom
