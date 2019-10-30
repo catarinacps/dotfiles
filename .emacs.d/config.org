@@ -316,9 +316,6 @@ writing.
 
 #+begin_src emacs-lisp :tangle yes
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
-(add-hook 'org-mode-hook 'turn-on-auto-fill)
-(add-hook 'tex-mode-hook 'turn-on-auto-fill)
-(add-hook 'LaTeX-mode-hook 'turn-on-auto-fill)
 #+end_src
 
 *** Mode line
@@ -1199,6 +1196,7 @@ automatically maintain an updated table of contents of your =.org= file.
   :hook
   ((org-mode . org-indent-mode)
    (org-mode . toc-org-mode)
+   (org-mode . turn-on-auto-fill)
    (org-mode . (lambda () (ox-extras-activate '(ignore-headlines))))
    (org-babel-after-execute . org-redisplay-inline-images)
    (ob-async-pre-execute-src-block . (lambda ()
@@ -1616,6 +1614,8 @@ directly from the buffer using =C-c C-b=.
 
 ** GMPL
 
+So I have syntax highlighting while editing GLPK files.
+
 #+begin_src emacs-lisp :tangle yes
 (use-package gmpl-mode
   :mode "\\.mod$")
@@ -1627,7 +1627,9 @@ A package to write Julia source code in Emacs.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package julia-mode
-  :mode "\\.jl$")
+  :mode "\\.jl$"
+  :custom
+  (inferior-julia-program-name "/usr/bin/julia"))
 #+end_src
 
 ** Jupyter
@@ -1654,9 +1656,11 @@ theoretically it should come bundled with Emacs).
   :ensure company-reftex
   :mode (("\\.tex$" . latex-mode))
   :hook
-  ((LaTeX-mode . turn-on-reftex)
-   (LaTeX-mode . company-auctex-init)
-   (LaTeX-mode . rainbow-delimiters-mode))
+  ((latex-mode . turn-on-reftex)
+   (latex-mode . company-auctex-init)
+   (tex-mode . turn-on-auto-fill)
+   (latex-mode . turn-on-auto-fill)
+   (latex-mode . rainbow-delimiters-mode))
   :custom
   (TeX-auto-save t)
   (TeX-parse-self t)
