@@ -1217,7 +1217,7 @@ automatically maintain an updated table of contents of your =.org= file.
   (org-export-babel-evaluate t)
   (org-latex-image-default-width "1\\linewidth")
   (org-latex-packages-alist
-   '(("cache=false" "minted")
+   '(("cache=false,outputdir=org-exports" "minted")
      ("T1" "fontenc")
      ("utf8" "inputenx")))
   (org-latex-listings 'minted)
