@@ -933,15 +933,15 @@ I use =yasnippet= to handle my snippet needs.
 (use-package yasnippet
   :general
   (:keymaps 'yas-minor-mode-map
-   "<tab>" 'yas-expand)
+   :states 'insert
+   "<tab>" yas-maybe-expand)
   :custom
   (yas-snippet-dirs '("~/.emacs.d/snippets"))
   :hook
   ((emacs-lisp-mode . yas-minor-mode)
    (html-mode . yas-minor-mode)
    (org-mode . yas-minor-mode)
-   (tex-mode . yas-minor-mode)
-   (python-mode . yas-minor-mode))
+   (tex-mode . yas-minor-mode))
   :config
   (yas-reload-all))
 #+end_src
@@ -1221,6 +1221,10 @@ automatically maintain an updated table of contents of your =.org= file.
      ("T1" "fontenc")
      ("utf8" "inputenx")))
   (org-latex-listings 'minted)
+  (org-latex-minted-options
+   '(("breaklines")
+     ("breakafter" "d")
+     ("linenos" "true")))
   (org-latex-pdf-process
    '("latexmk -pdflatex='pdflatex -shell-escape -interaction=nonstopmode' -f -pdf -outdir=%o %f"))
   (org-babel-default-header-args
