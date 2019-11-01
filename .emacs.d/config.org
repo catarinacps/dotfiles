@@ -714,6 +714,8 @@ have the best of both worlds!
    "n" 'neotree-toggle
    "j" 'org-journal-new-entry
    "ESC" 'evil-mc-undo-all-cursors)
+  (:states 'insert
+   "<tab>" 'indent-for-tab-command)
   :custom
   (evil-want-keybinding nil)
   (evil-emacs-state-cursor  '("red" box))
@@ -931,9 +933,7 @@ I use =yasnippet= to handle my snippet needs.
 (use-package yasnippet
   :general
   (:keymaps 'yas-minor-mode-map
-   "TAB" 'yas-expand)
-  (:states 'insert
-   "TAB" 'yas-expand)
+   "<tab>" 'yas-expand)
   :custom
   (yas-snippet-dirs '("~/.emacs.d/snippets"))
   :hook
