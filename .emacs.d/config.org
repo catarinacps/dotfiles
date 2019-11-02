@@ -66,6 +66,7 @@ Cool Emacs configs from cool people:
   - [[#julia][Julia]]
   - [[#jupyter][Jupyter]]
   - [[#latex][LaTeX]]
+  - [[#coq][Coq]]
 - [[#personal][Personal]]
   - [[#functions][Functions]]
     - [[#date][Date]]
@@ -103,6 +104,8 @@ You can find the following packages in this configuration file:
 #+begin_example
 - aggressive-indent
 - anzu
+- auctex
+- auctex-latexmk
 - auto-compile
 - bash-completion
 - bind-key
@@ -1167,6 +1170,7 @@ I still need to add packages relating to these languages:
 - [X] GMPL
 - [X] Julia
 - [X] Jupyter
+- [ ] Coq (yes, I'm slowly turning into what I most hate)
 
 ** Org
 
@@ -1176,7 +1180,7 @@ automatically maintain an updated table of contents of your =.org= file.
 
 #+begin_src emacs-lisp :tangle yes :results output
 (use-package org
-  :mode (("\\.org$" . org-mode))
+  :mode (("\\.org\\'" . org-mode))
   :ensure org-plus-contrib
   :ensure toc-org
   :ensure ob-async
@@ -1206,6 +1210,7 @@ automatically maintain an updated table of contents of your =.org= file.
   (org-highlight-latex-and-related '(latex script entities))
   (org-hide-leading-stars t)
   (org-support-shift-select nil)
+  (org-log-done t)
   (org-directory "~/org/")
   (org-cycle-emulate-tab nil)
   (org-edit-src-content-indentation 0)
@@ -1455,6 +1460,23 @@ It provides you with everything you need from R.
 
 ** Shell
 
+As for shell-scripting:
+
+#+begin_src emacs-lisp :tangle yes
+(use-package sh-script
+  :preface
+  (defun zsh-prezto-files ()
+    (if (and buffer-file-name
+             (member (file-name-nondirectory buffer-file-name) prezto-files))
+        (sh-set-shell "zsh")))
+  :custom
+  (prezto-files '("zlogin" "zlogin" "zlogout" "zpreztorc" "zprofile" "zshenv" "zshrc"))
+  :hook
+  (sh-mode . zsh-prezto-files)
+  :config
+  (sh-set-shell "bash"))
+#+end_src
+
 For =shell= completion I use =bash-complete=, which auto completes several
 =bash= functions.
 
@@ -1632,7 +1654,7 @@ So I have syntax highlighting while editing GLPK files.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package gmpl-mode
-  :mode "\\.mod$")
+  :mode "\\.mod\\'")
 #+end_src
 
 ** Julia
@@ -1641,8 +1663,8 @@ A package to write Julia source code in Emacs.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package julia-mode
-  :mode "\\.jl$"
-  :custom
+  :mode "\\.jl\\'"
+  :init
   (inferior-julia-program-name "/usr/bin/julia"))
 #+end_src
 
@@ -1720,6 +1742,14 @@ So, for my LaTeX config I'll mainly use =latexmk= as it's way simpler to use.
 
 The hook stuff is because all =TeX= get defined when the mode starts, so we need
 to redefine them then.
+
+** Coq
+
+Not set up, but when I get to it:
+
+- proof-general
+- company-coq-mode
+- hrs config!
 
 * Personal
 
