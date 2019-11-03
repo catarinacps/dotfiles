@@ -93,10 +93,10 @@ You can find the following packages in this configuration file:
 
 #+begin_src emacs-lisp :exports results
 (shell-command-to-string
- "grep '^(use-package .*$' < config.org |
+ "grep '^(use-package\ .*$' < config.el |
   awk '{print $2}' |
   tr -d ')' |
-  sed '1,10d;s/^/- /' |
+  sed 's/^/- /' |
   sort")
 #+end_src
 
@@ -156,8 +156,10 @@ You can find the following packages in this configuration file:
 - projectile
 - ranger
 - rtags
+- sh-script
 - smart-mode-line
 - tramp
+- use-package-ensure-system-package
 - vimish-fold
 - windmove
 - yasnippet
@@ -642,11 +644,12 @@ to edit local files as =root=. With the package =counsel-tramp= we have an
 =counsel=-powered interface to use that mechanism!
 
 This package looks up your hosts defined in =~/.ssh/config= to generate a list
-with possible =ssh= connections, along with =sudo= possibilities (including
-=localhost=!).
+with possible =ssh= connections AND docker containers (thanks to
+=docker-tramp=), along with =sudo= possibilities (including =localhost=!).
 
 #+begin_src emacs-lisp :tangle yes
 (use-package counsel-tramp
+  :ensure docker-tramp
   :after counsel
   :general
   ("C-c C-f" 'counsel-tramp))
@@ -934,6 +937,9 @@ I use =yasnippet= to handle my snippet needs.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package yasnippet
+  :demand
+  :init
+  (add-to-list 'hippie-expand-try-functions-list 'yas-hippie-try-expand)
   :general
   (:keymaps 'yas-minor-mode-map
    :states 'insert
@@ -1454,8 +1460,25 @@ It provides you with everything you need from R.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ess
-  :config
-  (require 'ess-r-mode))
+  :commands R
+  :init
+  (require 'ess-site)
+  :hook
+  (ess-mode . aggressive-indent-mode)
+  :preface
+  (defun hcps/insert-r-pipe ()
+    "Lets us insert the magrittr piping operator %>% in R"
+    (interactive)
+    (just-one-space 1)
+    (insert "%>%")
+    (reindent-then-newline-and-indent))
+  :general
+  (:states 'insert
+   :keymaps 'ess-r-mode-map
+   "M-<enter>" 'hcps/insert-r-pipe)
+  :custom
+  (ess-auto-width 'frame)
+  (ess-style 'RStudio))
 #+end_src
 
 ** Shell
@@ -1494,7 +1517,7 @@ we'll set that up.
 #+begin_src emacs-lisp :tangle yes
 (defun makefile-mode-defaults ()
   (whitespace-toggle-options '(tabs))
-  (setq indent-tabs-mode t ))
+  (setq-local indent-tabs-mode t ))
 
 (setq makefile-mode-hook 'makefile-mode-defaults)
 
@@ -1645,6 +1668,7 @@ directly from the buffer using =C-c C-b=.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package dockerfile-mode
+  :ensure docker-compose-mode
   :mode "Dockerfile\\'")
 #+end_src
 
