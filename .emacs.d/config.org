@@ -1475,7 +1475,7 @@ It provides you with everything you need from R.
   :general
   (:states 'insert
    :keymaps 'ess-r-mode-map
-   "M-<enter>" 'hcps/insert-r-pipe)
+   "M-RET" 'hcps/insert-r-pipe)
   :custom
   (ess-auto-width 'frame)
   (ess-style 'RStudio))
