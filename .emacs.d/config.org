@@ -1642,7 +1642,6 @@ Python.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package elpy
-  :ensure
   :defer t
   :init
   (advice-add 'python-mode :before 'elpy-enable))
