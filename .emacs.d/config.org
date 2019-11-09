@@ -279,6 +279,13 @@ Almost every GUI element of Emacs is useless and a waste of screen space.
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
 
+(when (fboundp 'tool-bar-mode)
+  (tool-bar-mode -1))
+(when (fboundp 'scroll-bar-mode)
+  (scroll-bar-mode -1))
+(when (fboundp 'horizontal-scroll-bar-mode)
+  (horizontal-scroll-bar-mode -1))
+
 (defun hcps/disable-scroll-bars (frame)
   (modify-frame-parameters frame
                            '((vertical-scroll-bars . nil)
@@ -719,7 +726,14 @@ have the best of both worlds!
    "y" 'counsel-yank-pop
    "n" 'neotree-toggle
    "j" 'org-journal-new-entry
-   "ESC" 'evil-mc-undo-all-cursors)
+   "ESC" 'evil-mc-undo-all-cursors
+   ;; misc bindings under 'm'
+   "m c" 'comment-dwim
+   "m i" 'indent-region
+   ;; projectile under p
+   "p p" 'counsel-projectile-switch-project
+   "p f" 'counsel-projectile-find-file
+   "p c" 'projectile-compile-project)
   (:states 'insert
    "<tab>" 'indent-for-tab-command)
   :custom
@@ -733,6 +747,10 @@ have the best of both worlds!
   :config
   (evil-mode 1))
 #+end_src
+
+Now, you may be asking yourself "why are you defining some of the keybindings
+here under evil and other in their respective packages?". That's a great
+question! My intention was to define everything =evil= and global here, and
 
 Also I use =evil-surround=, which is a port of =surround= from vim and allow you
 to quickly delete or change surrounding ="= and ='= from words or paragraphs or
@@ -799,26 +817,6 @@ popular packages.
   (evilmi-may-jump-by-percentage nil)
   :config
   (global-evil-matchit-mode 1))
-#+end_src
-
-=evil-nerd-commenter= is a port of =nerd-commenter= from =vim= and it helps you
-to be extremely efficient while commenting lines and text selections.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package evil-nerd-commenter
-  :after evil
-  :general
-  (:states '(normal visual)
-   :prefix hcps/leader-key
-   ",i" 'evilnc-comment-or-uncomment-lines
-   ",l" 'evilnc-quick-comment-or-uncomment-to-the-line
-   "ll" 'evilnc-quick-comment-or-uncomment-to-the-line
-   ",c" 'evilnc-copy-and-comment-lines
-   ",p" 'evilnc-comment-or-uncomment-paragraphs
-   ",r" 'comment-or-uncomment-region
-   ",v" 'evilnc-toggle-invert-comment-line-by-line)
-  :config
-  (evilnc-default-hotkeys nil t))
 #+end_src
 
 **** Hydra
@@ -1130,13 +1128,23 @@ without leaving Emacs.
 **** =openwith=
 
 =openwith= is a small and useful tool to set how you want to open your files
-with Emacs. I use it to set the opener of pdfs in my Emacs.
+with Emacs. I use it to set the opener of pdfs in my Emacs, as well to other
+diverse media files.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package openwith
   :demand
   :custom
-  (openwith-associations '(("\\.pdf\\'" "zathura" (file))))
+  (openwith-associations
+   '(("\\.pdf\\'" "zathura" (file))
+     ("\\.jpg\\'" "sxiv" (file))
+     ("\\.svg\\'" "sxiv" (file))
+     ("\\.jpeg\\'" "sxiv" (file))
+     ("\\.bmp\\'" "sxiv" (file))
+     ("\\.flac\\'" "mpv" (file))
+     ("\\.mkv\\'" "mpv" (file))
+     ("\\.mp3\\'" "mpv" (file))
+     ("\\.mp4\\'" "mpv" (file))))
   :config
   (openwith-mode t))
 #+end_src
@@ -1221,6 +1229,7 @@ automatically maintain an updated table of contents of your =.org= file.
   (org-cycle-emulate-tab nil)
   (org-edit-src-content-indentation 0)
   (org-edit-src-persistent-message nil)
+  (org-src-preserve-identation t)
   (org-src-fontify-natively t)
   (org-modules (append org-modules '(org-tempo ox-extra)))
   (org-export-allow-bind-keywords t)
@@ -1305,8 +1314,6 @@ automatically maintain an updated table of contents of your =.org= file.
      (jupyter . t)
      (lilypond . t))))
 #+end_src
-
-#+RESULTS:
 
 And here I'll put some LaTeX classes that aren't default in org:
 
@@ -1394,6 +1401,14 @@ This package makes your low-level programming life way easier.
   (add-to-list 'company-backends '(company-irony company-irony-c-headers)))
 #+end_src
 
+Better C++ font lock:
+
+#+begin_src emacs-lisp :tangle yes
+(use-package modern-cpp-font-lock
+  :config
+  (modern-c++-font-lock-global-mode))
+#+end_src
+
 Also, =rtags= is a project that aims to set up tags for C and C++ projects so
 other tools can use them.
 
@@ -1462,12 +1477,11 @@ For R you pretty much /need/ the =ess= package, i.e. /Emacs Speaks Statistics/.
 It provides you with everything you need from R.
 
 #+begin_src emacs-lisp :tangle yes
-(use-package ess
+(use-package ess-r-mode
+  :ensure ess
   :commands R
-  :init
-  (require 'ess-site)
   :hook
-  (ess-mode . aggressive-indent-mode)
+  (ess-r-mode . aggressive-indent-mode)
   :preface
   (defun hcps/insert-r-pipe ()
     "Lets us insert the magrittr piping operator %>% in R"
@@ -1688,10 +1702,11 @@ So I have syntax highlighting while editing GLPK files.
 A package to write Julia source code in Emacs.
 
 #+begin_src emacs-lisp :tangle yes
-(use-package julia-mode
+(use-package ess-julia-mode
+  :ensure ess
   :mode "\\.jl\\'"
   :init
-  (inferior-julia-program-name "/usr/bin/julia"))
+  (setq inferior-julia-program-name "/usr/bin/julia"))
 #+end_src
 
 ** Jupyter
@@ -1716,7 +1731,7 @@ theoretically it should come bundled with Emacs).
 (use-package auctex
   :ensure company-auctex
   :ensure company-reftex
-  :mode (("\\.tex$" . latex-mode))
+  :mode (("\\.tex\\'" . latex-mode))
   :hook
   ((latex-mode . turn-on-reftex)
    (latex-mode . company-auctex-init)
