@@ -712,6 +712,23 @@ have the best of both worlds!
 #+begin_src emacs-lisp :tangle yes
 (use-package evil
   :demand
+  :preface
+  (defun hcps/yank-to-eol ()
+    "Yank to the EOL."
+    (interactive)
+    (evil-yank (point) (point-at-eol)))
+  (defun hcps/shift-left-region ()
+    "Shift left and restore visual selection."
+    (interactive)
+    (evil-shift-left (region-beginning) (region-end))
+    (evil-normal-state)
+    (evil-visual-restore))
+  (defun hcps/shift-right-region ()
+    "Shift right and restore visual selection."
+    (interactive)
+    (evil-shift-right (region-beginning) (region-end))
+    (evil-normal-state)
+    (evil-visual-restore))
   :init
   (defconst hcps/leader-key "SPC")
   :general
@@ -733,7 +750,6 @@ have the best of both worlds!
    "o" 'ace-window
    "B" 'counsel-bookmark
    "y" 'counsel-yank-pop
-   "n" 'neotree-toggle
    "j" 'org-journal-new-entry
    "ESC" 'evil-mc-undo-all-cursors
    ;; misc bindings under 'm'
@@ -742,10 +758,21 @@ have the best of both worlds!
    ;; projectile under p
    "p p" 'counsel-projectile-switch-project
    "p f" 'counsel-projectile-find-file
-   "p c" 'projectile-compile-project)
+   "p c" 'projectile-compile-project
+   "p g" 'counsel-projectile-rg)
+  (:states '(normal visual)
+   "C-u" 'evil-scroll-up
+   "C-d" 'evil-scroll-down)
   (:states 'insert
    "<tab>" 'indent-for-tab-command)
+  (:states 'normal
+   "Y" 'hcps/yank-to-eol)
+  (:states 'visual
+   ">" 'hcps/shift-right-region
+   "<" 'hcps/shift-left-region)
   :custom
+  (evil-esc-delay 0)
+  (evil-shift-width 2)
   (evil-want-keybinding nil)
   (evil-emacs-state-cursor  '("red" box))
   (evil-normal-state-cursor '("gray" box))
@@ -1280,8 +1307,9 @@ automatically maintain an updated table of contents of your =.org= file.
   :general
   (:states '(normal visual)
    :keymaps 'org-mode-map
-   "gk" 'outline-up-heading
-   "gj" 'outline-next-visible-heading
+   "C-S-k" 'outline-up-heading
+   "C-k" 'outline-previous-visible-heading
+   "C-j" 'outline-next-visible-heading
    "t" 'org-todo ; mark a TODO item as DONE
    "<tab>" 'outline-toggle-children
    "<backtab>" 'org-global-cycle
@@ -1713,6 +1741,7 @@ A package to write Julia source code in Emacs.
 #+begin_src emacs-lisp :tangle yes
 (use-package ess-julia-mode
   :ensure ess
+  :ensure julia-mode
   :mode "\\.jl\\'"
   :init
   (setq inferior-julia-program-name "/usr/bin/julia"))
