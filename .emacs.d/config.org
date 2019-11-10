@@ -91,17 +91,16 @@ That way you can understand what's happening beneath all sugar syntax.
 
 You can find the following packages in this configuration file:
 
-#+begin_src emacs-lisp :exports results
+#+begin_src emacs-lisp :exports results :results value org list
 (shell-command-to-string
  "grep '^(use-package\ .*$' < config.el |
   awk '{print $2}' |
   tr -d ')' |
-  sed 's/^/- /' |
   sort")
 #+end_src
 
 #+RESULTS:
-#+begin_example
+#+begin_src org
 - aggressive-indent
 - anzu
 - auctex
@@ -117,16 +116,17 @@ You can find the following packages in this configuration file:
 - counsel-projectile
 - counsel-tramp
 - cpputils-cmake
+- deadgrep
 - dockerfile-mode
 - dumb-jump
 - elpy
 - engine-mode
-- ess
+- ess-julia-mode
+- ess-r-mode
 - evil
 - evil-collection
 - evil-matchit
 - evil-mc
-- evil-nerd-commenter
 - evil-org
 - evil-surround
 - evil-visualstar
@@ -141,10 +141,10 @@ You can find the following packages in this configuration file:
 - hydra
 - irony
 - ivy
-- julia-mode
 - jupyter
 - midnight
 - minions
+- modern-cpp-font-lock
 - mw-thesaurus
 - neotree
 - no-littering
@@ -163,7 +163,7 @@ You can find the following packages in this configuration file:
 - vimish-fold
 - windmove
 - yasnippet
-#+end_example
+#+end_src
 
 ** =use-package=
 
@@ -558,6 +558,15 @@ also like to use =anzu=.
 I use only the =anzu-replace-at-cursor-thing=, which is a very useful to replace
 multiple occurrences of a word fast.
 
+Besides that, I enjoy using =ripgrep= to search for stuff using =grep= syntax
+without the slowness of it. So, I use =deadgrep=!
+
+#+begin_src emacs-lisp :tangle yes
+(use-package deadgrep
+  :config
+  (evil-collection-deadgrep-setup))
+#+end_src
+
 *** Mode line
 
 I use =smart-mode-line= as it is very minimalist and informative (and it looks
@@ -718,9 +727,9 @@ have the best of both worlds!
    "t" 'counsel-tramp
    "s" 'save-buffer
    "d" 'ranger
-   "p" 'counsel-projectile-switch-project
    "w" 'delete-window
    "g" 'magit-status
+   "G" 'deadgrep
    "o" 'ace-window
    "B" 'counsel-bookmark
    "y" 'counsel-yank-pop
