@@ -1446,7 +1446,7 @@ Better C++ font lock:
 #+begin_src emacs-lisp :tangle yes
 (use-package modern-cpp-font-lock
   :config
-  (modern-c++-font-lock-global-mode))
+  (modern-c++-font-lock-global-mode t))
 #+end_src
 
 Also, =rtags= is a project that aims to set up tags for C and C++ projects so
