@@ -754,14 +754,16 @@ have the best of both worlds!
    "m b" 'counsel-bookmark
    "m r" 'anzu-replace-at-cursor-thing
    "m j" 'org-journal-new-entry
-   ;; projectile under p
+   ;; projectile binding under 'p'
    "p p" 'counsel-projectile-switch-project
    "p f" 'counsel-projectile-find-file
    "p c" 'projectile-compile-project
    "p g" 'counsel-projectile-rg)
   (:states '(normal visual)
    "C-u" 'evil-scroll-up
-   "C-d" 'evil-scroll-down)
+   "C-d" 'evil-scroll-down
+   "C-S-h" 'previous-buffer
+   "C-S-l" 'next-buffer)
   (:states 'insert
    "<tab>" 'indent-for-tab-command)
   (:states 'normal
