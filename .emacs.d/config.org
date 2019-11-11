@@ -695,7 +695,6 @@ completion candidates.
   (company-require-match nil)
   (company-tooltip-align-annotations t)
   :config
-  (add-to-list 'company-backends 'company-cmake)
   (global-company-mode 1))
 #+end_src
 
@@ -740,21 +739,21 @@ have the best of both worlds!
    "k" 'kill-this-buffer
    "K" 'kill-buffer
    "r" 'counsel-recentf
-   "R" 'anzu-replace-at-cursor-thing
    "t" 'counsel-tramp
    "s" 'save-buffer
    "d" 'ranger
    "w" 'delete-window
    "g" 'magit-status
-   "G" 'deadgrep
    "o" 'ace-window
-   "B" 'counsel-bookmark
    "y" 'counsel-yank-pop
-   "j" 'org-journal-new-entry
    "ESC" 'evil-mc-undo-all-cursors
    ;; misc bindings under 'm'
    "m c" 'comment-dwim
    "m i" 'indent-region
+   "m g" 'deadgrep
+   "m b" 'counsel-bookmark
+   "m r" 'anzu-replace-at-cursor-thing
+   "m j" 'org-journal-new-entry
    ;; projectile under p
    "p p" 'counsel-projectile-switch-project
    "p f" 'counsel-projectile-find-file
@@ -786,7 +785,9 @@ have the best of both worlds!
 
 Now, you may be asking yourself "why are you defining some of the keybindings
 here under evil and other in their respective packages?". That's a great
-question! My intention was to define everything =evil= and global here, and
+question! My intention was to define everything =evil= and global here, maybe
+some of it got scattered around the rest of the config files, but I'm slowly
+collecting these occurrences.
 
 Also I use =evil-surround=, which is a port of =surround= from vim and allow you
 to quickly delete or change surrounding ="= and ='= from words or paragraphs or
@@ -1481,7 +1482,9 @@ useful packages. It goes pretty well with =cmake-ide=.
   :hook
   (c-mode-common-hook . (lambda ()
                           (if (derived-mode-p 'c-mode 'c++-mode)
-                              (cppcm-reload-all)))))
+                              (cppcm-reload-all))))
+  :config
+  (add-to-list 'company-backends 'company-cmake))
 #+end_src
 
 In the department of code formatting, =clang-format= is a lovely tool that can
