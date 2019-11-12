@@ -728,8 +728,13 @@ have the best of both worlds!
     (evil-shift-right (region-beginning) (region-end))
     (evil-normal-state)
     (evil-visual-restore))
+  (defun hcps/indent-when-paste (old-fun &rest args)
+    "Indents the pasted region."
+    (indent-region (point) (+ (point) (length (apply old-fun args)))))
   :init
   (defconst hcps/leader-key "SPC")
+  (advice-add 'evil-paste-before :around #'hcps/indent-when-paste)
+  (advice-add 'evil-paste-after :around #'hcps/indent-when-paste)
   :general
   (:states '(normal visual)
    :prefix hcps/leader-key
@@ -774,7 +779,11 @@ have the best of both worlds!
   :custom
   (evil-esc-delay 0)
   (evil-shift-width 2)
+  (evil-auto-indent t)
+  (evil-want-fine-undo t)
+  (evil-magic 'very-magic)
   (evil-want-keybinding nil)
+  (evil-search-module 'evil-search)
   (evil-emacs-state-cursor  '("red" box))
   (evil-normal-state-cursor '("gray" box))
   (evil-visual-state-cursor '("gray" hollow))
@@ -1258,11 +1267,12 @@ automatically maintain an updated table of contents of your =.org= file.
    (org-babel-after-execute . org-redisplay-inline-images)
    (ob-async-pre-execute-src-block . (lambda ()
                                        (setq inferior-julia-program-name "/usr/bin/julia"))))
-  :custom
+  :custom ;; this is getting kinda big
   (org-return-follows-link t)
   (org-highlight-latex-and-related '(latex script entities))
   (org-hide-leading-stars t)
   (org-support-shift-select nil)
+  (org-replace-disputed-keys t)
   (org-log-done t)
   (org-directory "~/org/")
   (org-cycle-emulate-tab nil)
@@ -1270,11 +1280,41 @@ automatically maintain an updated table of contents of your =.org= file.
   (org-edit-src-persistent-message nil)
   (org-src-preserve-identation t)
   (org-src-fontify-natively t)
-  (org-modules (append org-modules '(org-tempo ox-extra)))
   (org-export-allow-bind-keywords t)
   (org-export-with-latex t)
   (org-export-babel-evaluate t)
-  (org-latex-image-default-width "1\\linewidth")
+  (org-todo-keywords
+   '((sequence
+      "TODO(t!)"
+      "STARTED(s!)"
+      "WAITING(w!)"
+      "|"
+      "DONE(d!)"
+      "CANCELLED(c!)"
+      "DEFERRED(f!)")))
+  (org-modules (append org-modules '(org-tempo ox-extra)))
+  (org-babel-load-languages
+   (append org-babel-load-languages
+           '((shell . t)
+             (python . t)
+             (makefile . t)
+             (emacs-lisp . t)
+             (R . t)
+             (C . t)
+             (ruby . t)
+             (ditaa . t)
+             (dot . t)
+             (octave . t)
+             (sqlite . t)
+             (perl . t)
+             (screen . t)
+             (plantuml . t)
+             (julia . t)
+             (latex . t)
+             (jupyter . t)
+             (lilypond . t))))
+  (org-latex-image-default-width
+   "1\\linewidth")
   (org-latex-packages-alist
    '(("cache=false,outputdir=org-exports" "minted")
      ("T1" "fontenc")
@@ -1335,24 +1375,7 @@ automatically maintain an updated table of contents of your =.org= file.
    "i" 'org-toggle-inline-images)
   :config
   (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((shell . t)
-     (python . t)
-     (makefile . t)
-     (R . t)
-     (C . t)
-     (ruby . t)
-     (ditaa . t)
-     (dot . t)
-     (octave . t)
-     (sqlite . t)
-     (perl . t)
-     (screen . t)
-     (plantuml . t)
-     (julia . t)
-     (latex . t)
-     (jupyter . t)
-     (lilypond . t))))
+   'org-babel-load-languages org-babel-load-languages))
 #+end_src
 
 And here I'll put some LaTeX classes that aren't default in org:
