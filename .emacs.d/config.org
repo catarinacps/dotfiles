@@ -746,6 +746,7 @@ have the best of both worlds!
    "g" 'magit-status
    "o" 'ace-window
    "y" 'counsel-yank-pop
+   "p" '(:keymap projectile-command-map :package projectile)
    "ESC" 'evil-mc-undo-all-cursors
    ;; misc bindings under 'm'
    "m c" 'comment-dwim
@@ -753,12 +754,7 @@ have the best of both worlds!
    "m g" 'deadgrep
    "m b" 'counsel-bookmark
    "m r" 'anzu-replace-at-cursor-thing
-   "m j" 'org-journal-new-entry
-   ;; projectile binding under 'p'
-   "p p" 'counsel-projectile-switch-project
-   "p f" 'counsel-projectile-find-file
-   "p c" 'projectile-compile-project
-   "p g" 'counsel-projectile-rg)
+   "m j" 'org-journal-new-entry)
   (:states '(normal visual)
    "C-u" 'evil-scroll-up
    "C-d" 'evil-scroll-down
