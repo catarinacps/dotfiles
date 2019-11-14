@@ -1310,29 +1310,28 @@ automatically maintain an updated table of contents of your =.org= file.
   :general
   (:states '(normal visual)
    :keymaps 'org-mode-map
-   "C-S-k" 'outline-up-heading
-   "C-k" 'outline-previous-visible-heading
-   "C-j" 'outline-next-visible-heading
    "t" 'org-todo ; mark a TODO item as DONE
-   "<tab>" 'outline-toggle-children
-   "<backtab>" 'org-global-cycle
-   "<return>" 'org-open-at-point
    "$" 'org-end-of-line ; smarter behaviour on headlines etc.
    "0" 'org-beginning-of-line ; ditto
    "-" 'org-ctrl-c-minus ; change bullet style
    "<" 'org-metaleft ; outdent
-   ">" 'org-metaright) ; indent
+   ">" 'org-metaright ; indent
+   "C-i" 'org-toggle-inline-images
+   "C-j" 'outline-next-visible-heading
+   "C-k" 'outline-previous-visible-heading
+   "C-S-k" 'outline-up-heading
+   "<tab>" 'outline-toggle-children
+   "<backtab>" 'org-global-cycle
+   "<return>" 'org-open-at-point)
   (:states '(normal visual)
    :keymaps 'org-mode-map
    :prefix hcps/leader-key
-   "c" 'org-cycle
    "e" 'org-export-dispatch
    "x" 'org-babel-execute-buffer
    "q" 'org-set-tags-command
    "a" 'org-attach
    "z" 'org-babel-tangle-block
-   "Z" 'org-babel-tangle
-   "i" 'org-toggle-inline-images)
+   "Z" 'org-babel-tangle)
   (:states 'insert
    :keymaps 'org-mode-map
    "<tab>" 'org-cycle)
