@@ -1265,7 +1265,7 @@ automatically maintain an updated table of contents of your =.org= file.
   (org-support-shift-select nil)
   (org-log-done t)
   (org-directory "~/org/")
-  (org-cycle-emulate-tab nil)
+  (org-cycle-emulate-tab t)
   (org-edit-src-content-indentation 0)
   (org-edit-src-persistent-message nil)
   (org-src-preserve-identation t)
@@ -1333,6 +1333,9 @@ automatically maintain an updated table of contents of your =.org= file.
    "z" 'org-babel-tangle-block
    "Z" 'org-babel-tangle
    "i" 'org-toggle-inline-images)
+  (:states 'insert
+   :keymaps 'org-mode-map
+   "<tab>" 'org-cycle)
   :config
   (org-babel-do-load-languages
    'org-babel-load-languages
