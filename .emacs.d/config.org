@@ -563,6 +563,7 @@ without the slowness of it. So, I use =deadgrep=!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package deadgrep
+  :after evil-collection
   :config
   (evil-collection-deadgrep-setup))
 #+end_src
@@ -649,6 +650,13 @@ make sure that =counsel-M-x= has decent candidate sorting.
   :ensure smex
   :after ivy
   :demand
+  :preface
+  (defun hcps/override-yank-pop (&optional arg)
+    "Delete the region before inserting poped string."
+    (when (and evil-mode (eq 'visual evil-state))
+      (kill-region (region-beginning) (region-end))))
+  :init
+  (advice-add 'counsel-yank-pop :before #'hcps/override-yank-pop)
   :general
   ("M-x" 'counsel-M-x)
   ("C-x C-f" 'counsel-find-file)
@@ -773,8 +781,9 @@ have the best of both worlds!
   (evil-want-keybinding nil)
   (evil-auto-indent t)
   (evil-want-fine-undo t)
-  (evil-magic 'very-magic)
-  (evil-search-module 'evil-search)
+  (evil-search-wrap t)
+  (evil-regexp-search t)
+  (evil-search-module 'isearch)
   (evil-emacs-state-cursor  '("red" box))
   (evil-normal-state-cursor '("gray" box))
   (evil-visual-state-cursor '("gray" hollow))
