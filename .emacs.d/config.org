@@ -40,11 +40,12 @@ Cool Emacs configs from cool people:
     - [[#mode-line-1][Mode line]]
     - [[#remote-editing][Remote editing]]
     - [[#completion][Completion]]
+    - [[#language-server-protocol][Language Server Protocol]]
+    - [[#syntax-checking][Syntax Checking]]
     - [[#keybindings][Keybindings]]
     - [[#buffers-and-windows][Buffers and windows]]
     - [[#templates-and-snippets][Templates and snippets]]
     - [[#folding][Folding]]
-    - [[#syntax-checking][Syntax Checking]]
     - [[#project-management][Project management]]
     - [[#regions-and-pointers][Regions and pointers]]
     - [[#indentation][Indentation]]
@@ -419,6 +420,7 @@ I still need to add:
 - [X] pdf-tools
 - [X] exec-path-from-shell
 - [X] anzu
+- [ ] lsp-mode
 
 Also, =prelude= packages that I like and still need to add:
 
@@ -704,6 +706,57 @@ completion candidates.
   (company-tooltip-align-annotations t)
   :config
   (global-company-mode 1))
+#+end_src
+
+*** Language Server Protocol
+
+I imagine anyone knows what is LSP, but oh well. Basically, it is one of the
+best features of other famous editor, such as Visual Studio Code. By using
+=lsp-mode=, we'll be able to have it too!
+
+#+begin_src emacs-lisp :tangle yes
+(use-package lsp-mode
+  :demand
+  :commands lsp
+  :ensure lsp-ui
+  :ensure company-lsp
+  :hook
+  ((prog-mode . lsp)
+   (lsp-mode . lsp-ui-mode))
+  :init
+  (setq lsp-log-io t
+        lsp-auto-guess-root t
+        lsp-prefer-flymake nil
+        lsp-enable-completion-at-point t
+        company-lsp-cache-candidates t
+        company-lsp-async t
+        company-lsp-enable-recompletion t)
+  :config
+  (add-to-list 'company-backends 'company-lsp))
+#+end_src
+
+*** Syntax Checking
+
+=Flycheck= provides a reliable source to syntax checking in Emacs.
+
+#+begin_src emacs-lisp
+(use-package flycheck
+  :demand
+  :init (global-flycheck-mode)
+  :custom
+  (flycheck-check-syntax-automatically '(save mode-enabled))
+  (flycheck-disabled-checkers '(emacs-lisp-checkdoc))
+  (flycheck-display-errors-delay .3)
+  :config
+  (flycheck-define-checker proselint
+    "A linter for prose."
+    :command ("proselint" source-inplace)
+    :error-patterns
+    ((warning line-start (file-name) ":" line ":" column ": "
+              (id (one-or-more (not (any " "))))
+              (message) line-end))
+    :modes (text-mode markdown-mode gfm-mode org-mode))
+  (add-to-list 'flycheck-checkers 'proselint))
 #+end_src
 
 *** Keybindings
@@ -1019,30 +1072,6 @@ Enables vim-like folding of regions.
   (vimish-fold-global-mode 1))
 #+end_src
 
-*** Syntax Checking
-
-=Flycheck= provides a reliable source to syntax checking in Emacs.
-
-#+begin_src emacs-lisp
-(use-package flycheck
-  :demand
-  :init (global-flycheck-mode)
-  :custom
-  (flycheck-check-syntax-automatically '(save mode-enabled))
-  (flycheck-disabled-checkers '(emacs-lisp-checkdoc))
-  (flycheck-display-errors-delay .3)
-  :config
-  (flycheck-define-checker proselint
-    "A linter for prose."
-    :command ("proselint" source-inplace)
-    :error-patterns
-    ((warning line-start (file-name) ":" line ":" column ": "
-              (id (one-or-more (not (any " "))))
-              (message) line-end))
-    :modes (text-mode markdown-mode gfm-mode org-mode))
-  (add-to-list 'flycheck-checkers 'proselint))
-#+end_src
-
 *** Project management
 
 For project management in Emacs, there's no better choice than =projectile=,
@@ -1056,6 +1085,9 @@ or searching the whole project and replacing something.
   :custom
   (projectile-completion-system 'ivy)
   (projectile-switch-project-action 'neotree-projectile-action)
+  (projectile-project-root-files-top-down-recurring
+   (append '("compile_commands.json" ".ccls")
+           projectile-project-root-files-top-down-recurring))
   :general
   ("s-p" '(:keymap projectile-command-map :package projectile))
   :config
@@ -1427,31 +1459,6 @@ Here I set some defaults I appreciate for cc-mode.
 (add-hook 'c-mode-common-hook (lambda () (run-hooks 'c-mode-defaults-hook)))
 #+end_src
 
-In a sea of C and C++ packages for Emacs, I must make a mention for =irony=.
-This package makes your low-level programming life way easier.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package irony
-  :ensure company-irony
-  :ensure company-irony-c-headers
-  :ensure flycheck-irony
-  :preface
-  (defun hcps/irony-mode-hook ()
-    (define-key irony-mode-map [remap completion-at-point]
-      'irony-completion-at-point-async)
-    (define-key irony-mode-map [remap complete-symbol]
-      'irony-completion-at-point-async))
-  :hook
-  ((c++-mode-hook . irony-mode)
-   (c-mode-hook . irony-mode)
-   (objc-mode-hook . irony-mode)
-   (flycheck-mode-hook . flycheck-irony)
-   (irony-mode-hook . irony-cdb-autosetup-compile-options)
-   (irony-mode-hook . hcps/irony-mode-hook))
-  :init
-  (add-to-list 'company-backends '(company-irony company-irony-c-headers)))
-#+end_src
-
 Better C++ font lock:
 
 #+begin_src emacs-lisp :tangle yes
@@ -1460,44 +1467,13 @@ Better C++ font lock:
   (modern-c++-font-lock-global-mode t))
 #+end_src
 
-Also, =rtags= is a project that aims to set up tags for C and C++ projects so
-other tools can use them.
+LSP integration:
 
 #+begin_src emacs-lisp :tangle yes
-(use-package rtags
-  :ensure company-rtags
+(use-package ccls
   :hook
-  (irony-mode-hook . rtags-start-process-unless-running)
-  :custom
-  (rtags-display-result-backend 'ivy)
-  (rtags-completions-enabled t)
-  :config
-  (add-to-list 'company-backends 'company-rtags)
-  (rtags-enable-standard-keybindings))
-#+end_src
-
-A very useful package for C and C++ is =cmake-ide=. In CMake projects it really
-shines, as it uses CMake to get completion and syntax highlighting after
-compilations.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package cmake-ide
-  :after (irony rtags)
-  :config
-  (cmake-ide-setup))
-#+end_src
-
-Also, the package =cpputils-cmake= sets up syntax highlighting to a bunch of
-useful packages. It goes pretty well with =cmake-ide=.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package cpputils-cmake
-  :hook
-  (c-mode-common-hook . (lambda ()
-                          (if (derived-mode-p 'c-mode 'c++-mode)
-                              (cppcm-reload-all))))
-  :config
-  (add-to-list 'company-backends 'company-cmake))
+  ((c-mode c++-mode objc-mode cuda-mode) .
+   (lambda () (require 'ccls) (lsp))))
 #+end_src
 
 In the department of code formatting, =clang-format= is a lovely tool that can
@@ -1754,11 +1730,18 @@ So I have syntax highlighting while editing GLPK files.
 
 A package to write Julia source code in Emacs.
 
+(=lsp-julia= kinda isn't working...)
+
 #+begin_src emacs-lisp :tangle yes
-(use-package ess-julia-mode
-  :ensure ess
-  :ensure julia-mode
+(setq-default lsp-julia-default-environment "~/.julia/environments/v1.2")
+
+(use-package julia-mode
+  :after lsp
+  :ensure julia-repl
+  :ensure lsp-julia
   :mode "\\.jl\\'"
+  :hook
+  (ess-julia-mode . julia-repl-mode)
   :init
   (setq inferior-julia-program-name "/usr/bin/julia"))
 #+end_src
