@@ -1026,6 +1026,7 @@ buffers in each.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package perspective
+  :disabled
   :config
   (persp-mode))
 #+end_src
@@ -1728,20 +1729,26 @@ So I have syntax highlighting while editing GLPK files.
 
 ** Julia
 
-A package to write Julia source code in Emacs.
+Packages to write Julia source code in Emacs.
 
 (=lsp-julia= kinda isn't working...)
 
 #+begin_src emacs-lisp :tangle yes
-(setq-default lsp-julia-default-environment "~/.julia/environments/v1.2")
+(use-package lsp-julia
+  :demand
+  :init
+  (setq lsp-julia-default-environment "~/.julia/environments/v1.2"
+        lsp-julia-package-dir nil))
+#+end_src
 
+#+begin_src emacs-lisp :tangle yes
 (use-package julia-mode
-  :after lsp
   :ensure julia-repl
   :ensure lsp-julia
   :mode "\\.jl\\'"
   :hook
-  (ess-julia-mode . julia-repl-mode)
+  ((julia-mode . julia-repl-mode)
+   (julia-mode . (lambda () (require 'lsp-julia) (lsp))))
   :init
   (setq inferior-julia-program-name "/usr/bin/julia"))
 #+end_src
