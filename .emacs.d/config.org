@@ -1523,6 +1523,12 @@ It provides you with everything you need from R.
     (just-one-space 1)
     (insert "%>%")
     (reindent-then-newline-and-indent))
+  :init
+  (lsp-register-client
+   (make-lsp-client :new-connection
+     (lsp-stdio-connection '("R" "--slave" "-e" "languageserver::run()"))
+     :major-modes '(ess-r-mode inferior-ess-r-mode)
+     :server-id 'lsp-R))
   :general
   (:states 'insert
    :keymaps 'ess-r-mode-map
