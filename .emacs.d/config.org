@@ -822,6 +822,10 @@ have the best of both worlds!
    "C-S-h" 'previous-buffer
    "C-S-l" 'next-buffer)
   (:states 'insert
+   "<up>" 'evil-previous-line
+   "<down>" 'evil-next-line
+   "<left>" 'evil-backward-char
+   "<right>" 'evil-forward-char
    "<tab>" 'indent-for-tab-command)
   (:states 'normal
    "Y" 'hcps/yank-to-eol)
