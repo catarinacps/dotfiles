@@ -47,6 +47,7 @@ Cool Emacs configs from cool people:
     - [[#templates-and-snippets][Templates and snippets]]
     - [[#folding][Folding]]
     - [[#project-management][Project management]]
+    - [[#versioning][Versioning]]
     - [[#regions-and-pointers][Regions and pointers]]
     - [[#indentation][Indentation]]
     - [[#utilities][Utilities]]
@@ -398,7 +399,7 @@ of Emacs as an editor, and do NOT add support to other languages or etc.
 I still need to add:
 
 - [X] ranger
-- [X] neotree
+- [X] treemacs
 - [X] smart-mode-line
 - [X] helpful
 - [X] gruvbox
@@ -420,14 +421,14 @@ I still need to add:
 - [X] pdf-tools
 - [X] exec-path-from-shell
 - [X] anzu
-- [ ] lsp-mode
+- [X] lsp-mode
 
 Also, =prelude= packages that I like and still need to add:
 
 - [ ] smartparens
 - [ ] which-key
 - [X] projectile
-- [ ] magit and additionals
+- [X] magit and additionals
 - [ ] flyspell (with aspell)
 - [ ] undo-tree
 - [ ] compile
@@ -508,13 +509,59 @@ the default =dired=.
   (ranger-override-dired-mode t))
 #+end_src
 
-Also, I like to use =neotree.el= to navigate my project files, which is a clone
-from =neotree= from vim.
+While I've somewhat used =neotree.el=, I believe that =treemacs= is turning out
+to be a better option, as it offers a bunch of extra integrating packages and is
+overall more popular than the former.
 
 #+begin_src emacs-lisp :tangle yes
-(use-package neotree
+(use-package treemacs
+  :demand
   :general
-  ("<f8>" 'neotree-toggle))
+  ("M-0" 'treemacs-select-window
+   "M-t" 'treemacs)
+  :custom
+  (treemacs-deferred-git-apply-delay 0.5)
+  (treemacs-display-in-side-window t)
+  (treemacs-eldoc-display t)
+  (treemacs-file-event-delay 5000)
+  (treemacs-file-follow-delay 0.2)
+  (treemacs-follow-after-init t)
+  (treemacs-git-command-pipe "")
+  (treemacs-goto-tag-strategy 'refetch-index)
+  (treemacs-indentation 2)
+  (treemacs-indentation-string " ")
+  (treemacs-is-never-other-window nil)
+  (treemacs-max-git-entries 5000)
+  (treemacs-missing-project-action 'ask)
+  (treemacs-no-png-images t)
+  (treemacs-no-delete-other-windows t)
+  (treemacs-project-follow-cleanup nil)
+  (treemacs-persist-file (expand-file-name ".cache/treemacs-persist" user-emacs-directory))
+  (treemacs-position  'left)
+  (treemacs-recenter-distance 0.1)
+  (treemacs-recenter-after-file-follow nil)
+  (treemacs-recenter-after-tag-follow nil)
+  (treemacs-recenter-after-project-jump 'always)
+  (treemacs-recenter-after-project-expand 'on-distance)
+  (treemacs-show-cursor nil)
+  (treemacs-show-hidden-files t)
+  (treemacs-silent-filewatch nil)
+  (treemacs-silent-refresh nil)
+  (treemacs-sorting 'alphabetic-desc)
+  (treemacs-space-between-root-nodes t)
+  (treemacs-tag-follow-cleanup t)
+  (treemacs-tag-follow-delay 1.5)
+  (treemacs-width 35)
+  :config
+  (treemacs-follow-mode t)
+  (treemacs-filewatch-mode t)
+  (treemacs-fringe-indicator-mode t))
+
+(use-package treemacs-evil
+  :after (treemacs evil))
+
+(use-package treemacs-projectile
+  :after (treemacs projectile))
 #+end_src
 
 *** Environment variables
@@ -723,14 +770,24 @@ best features of other famous editor, such as Visual Studio Code. By using
   :hook
   ((prog-mode . lsp)
    (lsp-mode . lsp-ui-mode))
-  :init
-  (setq lsp-log-io t
-        lsp-auto-guess-root t
-        lsp-prefer-flymake nil
-        lsp-enable-completion-at-point t
-        company-lsp-cache-candidates t
-        company-lsp-async t
-        company-lsp-enable-recompletion t)
+  :custom
+  ;; lsp-mode
+  (lsp-log-io t)
+  (lsp-auto-guess-root t)
+  (lsp-prefer-flymake nil)
+  (lsp-enable-completion-at-point t)
+  ;; company-lsp
+  (company-lsp-cache-candidates t)
+  (company-lsp-async t)
+  (company-lsp-enable-recompletion t)
+  ;; lsp-ui
+  (lsp-ui-doc-enable t)
+  (lsp-ui-doc-use-childframe t)
+  (lsp-ui-doc-include-signature t)
+  (lsp-ui-sideline-enable nil)
+  (lsp-ui-flycheck-enable t)
+  (lsp-ui-flycheck-list-position 'right)
+  (lsp-ui-flycheck-live-reporting t)
   :config
   (add-to-list 'company-backends 'company-lsp))
 #+end_src
@@ -812,6 +869,7 @@ have the best of both worlds!
    ;; misc bindings under 'm'
    "m c" 'comment-dwim
    "m i" 'indent-region
+   "m t" 'git-timemachine
    "m g" 'deadgrep
    "m b" 'counsel-bookmark
    "m r" 'anzu-replace-at-cursor-thing
@@ -1087,16 +1145,21 @@ or searching the whole project and replacing something.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package projectile
+  :demand
   :custom
   (projectile-completion-system 'ivy)
+  (projectile-find-dir-includes-top-level t)
   (projectile-switch-project-action 'neotree-projectile-action)
   (projectile-project-root-files-top-down-recurring
    (append '("compile_commands.json" ".ccls")
            projectile-project-root-files-top-down-recurring))
   :general
-  ("s-p" '(:keymap projectile-command-map :package projectile))
+  ("s-p" '(:keymap projectile-command-map :package projectile)
+   [remap compile] 'projectile-compile-project)
   :config
-  (projectile-global-mode))
+  (projectile-global-mode)
+  ;; clean dead projects when Emacs is idle
+  (run-with-idle-timer 10 nil #'projectile-cleanup-known-projects))
 #+end_src
 
 And, as a further integration of =ivy= and =projectile=, there is a package that
@@ -1108,6 +1171,54 @@ ordering of results.
   :after (projectile counsel)
   :config
   (counsel-projectile-mode))
+#+end_src
+
+*** Versioning
+
+Obviously, any configuration file that says it deserves *any* respect should
+feature =magit=, as it is, hands down, the best =git= front-end in the visible
+universe, nay, in the whole multiverse.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package magit
+  :demand
+  :ensure git-timemachine
+  :hook
+  (after-save . magit-after-save-refresh-status)
+  :preface
+  ;; easy on-off for the following function
+  (defcustom magit-push-protected-branch nil
+    "When set, ask for confirmation before pushing to this branch (e.g. master)."
+    :type 'string
+    :safe #'stringp
+    :group 'magit)
+  ;; are you sure you wanna push to main?
+  (defun magit-push--protected-branch (magit-push-fun &rest args)
+    "Ask for confirmation before pushing a protected branch."
+    (if (equal magit-push-protected-branch (magit-get-current-branch))
+        ;; Arglist is (BRANCH TARGET ARGS)
+        (if (yes-or-no-p (format "Push branch %s? " (magit-get-current-branch)))
+            (apply magit-push-fun args)
+          (error "Push aborted by user"))
+      (apply magit-push-fun args)))
+  :init
+  (advice-add 'magit-push-current-to-pushremote :around #'magit-push--protected-branch)
+  (advice-add 'magit-push-current-to-upstream :around #'magit-push--protected-branch)
+  :custom
+  (magit-push-protected-branch t)
+  (magit-save-repository-buffers 'dontask)
+  (magit-refs-show-commit-count 'all)
+  (magit-log-buffer-file-locked t)
+  (magit-revision-show-gravatars nil)
+  (magit-bury-buffer-function 'magit-mode-quit-window)
+  :general
+  ("s-m p" 'magit-list-repositories
+   "s-m g" 'magit-status
+   "s-m d" 'magit-dispatch
+   "s-m f" 'magit-file-dispatch
+   "s-m l" 'magit-log
+   "s-m b" 'magit-blame
+   "s-m t" 'git-timemachine))
 #+end_src
 
 *** Regions and pointers
