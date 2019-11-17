@@ -1184,7 +1184,8 @@ universe, nay, in the whole multiverse.
   :demand
   :ensure git-timemachine
   :hook
-  (after-save . magit-after-save-refresh-status)
+  ((after-save . magit-after-save-refresh-status)
+   (git-timemachine-mode . evil-normalize-keymaps))
   :preface
   ;; easy on-off for the following function
   (defcustom magit-push-protected-branch nil
@@ -1218,7 +1219,17 @@ universe, nay, in the whole multiverse.
    "s-m f" 'magit-file-dispatch
    "s-m l" 'magit-log
    "s-m b" 'magit-blame
-   "s-m t" 'git-timemachine))
+   "s-m t" 'git-timemachine)
+  (:states '(normal visual)
+   :keymaps 'git-timemachine-mode-map
+   "q" 'git-timemachine-quit
+   "n" 'git-timemachine-show-next-revision
+   "p" 'git-timemachine-show-previous-revision
+   "w" 'git-timemachine-kill-abbreviated-revision
+   "g" 'git-timemachine-show-nth-revision
+   "c" 'git-timemachine-show-commit)
+  :config
+  (evil-make-overriding-map git-timemachine-mode-map 'normal))
 #+end_src
 
 *** Regions and pointers
