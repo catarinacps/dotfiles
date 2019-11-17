@@ -1205,7 +1205,7 @@ universe, nay, in the whole multiverse.
   (advice-add 'magit-push-current-to-pushremote :around #'magit-push--protected-branch)
   (advice-add 'magit-push-current-to-upstream :around #'magit-push--protected-branch)
   :custom
-  (magit-push-protected-branch t)
+  (magit-push-protected-branch "master")
   (magit-save-repository-buffers 'dontask)
   (magit-refs-show-commit-count 'all)
   (magit-log-buffer-file-locked t)

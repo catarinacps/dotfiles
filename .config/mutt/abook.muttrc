@@ -1,0 +1,4 @@
+# -*- mode: conf; -*-
+
+set query_command = "abook --datafile $HOME/OneDrive/Documentos/Addresses/addressbook --mutt-query '%s'"
+macro index,pager a "|abook --datafile $HOME/OneDrive/Documentos/Addresses/addressbook --add-email\n" 'add sender to abook'
