@@ -1222,9 +1222,9 @@ universe, nay, in the whole multiverse.
    "s-m t" 'git-timemachine)
   (:states '(normal visual)
    :keymaps 'git-timemachine-mode-map
+   "C-j" 'git-timemachine-show-next-revision
+   "C-k" 'git-timemachine-show-previous-revision
    "q" 'git-timemachine-quit
-   "n" 'git-timemachine-show-next-revision
-   "p" 'git-timemachine-show-previous-revision
    "w" 'git-timemachine-kill-abbreviated-revision
    "g" 'git-timemachine-show-nth-revision
    "c" 'git-timemachine-show-commit)
