@@ -1182,10 +1182,8 @@ universe, nay, in the whole multiverse.
 #+begin_src emacs-lisp :tangle yes
 (use-package magit
   :demand
-  :ensure git-timemachine
   :hook
-  ((after-save . magit-after-save-refresh-status)
-   (git-timemachine-mode . evil-normalize-keymaps))
+  (after-save . magit-after-save-refresh-status)
   :preface
   ;; easy on-off for the following function
   (defcustom magit-push-protected-branch nil
@@ -1219,7 +1217,17 @@ universe, nay, in the whole multiverse.
    "s-m f" 'magit-file-dispatch
    "s-m l" 'magit-log
    "s-m b" 'magit-blame
-   "s-m t" 'git-timemachine)
+   "s-m t" 'git-timemachine))
+#+end_src
+
+Also, =git-timemachine= is a beautiful way to walk through git history:
+
+#+begin_src emacs-lisp :tangle yes
+(use-package git-timemachine
+  :after magit
+  :hook
+  (git-timemachine-mode . evil-normalize-keymaps)
+  :general
   (:states '(normal visual)
    :keymaps 'git-timemachine-mode-map
    "C-j" 'git-timemachine-show-next-revision
