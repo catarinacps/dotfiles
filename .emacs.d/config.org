@@ -515,7 +515,7 @@ overall more popular than the former.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package treemacs
-  :demand
+  :defer t
   :general
   ("M-0" 'treemacs-select-window
    "M-t" 'treemacs)
@@ -763,31 +763,41 @@ best features of other famous editor, such as Visual Studio Code. By using
 
 #+begin_src emacs-lisp :tangle yes
 (use-package lsp-mode
-  :demand
+  :defer t
   :commands lsp
-  :ensure lsp-ui
-  :ensure company-lsp
   :hook
-  ((prog-mode . lsp)
-   (lsp-mode . lsp-ui-mode))
+  (prog-mode . lsp)
   :custom
-  ;; lsp-mode
   (lsp-log-io t)
   (lsp-auto-guess-root t)
   (lsp-prefer-flymake nil)
-  (lsp-enable-completion-at-point t)
-  ;; company-lsp
-  (company-lsp-cache-candidates t)
-  (company-lsp-async t)
-  (company-lsp-enable-recompletion t)
-  ;; lsp-ui
+  (lsp-enable-completion-at-point t))
+#+end_src
+
+This package does have 2 extra sister packages: =lsp-ui= and =lsp-company=
+
+#+begin_src emacs-lisp :tangle yes
+(use-package lsp-ui
+  :after lsp-mode
+  :hook
+  (lsp-mode . lsp-ui-mode)
+  :custom
   (lsp-ui-doc-enable t)
   (lsp-ui-doc-use-childframe t)
   (lsp-ui-doc-include-signature t)
   (lsp-ui-sideline-enable nil)
   (lsp-ui-flycheck-enable t)
   (lsp-ui-flycheck-list-position 'right)
-  (lsp-ui-flycheck-live-reporting t)
+  (lsp-ui-flycheck-live-reporting t))
+#+end_src
+
+#+begin_src emacs-lisp :tangle yes
+(use-package company-lsp
+  :after lsp-mode
+  :custom
+  (company-lsp-cache-candidates t)
+  (company-lsp-async t)
+  (company-lsp-enable-recompletion t)
   :config
   (add-to-list 'company-backends 'company-lsp))
 #+end_src
@@ -1145,7 +1155,7 @@ or searching the whole project and replacing something.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package projectile
-  :demand
+  :defer t
   :custom
   (projectile-completion-system 'ivy)
   (projectile-find-dir-includes-top-level t)
@@ -1181,7 +1191,7 @@ universe, nay, in the whole multiverse.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package magit
-  :demand
+  :defer t
   :hook
   (after-save . magit-after-save-refresh-status)
   :preface
