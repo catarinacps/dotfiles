@@ -69,6 +69,7 @@ Cool Emacs configs from cool people:
   - [[#jupyter][Jupyter]]
   - [[#latex][LaTeX]]
   - [[#coq][Coq]]
+  - [[#cuda][CUDA]]
 - [[#personal][Personal]]
   - [[#functions][Functions]]
     - [[#date][Date]]
@@ -890,10 +891,10 @@ have the best of both worlds!
    "C-S-h" 'previous-buffer
    "C-S-l" 'next-buffer)
   (:states 'insert
-   "<up>" 'evil-previous-line
-   "<down>" 'evil-next-line
-   "<left>" 'evil-backward-char
-   "<right>" 'evil-forward-char
+   "<up>" 'previous-line
+   "<down>" 'next-line
+   "<left>" 'left-char
+   "<right>" 'right-char
    "<tab>" 'indent-for-tab-command)
   (:states 'normal
    "Y" 'hcps/yank-to-eol)
@@ -1411,6 +1412,7 @@ I still need to add packages relating to these languages:
 - [X] Julia
 - [X] Jupyter
 - [ ] Coq (yes, I'm slowly turning into what I most hate)
+- [ ] CUDA (subset of C, yeah, but /still/)
 
 ** Org
 
@@ -1986,6 +1988,22 @@ Not set up, but when I get to it:
 - proof-general
 - company-coq-mode
 - hrs config!
+
+** CUDA
+
+Suporting CUDA syntax per-se is kinda easy, as it's a subset of C after all. The
+thing is I want proper syntax highlighting for all those special keywords and
+types that CUDA introduces. So, let's install =cuda-mode=:
+
+#+begin_src emacs-lisp :tangle yes
+(use-package cuda-mode
+  :mode "\\.cu\\'"
+  :commands cuda
+  :custom
+  (cuda-font-lock-keywords 'cuda-font-lock-keywords-3))
+#+end_src
+
+It falls back on =c++-mode= by default, so we are safe here.
 
 * Personal
 
