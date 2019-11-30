@@ -772,7 +772,10 @@ best features of other famous editor, such as Visual Studio Code. By using
   (lsp-log-io t)
   (lsp-auto-guess-root t)
   (lsp-prefer-flymake nil)
-  (lsp-enable-completion-at-point t))
+  (lsp-enable-completion-at-point t)
+  :config
+  (add-to-list 'lsp-language-id-configuration '(cuda-mode . "cuda"))
+  (add-to-list 'lsp-language-id-configuration '(".*\\.cu$" . "cuda")))
 #+end_src
 
 This package does have 2 extra sister packages: =lsp-ui= and =lsp-company=
@@ -1999,6 +2002,8 @@ types that CUDA introduces. So, let's install =cuda-mode=:
 (use-package cuda-mode
   :mode "\\.cu\\'"
   :commands cuda
+  :hook
+  (cuda-mode . (lambda () (run-hooks 'prog-mode-hook)))
   :custom
   (cuda-font-lock-keywords 'cuda-font-lock-keywords-3))
 #+end_src
