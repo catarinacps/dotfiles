@@ -884,6 +884,7 @@ have the best of both worlds!
    "m c" 'comment-dwim
    "m i" 'indent-region
    "m t" 'git-timemachine
+   "m d" 'ispell-change-dictionary
    "m g" 'deadgrep
    "m b" 'counsel-bookmark
    "m r" 'anzu-replace-at-cursor-thing
