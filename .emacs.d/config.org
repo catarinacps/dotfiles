@@ -72,6 +72,7 @@ Cool Emacs configs from cool people:
   - [[#cuda][CUDA]]
 - [[#personal][Personal]]
   - [[#functions][Functions]]
+    - [[#fetching-text][Fetching text]]
     - [[#date][Date]]
   - [[#keybindings-1][Keybindings]]
 
@@ -2025,6 +2026,21 @@ To-do:
 
 Some very useful functions I got from other people or that I coded myself.
 
+*** Fetching text
+
+To get the current selected text without newlines.
+
+#+begin_src emacs-lisp :tangle yes
+(defun hcps/get-selected-text (start end)
+  (interactive "r")
+  (kill-new
+   (replace-regexp-in-string
+    "\n" " "
+    (if (use-region-p)
+        (let ((regionp (buffer-substring start end)))
+          (message regionp))))))
+#+end_src
+
 *** Date
 
 Insert the current date.
@@ -2068,4 +2084,5 @@ Here I'll define some of my personal keybindings.
 #+begin_src emacs-lisp :tangle yes
 (global-set-key (kbd "C-x k") 'kill-this-buffer)
 (global-set-key (kbd "C-c x") 'hcps/date-iso)
+(global-set-key (kbd "<f9>") 'hcps/get-selected-text)
 #+end_src
