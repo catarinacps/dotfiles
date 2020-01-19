@@ -760,7 +760,7 @@ completion candidates.
 *** Language Server Protocol
 
 I imagine anyone knows what is LSP, but oh well. Basically, it is one of the
-best features of other famous editor, such as Visual Studio Code. By using
+best features of other famous editors, such as Visual Studio Code. By using
 =lsp-mode=, we'll be able to have it too!
 
 #+begin_src emacs-lisp :tangle yes
@@ -1466,7 +1466,7 @@ automatically maintain an updated table of contents of your =.org= file.
   (org-src-fontify-natively t)
   (org-src-tab-acts-natively t)
   (org-src-window-setup 'current-window)
-  (org-modules (append org-modules '(org-tempo ox-extra)))
+  (org-modules (append org-modules '(org-tempo org-inlinetask ox-extra)))
   (org-export-allow-bind-keywords t)
   (org-export-with-latex t)
   (org-export-babel-evaluate t)
@@ -1549,6 +1549,7 @@ automatically maintain an updated table of contents of your =.org= file.
      (plantuml . t)
      (julia . t)
      (latex . t)
+     (bibtex . t)
      (jupyter . t)
      (lilypond . t))))
 #+end_src
