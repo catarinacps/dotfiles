@@ -657,6 +657,28 @@ editing remote files and to editing as super-user.
   (tramp-default-method "ssh"))
 #+end_src
 
+Here's a small package that allows remotely opening sessions.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package ssh
+  :after shell
+  :preface
+  (defcustom ssh-server "bolsa.inf"
+    "Indicates the remote server to be used when remotely using server with SSH (e.g. bolsa.inf)."
+    :type 'string
+    :safe #'stringp
+    :group 'ssh)
+  (defun ssh-connect-remote ()
+    "Open a SSH session buffer to the desired target."
+    (interactive)
+    (ssh (read-from-minibuffer "What server to connect to: " nil nil nil ssh-server)))
+  :custom
+  (ssh-directory-tracking-mode t)
+  (dirtrackp nil)
+  :config
+  (shell-dirtrack-mode t))
+#+end_src
+
 *** Completion
 
 This section comprises of both text completion and fuzzy command and path
@@ -889,6 +911,7 @@ have the best of both worlds!
    "m g" 'deadgrep
    "m b" 'counsel-bookmark
    "m r" 'anzu-replace-at-cursor-thing
+   "m s" 'ssh-connect-remote
    "m j" 'org-journal-new-entry)
   (:states '(normal visual)
    "C-u" 'evil-scroll-up
