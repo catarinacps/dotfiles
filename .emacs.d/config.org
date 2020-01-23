@@ -673,14 +673,29 @@ Here's a small package that allows remotely opening sessions.
     :type 'string
     :safe #'stringp
     :group 'ssh)
-  (defun ssh-connect-remote ()
+  (defcustom ssh-remote-user-server nil
+    :type 'string
+    :safe #'stringp
+    :group 'ssh)
+  (defun ssh-connect-remote (SERVER)
     "Open a SSH session buffer to the desired target."
+    (interactive (list (read-from-minibuffer
+                        (format "What server to connect to (default: %s): "
+                                ssh-default-server))))
+    (let* ((server-to-connect (if (equal SERVER "") ssh-default-server SERVER)))
+      (setq ssh-current-server (buffer-name (ssh server-to-connect))))
+    (get-buffer-create ssh-current-server))
+  (defun hcps/ssh-user-connect ()
+    "Calls interactively the ssh-connect-remote function."
     (interactive)
-    (let* ((read-server (read-from-minibuffer
-                         (format "What server to connect to (default: %s): "
-                                 ssh-default-server)))
-           (server (if (equal read-server "") ssh-default-server read-server)))
-      (setq ssh-current-server (buffer-name (ssh server)))))
+    (call-interactively 'ssh-connect-remote))
+  (defun hcps/get-user-server ()
+    "Call to set and print the user server."
+    (interactive)
+    (if (equal ssh-remote-user-server nil)
+        (setq ssh-remote-user-server
+              (read-from-minibuffer "What server to store: ")))
+    (princ ssh-remote-user-server))
   :custom
   (shell-command-dont-erase-buffer t)
   (ssh-default-server "bolsa.inf")
@@ -921,7 +936,7 @@ have the best of both worlds!
    "m g" 'deadgrep
    "m b" 'counsel-bookmark
    "m r" 'anzu-replace-at-cursor-thing
-   "m s" 'ssh-connect-remote
+   "m s" 'hcps/ssh-user-connect
    "m j" 'org-journal-new-entry)
   (:states '(normal visual)
    "C-u" 'evil-scroll-up
@@ -1702,12 +1717,31 @@ It provides you with everything you need from R.
   :hook
   (ess-r-mode . aggressive-indent-mode)
   :preface
+  (defcustom existing-remote-session nil
+    "Defines the existence of a remote R session."
+    :type 'boolean
+    :safe #'booleanp
+    :group 'R)
   (defun hcps/insert-r-pipe ()
     "Lets us insert the magrittr piping operator %>% in R"
     (interactive)
     (just-one-space 1)
     (insert "%>%")
     (reindent-then-newline-and-indent))
+  (defun hcps/make-remote-r-session (BUFFER)
+    (interactive (list (call-interactively 'ssh-connect-remote)))
+    (with-current-buffer (buffer-name BUFFER)
+      (goto-char (point-max))
+      (insert "R")
+      (comint-send-input))
+    (setq existing-remote-session t))
+  (defun hcps/use-remote-r-session ()
+    (interactive)
+    (if (equal ssh-current-server nil)
+        (call-interactively 'hcps/make-remote-r-session))
+    (if (not existing-remote-session)
+        (hcps/make-remote-r-session (get-buffer-create ssh-current-server)))
+    ssh-current-server)
   :init
   (lsp-register-client
    (make-lsp-client :new-connection

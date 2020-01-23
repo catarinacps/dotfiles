@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: r-remote
+# key: <rr
+# --
+#+begin_src R :session *R-REMOTE* :results output :dir /scp:(hcps/get-user-server):
+$0
+#+end_src
