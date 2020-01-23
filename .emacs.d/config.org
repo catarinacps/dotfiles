@@ -1487,7 +1487,8 @@ automatically maintain an updated table of contents of your =.org= file.
                                        (setq inferior-julia-program-name "/usr/bin/julia"))))
   :custom
   (org-return-follows-link t)
-  (org-highlight-latex-and-related '(latex script entities))
+  ;; the following used to be '(latex script entities)
+  (org-highlight-latex-and-related nil)
   (org-hide-leading-stars t)
   (org-support-shift-select nil)
   (org-log-done t)
