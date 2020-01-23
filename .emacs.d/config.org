@@ -674,6 +674,7 @@ Here's a small package that allows remotely opening sessions.
     :safe #'stringp
     :group 'ssh)
   (defcustom ssh-remote-user-server nil
+    "Dummy variable that holds a server name."
     :type 'string
     :safe #'stringp
     :group 'ssh)
@@ -695,7 +696,7 @@ Here's a small package that allows remotely opening sessions.
     (if (equal ssh-remote-user-server nil)
         (setq ssh-remote-user-server
               (read-from-minibuffer "What server to store: ")))
-    (princ ssh-remote-user-server))
+    (concat "/scp:" ssh-remote-user-server ":"))
   :custom
   (shell-command-dont-erase-buffer t)
   (ssh-default-server "bolsa.inf")
