@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: sh-remote
+# key: <shr
+# --
+#+begin_src bash :session *SH-REMOTE* :results output :dir (hcps/get-user-server)
+$0
+#+end_src
