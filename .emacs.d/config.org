@@ -70,6 +70,7 @@ Cool Emacs configs from cool people:
   - [[#latex][LaTeX]]
   - [[#coq][Coq]]
   - [[#cuda][CUDA]]
+  - [[#meson][Meson]]
 - [[#personal][Personal]]
   - [[#functions][Functions]]
     - [[#fetching-text][Fetching text]]
@@ -1474,7 +1475,8 @@ I still need to add packages relating to these languages:
 - [X] Julia
 - [X] Jupyter
 - [ ] Coq (yes, I'm slowly turning into what I most hate)
-- [ ] CUDA (subset of C, yeah, but /still/)
+- [X] CUDA (subset of C, yeah, but /still/)
+- [X] Meson (the build system)
 
 ** Org
 
@@ -1516,6 +1518,7 @@ automatically maintain an updated table of contents of your =.org= file.
   (org-highlight-latex-and-related nil)
   (org-hide-leading-stars t)
   (org-support-shift-select nil)
+  (org-link-descriptive nil)
   (org-log-done t)
   (org-directory "~/org/")
   (org-cycle-emulate-tab t)
@@ -1973,7 +1976,6 @@ Packages to write Julia source code in Emacs.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package lsp-julia
-  :demand
   :init
   (setq lsp-julia-default-environment "~/.julia/environments/v1.2"
         lsp-julia-package-dir nil))
@@ -2088,6 +2090,19 @@ types that CUDA introduces. So, let's install =cuda-mode=:
 #+end_src
 
 It falls back on =c++-mode= by default, so we are safe here.
+
+** Meson
+
+Syntax support for the Meson build system DSL (which is based from Python).
+
+#+begin_src emacs-lisp :tangle yes
+(use-package meson-mode
+  :mode "meson.build\\'"
+  :commands meson
+  :hook
+  ((meson-mode . (lambda () (run-hooks 'prog-mode-hook)))
+   (meson-mode . company-mode)))
+#+end_src
 
 * Personal
 
