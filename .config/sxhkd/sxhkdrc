@@ -1,0 +1,24 @@
+super + F1
+    terminal -e 'neomutt'
+
+super + F2
+    $BROWSER
+
+super + {_,shift} + F3
+    {terminal -e 'ranger',pcmanfm}
+
+super + F4
+    emacsclient -c
+
+super + {_,shift} + Print
+    scrot -f{_,s} '%Y-%m-%d_$wx$h_scrot.png' -e 'mv $f ~/Pictures/'; \
+    notify-send "screenshot has been saved in ~/Pictures/"
+
+XF86TouchpadToggle
+    touch_toggle.sh
+
+super + d
+    rofi -modi run,drun -show drun -width 40 -drun-icon-theme 'Papirus'
+
+super + c
+    rofi -show window -width 40 -drun-icon-theme 'Papirus'

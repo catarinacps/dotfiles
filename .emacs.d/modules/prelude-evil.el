@@ -132,8 +132,8 @@
   (evil-declare-key 'normal org-mode-map
     "gk" 'outline-up-heading
     "gj" 'outline-next-visible-heading
-    "H" 'org-beginning-of-line ; smarter behaviour on headlines etc.
-    "L" 'org-end-of-line ; smarter behaviour on headlines etc.
+    ;; "H" 'org-beginning-of-line ; smarter behaviour on headlines etc.
+    ;; "L" 'org-end-of-line ; smarter behaviour on headlines etc.
     "t" 'org-todo ; mark a TODO item as DONE
     ",c" 'org-cycle
     (kbd "TAB") 'org-cycle

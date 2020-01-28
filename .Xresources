@@ -197,7 +197,7 @@ URxvt.keysym.Shift-Control-Down:  \033[1;6B
 ! URxvt*pointerColor:               color
 ! URxvt*pointerColor2:              color
 ! URxvt*borderColor:                color
-! URxvt*iconFile:                   file
+URxvt.iconFile: /usr/share/icons/Papirus/24x24/apps/terminal.svg
 ! URxvt*font:                       fontname
 ! URxvt*boldFont:                   fontname
 ! URxvt*italicFont:                 fontname

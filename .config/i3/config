@@ -302,8 +302,7 @@ exec --no-startup-id caffeine
 exec --no-startup-id emacs --daemon
 exec_always --no-startup-id ff-theme-util
 exec_always --no-startup-id fix_xcursor
-exec_always --no-startup-id compton -b
-exec_always --no-startup-id sleep 1; nitrogen --restore
+exec_always --no-startup-id sleep 2; nitrogen --restore; compton -b
 
 # Color palette used for the terminal ( ~/.Xresources file )
 # Colors are gathered based on the documentation:
