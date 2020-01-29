@@ -105,7 +105,7 @@ URxvt.letterSpace:                0
 !! terminus names see end of file!
 
 URxvt.depth:                      32
-URxvt.background:                 [90]#272727
+URxvt.background:                 [93]#272727
 URxvt*scrollBar:                  false
 URxvt*mouseWheelScrollPage:       false
 URxvt*cursorBlink:                true
@@ -194,7 +194,7 @@ URxvt.keysym.Shift-Control-Down:  \033[1;6B
 ! URxvt*pointerColor:               color
 ! URxvt*pointerColor2:              color
 ! URxvt*borderColor:                color
-URxvt.iconFile: /usr/share/icons/Papirus/24x24/apps/terminal.svg
+URxvt*iconFile:                     /usr/share/icons/Papirus/24x24/apps/utilities-terminal.svg
 ! URxvt*font:                       fontname
 ! URxvt*boldFont:                   fontname
 ! URxvt*italicFont:                 fontname
@@ -205,7 +205,7 @@ URxvt.iconFile: /usr/share/icons/Papirus/24x24/apps/terminal.svg
 ! URxvt*imLocale:                   string
 ! URxvt*imFont:                     fontname
 ! URxvt*title:                      string
-! URxvt*iconName:                   string
+URxvt*iconName:                     utilities-terminal
 ! URxvt*buffered:                   boolean
 ! URxvt*depth:                      number
 ! URxvt*visual:                     number
