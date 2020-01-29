@@ -35,6 +35,7 @@ bindsym $mod+Shift+q kill
 # start program launcher
 # bindsym $mod+d exec --no-startup-id "dmenu_recency -h 24"
 bindsym $mod+d exec --no-startup-id "rofi -modi run,drun -show drun -line-padding 4 -width 40 -padding 30 -hide-scrollbar -show-icons -drun-icon-theme 'Papirus'"
+bindsym $mod+c exec --no-startup-id "rofi -show window -width 40"
 
 # launch categorized menu
 bindsym $mod+z exec --no-startup-id morc_menu
