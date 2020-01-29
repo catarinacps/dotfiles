@@ -305,11 +305,11 @@ Almost every GUI element of Emacs is useless and a waste of screen space.
 
 *** Font
 
-I use the =Source Code Pro= font in every editor I can set that on. Here's their
-[[https://github.com/adobe-fonts/source-code-pro][GitHub]].
+I now use the =Inconsolata-g= font! As I couldn't find a GitHub of sorts, here's
+a link to a mirror [[https://www.fontmirror.com/inconsolata-g]].
 
 #+begin_src emacs-lisp :tangle yes
-(setq-default default-frame-alist '((font . "Source Code Pro-12")))
+(setq-default default-frame-alist '((font . "Inconsolata\-g-12")))
 #+end_src
 
 *** Text
