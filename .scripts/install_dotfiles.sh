@@ -1,27 +1,26 @@
-#!/bin/bash
+#!/bin/sh
 
-# This script is supposed to be downloaded and ran BEFORE the cloning of
+# robust script, stops in case of failure
+set -euo pipefail
+
+# this script is supposed to be downloaded and ran before the cloning of
 # this repository, i.e. run this script to clone
-# Example usage: chmod +x ./clone_repo.sh; $SHELL ./clone_repo.sh
+# example usage: chmod +x ./clone_repo.sh; ./clone_repo.sh
 
-# Definitions
-gitdir="~/.cfg/"
-gitrepo='git@github.com:hcpsilva/dotfiles.git'
-gitalias="git --git-dir=$gitdir --work-tree=$HOME"
+# definitions
+GIT_DIR="$HOME/.cfg/"
+GIT_REPO="https://github.com/hcpsilva/dotfiles.git"
+GIT_ALIAS="git --git-dir=$GIT_DIR --work-tree=$HOME"
 
-# Set-up
-alias dotgit="'$gitalias'"
-echo "alias dotgit='$gitalias'" >> $HOME/.$(basename $SHELL)rc
-echo $gitdir >> $HOME/.gitignore
+# set-up
+echo "alias dotgit='$GIT_ALIAS'" >> $HOME/.$(basename $SHELL)rc
+echo $GIT_DIR >> $HOME/.gitignore
 
-# Cloning
-git clone --bare $gitrepo $gitdir
+# cloning
+git clone --bare $GIT_REPO $GIT_DIR
 
-# Make sure we checkout (if before where any duplicates)
-dotgit checkout -f
+# make sure we checkout (if before where any duplicates)
+$GIT_ALIAS checkout -f
 
-# Set so that this repo can't see untracked files (otherwise madness)
-dotgit config --local status.showUntrackedFiles no
-
-# Load up the alias
-source $HOME/.$(basename $SHELL)rc
+# set so that this repo can't see untracked files (otherwise madness)
+$GIT_ALIAS config --local status.showUntrackedFiles no
