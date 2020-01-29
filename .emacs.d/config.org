@@ -99,9 +99,9 @@ You can find the following packages in this configuration file:
 
 #+begin_src emacs-lisp :exports results :results value org list
 (shell-command-to-string
- "grep '^(use-package\ .*$' < config.el |
-  awk '{print $2}' |
-  tr -d ')' |
+ "grep '^(use-package .*' < config.el |
+  tr -d '()' |
+  cut -d' ' -f2 |
   sort")
 #+end_src
 
