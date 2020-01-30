@@ -314,10 +314,15 @@ Almost every GUI element of Emacs is useless and a waste of screen space.
 *** Font
 
 I now use the =Inconsolata-g= font! As I couldn't find a GitHub of sorts, here's
-a link to a mirror [[https://www.fontmirror.com/inconsolata-g]].
+a link to a mirror [[https://www.fontmirror.com/inconsolata-g]]. Also, you may
+end up having some issues with this font, as Emacs only knows the XLFD, which
+splits the important font info by the '-', so our =Inconsolata-g= will face some
+issues here and there. To fix this, duplicate the font in your font directory
+(probably /usr/share/fonts/TTF) as this link indicates
+[[https://emacs.stackexchange.com/questions/16818/cocoa-emacs-24-5-font-issues-inconsolata-dz]].
 
 #+begin_src emacs-lisp :tangle yes
-(setq-default default-frame-alist '((font . "Inconsolata\-g-12")))
+(setq-default default-frame-alist '((font . "InconsolataG-12")))
 #+end_src
 
 *** Text
@@ -749,11 +754,18 @@ whatnot.
   :custom
   (ivy-count-format "(%d/%d) ")
   (ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
+  (ivy-height 8)
+  (ivy-extra-directories nil)
+  (ivy-wrap t)
+  (ivy-action-wrap t)
+  (ivy-initial-inputs-alist nil)
   :general
   ("C-x b" 'ivy-switch-buffer)
   (:keymaps 'ivy-minibuffer-map
    "RET" 'ivy-alt-done
-   "C-f" 'hcps/ivy-open-current-typed-path)
+   "C-f" 'hcps/ivy-open-current-typed-path
+   "C-j" 'ivy-next-line
+   "C-k" 'ivy-previous-line)
   :config
   (ivy-mode 1))
 #+end_src
@@ -1236,6 +1248,8 @@ or searching the whole project and replacing something.
   (projectile-project-root-files-top-down-recurring
    (append '("compile_commands.json" ".ccls")
            projectile-project-root-files-top-down-recurring))
+  (projectile-globally-ignored-file-suffixes '(".elc" ".pyc" ".o"))
+  (projectile-globally-ignored-files '(".DS_Store" "Icon" "TAGS" "__PYCACHE__"))
   :general
   ("s-p" '(:keymap projectile-command-map :package projectile)
    [remap compile] 'projectile-compile-project)
