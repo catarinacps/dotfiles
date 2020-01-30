@@ -1837,7 +1837,7 @@ As for shell-scripting:
       "who" "whoami" "write" "xargs" "xstr" "yacc" "yes" "zcat")
     "A list of common shell commands to be fontified especially in `sh-mode'.")
   (defvar more-sh-builtins
-    '("." ":" "[" "]" "alias" "bg" "bind" "break" "builtin" "caller" "cd"
+    '("alias" "bg" "bind" "break" "builtin" "caller" "cd"
       "command" "compgen" "complete" "compopt" "continue" "declare" "dirs"
       "disown" "echo" "enable" "eval" "exec" "exit" "export" "false" "fc" "fg"
       "getopts" "hash" "help" "history" "jobs" "kill" "let" "local" "logout"
