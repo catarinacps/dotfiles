@@ -1815,30 +1815,36 @@ As for shell-scripting:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package sh-script
-  :init
-  (add-to-list 'sh-imenu-generic-expression
-               '(sh (nil "^\\s-*function\\s-+\\([[:alpha:]_-][[:alnum:]_-]*\\)\\s-*\\(?:()\\)?" 1)
-                    (nil "^\\s-*\\([[:alpha:]_-][[:alnum:]_-]*\\)\\s-*()" 1)))
   :preface
-  (defvar more-sh-builtin-keywords
-    '("addbib" "apropos" "ar" "at" "awk" "banner" "basename" "batch" "biff" "chroot"
-      "cal" "calendar" "cancel" "cat" "cb" "cc" "cd" "checknr" "checkeq" "chgrp"
-      "chmod" "clear" "cmp" "colcrt" "comm" "compress" "cp" "cpio" "cpp" "csh" "dd"
-      "ctags" "cut" "date" "dbx" "deroff" "df" "diff" "du" "e" "echo" "ed" "red"
-      "edit" "eqn" "ex" "expand" "expr" "false" "file" "find" "finger" "fmt" "env"
-      "fold" "ftp" "gprof" "grep" "groups" "head" "hostname" "indent" "install" "dirname"
-      "join" "kill" "last" "ld" "leave" "lex" "lint" "ln" "login" "look" "pgrep" "git"
-      "lookbib" "lorder" "lp" "lpq" "lpr" "lprm" "ls" "mail" "make" "man" "printf"
-      "mesg" "mkdir" "mkstr" "more" "mv" "nice" "nm" "neqn" "nroff" "od" "page" "tac"
-      "passwd" "paste" "pr" "prof" "ps" "pwd" "ranlib" "rcp" "rev" "rlogin" "rm" "unlink"
-      "rmdir" "roffbib" "rsh" "rup" "ruptime" "rusers" "rwall" "rwho" "sccs" "seq"
-      "script" "sed" "sh" "size" "sleep" "sort" "sortbib" "spell" "split" "pkill"
-      "strings" "strip" "stty" "su" "sudo" "tabs" "tail" "talk" "tar" "tbl" "less"
-      "tee" "telnet" "test" "tftp" "time" "touch" "troff" "true" "tsort" "tty" "mkfifo"
-      "ul" "uncompress" "uniq" "units" "uptime" "users" "uucp" "unexpand" "chown"
-      "vacation" "vi" "vedit" "view" "w" "wait" "wall" "wc" "whatis" "whereis" "uname"
-      "which" "who" "whoami" "write" "xargs" "xstr" "yacc" "yes" "zcat" "timeout")
-    "A list of common shell commands and keywords to be fontified especially in `sh-mode'.")
+  (defvar more-sh-utilities
+    '("addbib" "apropos" "ar" "at" "awk" "banner" "basename" "batch" "biff"
+      "cal" "calendar" "cancel" "cat" "cb" "cc" "checkeq" "checknr" "chgrp"
+      "chmod" "chown" "chroot" "clear" "cmp" "colcrt" "comm" "compress" "cp"
+      "cpio" "cpp" "csh" "ctags" "cut" "date" "dbx" "dd" "deroff" "df" "diff"
+      "dirname" "du" "e" "ed" "edit" "env" "eqn" "ex" "expand" "expr" "file"
+      "find" "finger" "fmt" "fold" "ftp" "git" "gprof" "grep" "groups" "head"
+      "hostname" "indent" "install" "join" "last" "ld" "leave" "less" "lex"
+      "lint" "ln" "login" "look" "lookbib" "lorder" "lp" "lpq" "lpr" "lprm"
+      "ls" "mail" "make" "man" "mesg" "mkdir" "mkfifo" "mkstr" "more" "mv"
+      "neqn" "nice" "nm" "nroff" "od" "page" "passwd" "paste" "pgrep" "pkill"
+      "pr" "prof" "ps" "ranlib" "rcp" "rev" "rlogin" "rm" "rmdir" "roffbib"
+      "rsh" "rup" "ruptime" "rusers" "rwall" "rwho" "sccs" "script" "sed" "seq"
+      "sh" "size" "sleep" "sort" "sortbib" "spell" "split" "strings" "strip"
+      "stty" "su" "sudo" "tabs" "tac" "tail" "talk" "tar" "tbl" "tee" "telnet"
+      "tftp" "time" "timeout" "touch" "troff" "tsort" "tty" "ul" "uname"
+      "uncompress" "unexpand" "uniq" "units" "unlink" "uptime" "users" "uucp"
+      "vacation" "vedit" "vi" "view" "w" "wall" "wc" "whatis" "whereis" "which"
+      "who" "whoami" "write" "xargs" "xstr" "yacc" "yes" "zcat")
+    "A list of common shell commands to be fontified especially in `sh-mode'.")
+  (defvar more-sh-builtins
+    '("." ":" "[" "]" "alias" "bg" "bind" "break" "builtin" "caller" "cd"
+      "command" "compgen" "complete" "compopt" "continue" "declare" "dirs"
+      "disown" "echo" "enable" "eval" "exec" "exit" "export" "false" "fc" "fg"
+      "getopts" "hash" "help" "history" "jobs" "kill" "let" "local" "logout"
+      "mapfile" "popd" "printf" "pushd" "pwd" "read" "readarray" "readonly"
+      "return" "set" "shift" "shopt" "source" "suspend" "test" "times" "trap"
+      "true" "type" "typeset" "ulimit" "umask" "unalias" "unset" "wait")
+    "Actual list of common keywords and builtins in `sh-mode'.")
   (defun zsh-prezto-files ()
     "Function to ease switching to zsh when dealing with a zsh file."
     (if (and buffer-file-name
@@ -1874,8 +1880,13 @@ As for shell-scripting:
                (2 'font-lock-variable-name-face prepend))
               (sh--match-command-subst-in-quotes
                (0 'sh-quoted-exec prepend))
-              (,(regexp-opt more-sh-builtin-keywords 'words)
-               (0 'font-lock-builtin-face append)))))
+              (,(regexp-opt more-sh-utilities 'words)
+               (0 'sh-quoted-exec append))
+              (,(regexp-opt more-sh-builtins 'words)
+               (0 'font-lock-builtin-face append))))
+  (add-to-list 'sh-imenu-generic-expression
+               '(sh (nil "^\\s-*function\\s-+\\([[:alpha:]_-][[:alnum:]_-]*\\)\\s-*\\(?:()\\)?" 1)
+                    (nil "^\\s-*\\([[:alpha:]_-][[:alnum:]_-]*\\)\\s-*()" 1))))
 #+end_src
 
 For =shell= completion I use =bash-complete=, which auto completes several
@@ -2476,7 +2487,7 @@ the 'x' in 'for_window [x=y]'.")
 #+end_src
 
 #+begin_src emacs-lisp :tangle yes
-(add-to-list 'auto-mode-alist '("sxhkdrc" . bspwm-config-mode))
+(add-to-list 'auto-mode-alist '("sxhkdrc\\'" . bspwm-config-mode))
 #+end_src
 
 * Personal
