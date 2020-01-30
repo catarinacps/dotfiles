@@ -333,6 +333,7 @@ further.
 #+begin_src emacs-lisp :tangle yes
 (setq-default fill-column 80
               indent-tabs-mode nil
+              sentence-end-double-space nil
               tab-width 4
               line-spacing 0
               require-final-newline t
@@ -624,14 +625,29 @@ also like to use =anzu=.
 I use only the =anzu-replace-at-cursor-thing=, which is a very useful to replace
 multiple occurrences of a word fast.
 
-Besides that, I enjoy using =ripgrep= to search for stuff using =grep= syntax
-without the slowness of it. So, I use =deadgrep=!
+I enjoy using =ripgrep= to search for stuff using =grep= syntax without the
+slowness of it. So, I use =deadgrep=!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package deadgrep
   :after evil-collection
   :config
   (evil-collection-deadgrep-setup))
+#+end_src
+
+And, to upgrade Emacs to the 21st century, I use =visual-regexp=!
+
+#+begin_src emacs-lisp :tangle yes
+(use-package visual-regexp-steroids
+  :ensure visual-regexp
+  :ensure pcre2el
+  ;; :init
+  ;; (advice-add 'vr--get-regexp-modifiers-prefix
+  ;;             :filter-return (lambda (fun-ret)
+  ;;                              (if (not (string= "" fun-ret)) (concat fun-ret " "))))
+  :custom
+  (vr/default-feedback-limit 300)
+  (vr/engine 'pcre2el))
 #+end_src
 
 *** Mode line
@@ -949,6 +965,7 @@ have the best of both worlds!
    "k" 'kill-this-buffer
    "K" 'kill-buffer
    "r" 'counsel-recentf
+   "R" 'vr/query-replace
    "t" 'counsel-tramp
    "s" 'save-buffer
    "d" 'ranger
