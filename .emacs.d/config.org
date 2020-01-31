@@ -41,7 +41,7 @@ Cool Emacs configs from cool people:
     - [[#remote-editing][Remote editing]]
     - [[#completion][Completion]]
     - [[#language-server-protocol][Language Server Protocol]]
-    - [[#syntax-checking][Syntax Checking]]
+    - [[#syntax-and-highlighting][Syntax and Highlighting]]
     - [[#keybindings][Keybindings]]
     - [[#buffers-and-windows][Buffers and windows]]
     - [[#templates-and-snippets][Templates and snippets]]
@@ -900,7 +900,7 @@ This package does have 2 extra sister packages: =lsp-ui= and =lsp-company=
   (add-to-list 'company-backends 'company-lsp))
 #+end_src
 
-*** Syntax Checking
+*** Syntax and Highlighting
 
 =Flycheck= provides a reliable source to syntax checking in Emacs.
 
@@ -922,6 +922,28 @@ This package does have 2 extra sister packages: =lsp-ui= and =lsp-company=
               (message) line-end))
     :modes (text-mode markdown-mode gfm-mode org-mode))
   (add-to-list 'flycheck-checkers 'proselint))
+#+end_src
+
+This highlights numbers in =prog-mode=:
+
+#+begin_src emacs-lisp :tangle yes
+(use-package highlight-numbers
+  :hook ((prog-mode . highlight-numbers-mode)))
+#+end_src
+
+And this is to highlight escape sequences in some common modes:
+
+#+begin_src emacs-lisp :tangle yes
+(use-package highlight-escape-sequences
+  :preface
+  (defconst hes-shell-escape-sequence-re
+    (rx (submatch
+         (and ?\\ (submatch (any "\"\'\\bfnrtv")))))
+    "Simple regex to match any common escaped character in sh-mode")
+  :config
+  (hes-mode)
+  (add-to-list 'hes-mode-alist '(sh-mode . hes-shell-escape-sequence-re))
+  (add-to-list 'hes-mode-alist '(shell-script-mode . hes-shell-escape-sequence-re)))
 #+end_src
 
 *** Keybindings
@@ -1757,6 +1779,14 @@ really be of great use while editing C and C++ code.
   (clang-format-style "webkit"))
 #+end_src
 
+This little package highlights doxygen-style comments:
+
+#+begin_src emacs-lisp :tangle yes
+(use-package highlight-doxygen
+  :hook
+  ((c-mode c++-mode) . highlight-doxygen-mode))
+#+end_src
+
 ** R
 
 For R you pretty much /need/ the =ess= package, i.e. /Emacs Speaks Statistics/.
@@ -1834,7 +1864,7 @@ As for shell-scripting:
       "tftp" "time" "timeout" "touch" "troff" "tsort" "tty" "ul" "uname"
       "uncompress" "unexpand" "uniq" "units" "unlink" "uptime" "users" "uucp"
       "vacation" "vedit" "vi" "view" "w" "wall" "wc" "whatis" "whereis" "which"
-      "who" "whoami" "write" "xargs" "xstr" "yacc" "yes" "zcat")
+      "who" "whoami" "write" "xargs" "xstr" "yacc" "yes" "zcat" "gawk")
     "A list of common shell commands to be fontified especially in `sh-mode'.")
   (defvar more-sh-builtins
     '("alias" "bg" "bind" "break" "builtin" "caller" "cd"
