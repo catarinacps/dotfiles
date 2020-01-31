@@ -48,7 +48,7 @@ Cool Emacs configs from cool people:
     - [[#folding][Folding]]
     - [[#project-management][Project management]]
     - [[#versioning][Versioning]]
-    - [[#regions-and-pointers][Regions and pointers]]
+    - [[#regions-pointers-and-pairs][Regions, pointers and pairs]]
     - [[#indentation][Indentation]]
     - [[#utilities][Utilities]]
   - [[#theme][Theme]]
@@ -443,7 +443,7 @@ I still need to add:
 
 Also, =prelude= packages that I like and still need to add:
 
-- [ ] smartparens
+- [X] smartparens
 - [ ] which-key
 - [X] projectile
 - [X] magit and additionals
@@ -1119,6 +1119,15 @@ popular packages.
   (global-evil-matchit-mode 1))
 #+end_src
 
+And to use better bindings to =smartparens=, =evil-smartparens=!
+
+#+begin_src emacs-lisp :tangle yes
+(use-package evil-smartparens
+  :after smartparens
+  :hook
+  (smartparens-enabled . evil-smartparens-mode))
+#+end_src
+
 **** Hydra
 
 =hydra= is a package that allows keybindings to be activated under the pressing
@@ -1217,7 +1226,7 @@ that kills old buffers.
   (clean-buffer-list-delay-general 0.5)
   (clean-buffer-list-delay-special (* 1 3600))
   (clean-buffer-list-kill-buffer-names
-   (nconc clean-buffer-list-kill-buffer-names "*IBuffer*" "*Finder*")))
+   (append clean-buffer-list-kill-buffer-names '("*IBuffer*" "*Finder*"))))
 #+end_src
 
 Also, I use perspective to maintain multiple workspaces open with different
@@ -1379,7 +1388,7 @@ Also, =git-timemachine= is a beautiful way to walk through git history:
   (evil-make-overriding-map git-timemachine-mode-map 'normal))
 #+end_src
 
-*** Regions and pointers
+*** Regions, pointers and pairs
 
 Increase region by semantic units. It tries to be smart about it and adapt to
 the structure of the current major mode.
@@ -1389,6 +1398,19 @@ the structure of the current major mode.
   :general
   ("C-+" 'er/contract-region)
   ("C-=" 'er/expand-region))
+#+end_src
+
+When in need of smart pairing, look no further than =smartparens=!
+
+#+begin_src emacs-lisp :tangle yes
+(use-package smartparens
+  :custom
+  (sp-base-key-bindings 'paredit)
+  (sp-autoskip-closing-pair 'always)
+  (sp-hybrid-kill-entire-symbol nil)
+  :config
+  (require 'smartparens-config)
+  (sp-use-paredit-bindings))
 #+end_src
 
 *** Indentation
@@ -1502,6 +1524,18 @@ diverse media files.
      ("\\.mp4\\'" "mpv" (file))))
   :config
   (openwith-mode t))
+#+end_src
+
+**** =page-break-lines=
+
+To make pretty page breaks in your Emacs buffers:
+
+#+begin_src emacs-lisp :tangle yes
+(use-package page-break-lines
+  :hook
+  (prog-mode . page-break-lines-mode)
+  :config
+  (global-page-break-lines-mode))
 #+end_src
 
 ** Theme
