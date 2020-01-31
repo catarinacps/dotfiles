@@ -641,10 +641,11 @@ And, to upgrade Emacs to the 21st century, I use =visual-regexp=!
 (use-package visual-regexp-steroids
   :ensure visual-regexp
   :ensure pcre2el
-  ;; :init
-  ;; (advice-add 'vr--get-regexp-modifiers-prefix
-  ;;             :filter-return (lambda (fun-ret)
-  ;;                              (if (not (string= "" fun-ret)) (concat fun-ret " "))))
+  :after (visual-regexp pcre2el)
+  :init
+  (advice-add 'vr--get-regexp-modifiers-prefix
+              :filter-return (lambda (fun-ret)
+                               (if (not (string= "" fun-ret)) (concat fun-ret " "))))
   :custom
   (vr/default-feedback-limit 300)
   (vr/engine 'pcre2el))
@@ -927,23 +928,25 @@ This package does have 2 extra sister packages: =lsp-ui= and =lsp-company=
 This highlights numbers in =prog-mode=:
 
 #+begin_src emacs-lisp :tangle yes
-(use-package highlight-numbers
-  :hook ((prog-mode . highlight-numbers-mode)))
+(use-package highlight-numbers)
 #+end_src
 
 And this is to highlight escape sequences in some common modes:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package highlight-escape-sequences
+  :disabled
+  :init
+  (turn-on-hes-mode)
   :preface
   (defconst hes-shell-escape-sequence-re
     (rx (submatch
          (and ?\\ (submatch (any "\"\'\\bfnrtv")))))
     "Simple regex to match any common escaped character in sh-mode")
-  :config
-  (hes-mode)
-  (add-to-list 'hes-mode-alist '(sh-mode . hes-shell-escape-sequence-re))
-  (add-to-list 'hes-mode-alist '(shell-script-mode . hes-shell-escape-sequence-re)))
+  :custom
+  (hes-mode-alist (append hes-mode-alist
+                          '((sh-mode . hes-shell-escape-sequence-re)
+                            (shell-script-mode . hes-shell-escape-sequence-re)))))
 #+end_src
 
 *** Keybindings
@@ -1732,6 +1735,7 @@ Here I set some defaults I appreciate for cc-mode.
   (c-set-offset 'substatement-open 0))
 
 (setq c-mode-defaults-hook 'c-mode-defaults)
+(add-hook 'c-mode-defaults-hook #'highlight-numbers-mode)
 
 ;; this will affect all modes derived from cc-mode, like
 ;; java-mode, php-mode, etc
@@ -1797,7 +1801,8 @@ It provides you with everything you need from R.
   :ensure ess
   :commands R
   :hook
-  (ess-r-mode . aggressive-indent-mode)
+  ((ess-r-mode . aggressive-indent-mode)
+   (ess-r-mode . highlight-numbers-mode))
   :preface
   (defcustom existing-remote-session nil
     "Defines the existence of a remote R session."
@@ -2035,6 +2040,7 @@ and the necessary hook:
 #+begin_src emacs-lisp :tangle yes
 (add-hook 'emacs-lisp-mode-hook
           (lambda () (setq-local lisp-indent-function #'fuco1/lisp-indent-function)))
+(add-hook 'emacs-lisp-mode-hook #'highlight-numbers-mode)
 #+end_src
 
 ** English
@@ -2062,6 +2068,8 @@ Python.
 #+begin_src emacs-lisp :tangle yes
 (use-package elpy
   :defer t
+  :hook
+  (python-mode . highlight-numbers-mode)
   :init
   (advice-add 'python-mode :before 'elpy-enable))
 #+end_src
@@ -2119,7 +2127,8 @@ Packages to write Julia source code in Emacs.
   :mode "\\.jl\\'"
   :hook
   ((julia-mode . julia-repl-mode)
-   (julia-mode . (lambda () (require 'lsp-julia) (lsp))))
+   (julia-mode . (lambda () (require 'lsp-julia) (lsp)))
+   (julia-mode . highlight-numbers-mode))
   :init
   (setq inferior-julia-program-name "/usr/bin/julia"))
 #+end_src
@@ -2215,7 +2224,8 @@ types that CUDA introduces. So, let's install =cuda-mode=:
   :mode "\\.cu\\'"
   :commands cuda
   :hook
-  (cuda-mode . (lambda () (run-hooks 'prog-mode-hook)))
+  ((cuda-mode . (lambda () (run-hooks 'prog-mode-hook)))
+   (cuda-mode . highlight-numbers-mode))
   :custom
   (cuda-font-lock-keywords 'cuda-font-lock-keywords-3))
 #+end_src
