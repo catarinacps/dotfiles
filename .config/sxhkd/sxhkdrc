@@ -17,12 +17,17 @@ super + {_,shift} {h,j,k,l}
 super + {_,ctrl} + {1-8}
     i3-msg {_,move container to} workspace {1-8}
 
+# move window and move to selected workspace
+super + shift + {1-8}
+    i3-msg move container to workspace {1-8}; i3-msg workspace {1-8}
+
 # make the window in focus fullscreen
 super + f
     i3-msg fullscreen toggle
 
+# cycle between all workspaces
 super + ctrl + bracket{left,right}
-  i3-msg workspace {prev,next}
+    i3-msg workspace {prev,next}
 
 # cycle between non-empty workspaces
 super + b
