@@ -31,9 +31,14 @@ location), you should use [[./.scripts/install_dotfiles.sh][this script]].
 
 Here is it, by the way:
 
-#+include: ".scripts/install_dotfiles.sh" src shell
+#+begin_src shell :wrap src shell :exports results :results output
+cat .scripts/install_dotfiles.sh
+#+end_src
 
+#+RESULTS:
 #+begin_src shell
+#!/bin/sh
+
 # robust script, stops in case of failure
 set -euo pipefail
 
