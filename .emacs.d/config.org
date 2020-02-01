@@ -2562,6 +2562,7 @@ the 'x' in 'for_window [x=y]'.")
 
 #+begin_src emacs-lisp :tangle yes
 (add-to-list 'auto-mode-alist '("sxhkdrc\\'" . bspwm-config-mode))
+(add-hook 'bspwm-config-mode-hook #'page-break-lines-mode)
 #+end_src
 
 * Personal
