@@ -5,6 +5,71 @@
 # |_|\_\_____| |_| |____/___|_| \_|____/___|_| \_|\____|____/ 
 #
 
+#
+# keybinding related to the window-manager:
+#
+
+# change the window in focus or move it
+super + {_,shift} {h,j,k,l}
+    i3-msg {focus,move} {left,down,up,right}
+
+# move either focus or window to desired workspace
+super + {_,ctrl} + {1-8}
+    i3-msg {_,move container to} workspace {1-8}
+
+# make the window in focus fullscreen
+super + f
+    i3-msg fullscreen toggle
+
+super + ctrl + bracket{left,right}
+  i3-msg workspace {prev,next}
+
+# cycle between non-empty workspaces
+super + b
+    i3-msg workspace back_and_forth
+
+# same as before but take the window in focus with you
+super + shift + b
+    i3-msg move container to workspace back_and_forth; i3-msg workspace back_and_forth
+
+# make the window in focus floating
+super + shift + space
+    i3-msg floating toggle
+
+# change the focus between floating and tiling windows
+super + space
+    i3-msg focus mode_toggle
+
+# kill the window in focus
+super + shift + q
+    i3-msg kill window
+
+# show windows in scratchpad (cycle through them)
+super + minus
+    i3-msg scratchpad show
+
+# move window in focus to scratchpad
+super + shift + minus
+    i3-msg move scratchpad
+
+# change new window tiling
+super + ctrl + {h,v,q}
+    i3-msg split {h,v,toggle}
+
+# change the window layout
+super + {s,w,e}
+    i3-msg layout {stacking,tabbed,toggle split}
+
+# either reload the config or restart i3
+super + shift + {c,r}
+    i3-msg {reload,restart}
+
+
+
+#
+# keybindings related to the start of any application:
+#
+
 # opens a floating rofi window to either open new stuff or to change the current window
 super + {d,c,y}
     rofi -modi drun,window,ssh -show {drun,window,ssh} -width 40 -drun-icon-theme 'Papirus'
@@ -12,6 +77,12 @@ super + {d,c,y}
 # opens a simple terminal window
 super + Return
     terminal
+
+
+
+#
+# keybindings that are really just shortcuts
+#
 
 # opens neomutt, the email client
 super + F1
@@ -37,17 +108,15 @@ super + F5
 super + shift + F3
     pcmanfm
 
+
+
+#
+# useful media and such stuff
+#
+
 # prints either the current screen or a section of the screen
 super + {_,shift,ctrl} + Print
     $HOME/.scripts/i3-scrot -{w,s,d}
-
-# to start and stop compton
-super + {_,ctrl} + t
-    {pkill,} picom {,-b}
-
-# restart the notification system
-super + shift + d
-    killall dunst && notify-send 'restart dunst'
 
 # for my notebook, toggles the touchpad
 XF86TouchpadToggle
@@ -55,4 +124,20 @@ XF86TouchpadToggle
 
 XF86Audio{Play,Stop,Next,Prev}
     playerctl {play-pause,stop,next,previous}
+
+
+
+#
+# stuff that really is only here because some stuff is kinda broken sometimes
+#
  
+# to start and stop compton
+super + t
+    pkill picom
+super + ctrl + t
+    picom -b
+
+# restart the notification system
+super + shift + d
+    killall dunst && notify-send 'restart dunst'
+
