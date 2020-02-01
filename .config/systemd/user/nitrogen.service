@@ -1,0 +1,12 @@
+[Unit]
+Description=X11 background previewer and setter
+Documentation=man:nitrogen(1)
+After=autorandr.service
+
+[Service]
+Environment=DISPLAY=:0
+ExecStart=/usr/bin/nitrogen --restore
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

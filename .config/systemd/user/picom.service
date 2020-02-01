@@ -1,0 +1,12 @@
+[Unit]
+Description=A compositor for X11
+Documentation=man:picom(1)
+After=autorandr.service
+
+[Service]
+Environment=DISPLAY=:0
+ExecStart=/usr/bin/picom
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

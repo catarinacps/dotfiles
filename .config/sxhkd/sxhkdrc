@@ -125,7 +125,7 @@ super + {_,shift,ctrl} + Print
 
 # for my notebook, toggles the touchpad
 XF86TouchpadToggle
-    touch_toggle.sh
+    $HOME/.scripts/touch_toggle.sh
 
 XF86Audio{Play,Stop,Next,Prev}
     playerctl {play-pause,stop,next,previous}
@@ -138,11 +138,11 @@ XF86Audio{Play,Stop,Next,Prev}
  
 # to start and stop compton
 super + t
-    pkill picom
+    systemctl --user stop picom.service
 super + ctrl + t
-    picom -b
+    systemctl --user start picom.service
 
 # restart the notification system
 super + shift + d
-    killall dunst && notify-send 'restart dunst'
+    systemctl --user restart dunst.service && notify-send 'restart dunst'
 
