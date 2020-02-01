@@ -23,6 +23,7 @@ the near future distro-hop to Arch (either that or use Manjaro Architect).
 - [[./.config/dunst/dunstrc][dunst]]
 - [[./.config/redshift.conf][redshift]]
 - [[./.config/sxhkd/sxhkdrc][sxhkd]]
+- [[./.config/systemd/user/][systemd services]]
 
 ** Installing
 
