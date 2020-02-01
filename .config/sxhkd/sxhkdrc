@@ -7,7 +7,7 @@
 
 # opens a floating rofi window to either open new stuff or to change the current window
 super + {d,c}
-    rofi -modi {drun,window} -show {drun,window} -width 40 -drun-icon-theme 'Papirus'
+    rofi -modi drun,window -show {drun,window} -width 40 -drun-icon-theme 'Papirus'
 
 # opens a simple terminal window
 super + Return
@@ -38,7 +38,7 @@ super + shift + F3
     pcmanfm
 
 # prints either the current screen or a section of the screen
-@super + {_,shift,ctrl} + Print
+super + {_,shift,ctrl} + Print
     $HOME/.scripts/i3-scrot -{w,s,d}
 
 # to start and stop compton
@@ -53,6 +53,6 @@ super + shift + d
 XF86TouchpadToggle
     touch_toggle.sh
 
-{XF86AudioPlay,XF86AudioStop,XF86AudioNext,XF86AudioPrev}
+XF86Audio{Play,Stop,Next,Prev}
     playerctl {play-pause,stop,next,previous}
  
