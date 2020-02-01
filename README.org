@@ -31,7 +31,7 @@ location), you should use [[./.scripts/install_dotfiles.sh][this script]].
 
 Here is it, by the way:
 
-#+include: "./.scripts/install_dotfiles.sh" export shell
+#+include: "./.scripts/install_dotfiles.sh"
 
 It ensures that the repo is cloned the right way and puts an useful alias
 in your =$SHELL= configuration file.
