@@ -72,6 +72,7 @@ Cool Emacs configs from cool people:
   - [[#cuda][CUDA]]
   - [[#meson][Meson]]
   - [[#bspwmsxhkd][bspwm/sxhkd]]
+  - [[#systemd-services][systemd services]]
 - [[#personal][Personal]]
   - [[#functions][Functions]]
     - [[#fetching-text][Fetching text]]
@@ -1577,6 +1578,7 @@ I still need to add packages relating to these languages:
 - [X] CUDA (subset of C, yeah, but /still/)
 - [X] Meson (the build system)
 - [X] bspwm/sxhkd
+- [X] systemd services/units
 
 ** Org
 
@@ -2563,6 +2565,14 @@ the 'x' in 'for_window [x=y]'.")
 #+begin_src emacs-lisp :tangle yes
 (add-to-list 'auto-mode-alist '("sxhkdrc\\'" . bspwm-config-mode))
 (add-hook 'bspwm-config-mode-hook #'page-break-lines-mode)
+#+end_src
+
+** systemd services
+
+Just a little hook to start the desired =conf-mode= when we open these files.
+
+#+begin_src emacs-lisp :tangle yes
+(add-to-list 'auto-mode-alist '("\\.service\\'" . conf-mode))
 #+end_src
 
 * Personal

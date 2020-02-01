@@ -6,6 +6,9 @@ After=autorandr.service
 [Service]
 Environment=DISPLAY=:0
 ExecStart=/usr/bin/nitrogen --restore
+Type=oneshot
+RemainAfterExit=false
+KillMode=process
 Restart=on-failure
 
 [Install]

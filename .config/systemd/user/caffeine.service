@@ -1,0 +1,11 @@
+[Unit]
+Description=An application that prevents the activation of both the screensaver and the "sleep" powersaving mode
+Documentation=man:caffeine(1)
+After=display-manager.service
+
+[Service]
+ExecStart=/usr/bin/caffeine
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
