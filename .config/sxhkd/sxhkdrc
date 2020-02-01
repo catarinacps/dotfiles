@@ -1,23 +1,58 @@
+#  _  _________   ______ ___ _   _ ____ ___ _   _  ____ ____  
+# | |/ / ____\ \ / / __ )_ _| \ | |  _ \_ _| \ | |/ ___/ ___| 
+# | ' /|  _|  \ V /|  _ \| ||  \| | | | | ||  \| | |  _\___ \ 
+# | . \| |___  | | | |_) | || |\  | |_| | || |\  | |_| |___) |
+# |_|\_\_____| |_| |____/___|_| \_|____/___|_| \_|\____|____/ 
+#
+
+# opens a floating rofi window to either open new stuff or to change the current window
+super + {d,c}
+    rofi -modi {drun,window} -show {drun,window} -width 40 -drun-icon-theme 'Papirus'
+
+# opens a simple terminal window
+super + Return
+    terminal
+
+# opens neomutt, the email client
 super + F1
     terminal -e 'neomutt'
 
+# opens the browser
 super + F2
-    $BROWSER
+    chromium
 
-super + {_,shift} + F3
-    {terminal -e 'ranger',pcmanfm}
+# opens ranger, the file browser
+super + F3
+    terminal -e 'ranger'
 
+# opens emacs
 super + F4
     emacsclient -c
 
-@super + {_,shift} + Print
-    $HOME/.scripts/i3-scrot -{w,s}
+# opens mocp
+super + F5
+    terminal -e 'mocp'
 
+# opens pcmanfm, sometimes you need x graphics
+super + shift + F3
+    pcmanfm
+
+# prints either the current screen or a section of the screen
+@super + {_,shift,ctrl} + Print
+    $HOME/.scripts/i3-scrot -{w,s,d}
+
+# to start and stop compton
+super + {_,ctrl} + t
+    {pkill,} picom {,-b}
+
+# restart the notification system
+super + shift + d
+    killall dunst && notify-send 'restart dunst'
+
+# for my notebook, toggles the touchpad
 XF86TouchpadToggle
     touch_toggle.sh
 
-super + d
-    rofi -modi run,drun -show drun -width 40 -drun-icon-theme 'Papirus'
-
-super + c
-    rofi -show window -width 40 -drun-icon-theme 'Papirus'
+{XF86AudioPlay,XF86AudioStop,XF86AudioNext,XF86AudioPrev}
+    playerctl {play-pause,stop,next,previous}
+ 
