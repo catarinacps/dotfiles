@@ -13,15 +13,16 @@ the near future distro-hop to Arch (either that or use Manjaro Architect).
 
 ** Configurations that can be found here
 
-- i3-gaps
-- urxvt
-- dmenu
-- lightdm
-- emacs
-- zsh
-- compton
-- dunst
-- redshift
+- [[./.config/i3/config][i3-gaps]]
+- [[./.Xresources][URxvt]]
+- [[./.config/rofi/config][rofi]]
+- [[./.config/lightdm/lightdm.conf][lightdm]]
+- [[./.emacs.d/config.org][Emacs]]
+- [[./.zshrc][zsh]]
+- [[./.config/picom.conf][picom]]
+- [[./.config/dunst/dunstrc][dunst]]
+- [[./.config/redshift.conf][redshift]]
+- [[./.config/sxhkd/sxhkdrc][sxhkd]]
 
 ** Installing
 
