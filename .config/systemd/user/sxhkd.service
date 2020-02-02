@@ -1,8 +1,9 @@
 [Unit]
 Description=Simple X Hotkey Daemon
 Documentation=man:sxhkd(1)
-Wants=sxhkd-fifo.service lightdm.service
-After=lightdm.service sxhkd-fifo.service
+PartOf=graphical-session.target
+Wants=graphical-session.target sxhkd-fifo.service 
+After=graphical-session.target sxhkd-fifo.service
 
 [Service]
 Environment=DISPLAY=:0 SHELL=bash

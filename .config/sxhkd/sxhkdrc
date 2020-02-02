@@ -109,9 +109,9 @@ super + shift + {c,r}
 super + {d,c,y}
     rofi -modi drun,window,ssh -show {drun,window,ssh} -width 40 -drun-icon-theme 'Papirus'
 
-# opens a simple terminal window
+# opens a simple terminal window running zsh
 super + Return
-    terminal
+    SHELL=zsh terminal
 
 
 

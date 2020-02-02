@@ -1,8 +1,9 @@
 [Unit]
 Description=A fast and easy-to-use tool status bar
 Documentation=man:polybar(1)
+PartOf=graphical-session.target
 Wants=autorandr.service
-After=autorandr.service lightdm.service
+After=autorandr.service graphical-session.target
 
 [Service]
 Type=simple
