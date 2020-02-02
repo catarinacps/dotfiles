@@ -1,0 +1,12 @@
+[Unit]
+Description=Locks the screen in case of user inactivity under X
+Documentation=man:xautolock(1)
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/xautolock -time 10 -locker blurlock
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
