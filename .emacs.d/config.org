@@ -1902,7 +1902,7 @@ As for shell-scripting:
       "rsh" "rup" "ruptime" "rusers" "rwall" "rwho" "sccs" "script" "sed" "seq"
       "sh" "size" "sleep" "sort" "sortbib" "spell" "split" "strings" "strip"
       "stty" "su" "sudo" "tabs" "tac" "tail" "talk" "tar" "tbl" "tee" "telnet"
-      "tftp" "time" "timeout" "touch" "troff" "tsort" "tty" "ul" "uname"
+      "tftp" "time" "timeout" "touch" "tr" "troff" "tsort" "tty" "ul" "uname"
       "uncompress" "unexpand" "uniq" "units" "unlink" "uptime" "users" "uucp"
       "vacation" "vedit" "vi" "view" "w" "wall" "wc" "whatis" "whereis" "which"
       "who" "whoami" "write" "xargs" "xstr" "yacc" "yes" "zcat" "gawk")

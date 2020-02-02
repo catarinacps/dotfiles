@@ -110,45 +110,45 @@ bindsym $mod+Shift+e exec "i3-nagbar -t warning -m\
 -b 'Yes, exit i3' 'i3-msg exit'"
 
 # Set shut down, restart and locking features
-bindsym $mod+0 mode "$mode_system"
-set $mode_system (l)ock, (e)xit, switch_(u)ser, (s)uspend, (h)ibernate, (r)eboot, (Shift+s)hutdown
-mode "$mode_system" {
-    bindsym l exec --no-startup-id i3exit lock, mode "default"
-    bindsym s exec --no-startup-id i3exit suspend, mode "default"
-    bindsym u exec --no-startup-id i3exit switch_user, mode "default"
-    bindsym e exec --no-startup-id i3exit logout, mode "default"
-    bindsym h exec --no-startup-id i3exit hibernate, mode "default"
-    bindsym r exec --no-startup-id i3exit reboot, mode "default"
-    bindsym Shift+s exec --no-startup-id i3exit shutdown, mode "default"
+# bindsym $mod+0 mode "$mode_system"
+# set $mode_system (l)ock, (e)xit, switch_(u)ser, (s)uspend, (h)ibernate, (r)eboot, (Shift+s)hutdown
+# mode "$mode_system" {
+#     bindsym l exec --no-startup-id $HOME/.scripts/i3_exit lock, mode "default"
+#     bindsym s exec --no-startup-id $HOME/.scripts/i3_exit suspend, mode "default"
+#     bindsym u exec --no-startup-id $HOME/.scripts/i3_exit switch_user, mode "default"
+#     bindsym e exec --no-startup-id $HOME/.scripts/i3_exit logout, mode "default"
+#     bindsym h exec --no-startup-id $HOME/.scripts/i3_exit hibernate, mode "default"
+#     bindsym r exec --no-startup-id $HOME/.scripts/i3_exit reboot, mode "default"
+#     bindsym Shift+s exec --no-startup-id $HOME/.scripts/i3_exit shutdown, mode "default"
 
-    # exit system mode: "Enter" or "Escape"
-    bindsym Return mode "default"
-    bindsym Escape mode "default"
-}
+#     # exit system mode: "Enter" or "Escape"
+#     bindsym Return mode "default"
+#     bindsym Escape mode "default"
+# }
 
 # Resize window (you can also use the mouse for that)
-bindsym $mod+r mode "resize"
-mode "resize" {
-        # These bindings trigger as soon as you enter the resize mode
-        # Pressing left will shrink the window’s width.
-        # Pressing right will grow the window’s width.
-        # Pressing up will sh'rink the window’s height.
-        # Pressing down will grow the window’s height.
-        bindsym h resize shrink width 5 px or 5 ppt
-        bindsym j resize grow height 5 px or 5 ppt
-        bindsym k resize shrink height 5 px or 5 ppt
-        bindsym l resize grow width 5 px or 5 ppt
+# bindsym $mod+r mode "resize"
+# mode "resize" {
+#         # These bindings trigger as soon as you enter the resize mode
+#         # Pressing left will shrink the window’s width.
+#         # Pressing right will grow the window’s width.
+#         # Pressing up will sh'rink the window’s height.
+#         # Pressing down will grow the window’s height.
+#         bindsym h resize shrink width 5 px or 5 ppt
+#         bindsym j resize grow height 5 px or 5 ppt
+#         bindsym k resize shrink height 5 px or 5 ppt
+#         bindsym l resize grow width 5 px or 5 ppt
 
-        # same bindings, but for the arrow keys
-        bindsym Left resize shrink width 5 px or 5 ppt
-        bindsym Down resize grow height 5 px or 5 ppt
-        bindsym Up resize shrink height 5 px or 5 ppt
-        bindsym Right resize grow width 5 px or 5 ppt
+#         # same bindings, but for the arrow keys
+#         bindsym Left resize shrink width 5 px or 5 ppt
+#         bindsym Down resize grow height 5 px or 5 ppt
+#         bindsym Up resize shrink height 5 px or 5 ppt
+#         bindsym Right resize grow width 5 px or 5 ppt
 
-        # exit resize mode: Enter or Escape
-        bindsym Return mode "default"
-        bindsym Escape mode "default"
-}
+#         # exit resize mode: Enter or Escape
+#         bindsym Return mode "default"
+#         bindsym Escape mode "default"
+# }
 
 # Lock screen
 bindsym $mod+9 exec --no-startup-id blurlock
