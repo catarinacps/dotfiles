@@ -1,5 +1,6 @@
 [Unit]
 Description=Runs autorandr whenever the lid state changes
+# this isn't actually a user service, it's here because i want to backup it
 
 [Service]
 Type=simple
@@ -9,4 +10,4 @@ RestartSec=30
 SyslogIdentifier=autorandr
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
