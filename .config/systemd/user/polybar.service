@@ -1,10 +1,12 @@
 [Unit]
 Description=A fast and easy-to-use tool status bar
 Documentation=man:polybar(1)
+Wants=autorandr.service
 After=autorandr.service
 
 [Service]
-ExecStart=$HOME/.config/polybar/launch.sh
+Type=simple
+ExecStart=%h/.config/polybar/launch.sh %U %h
 Restart=on-failure
 
 [Install]

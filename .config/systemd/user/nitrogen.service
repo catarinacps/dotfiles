@@ -9,7 +9,6 @@ ExecStart=/usr/bin/nitrogen --restore
 Type=oneshot
 RemainAfterExit=false
 KillMode=process
-Restart=on-failure
 
 [Install]
 WantedBy=default.target

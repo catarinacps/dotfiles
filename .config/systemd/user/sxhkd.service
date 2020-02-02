@@ -6,7 +6,7 @@ Documentation=man:sxhkd(1)
 
 [Service]
 Environment=DISPLAY=:0
-ExecStartPre=mkfifo /tmp/sxhkd.fifo
+ExecStartPre=rm -f /tmp/sxhkd.fifo && mkfifo /tmp/sxhkd.fifo
 ExecStart=/usr/bin/sxhkd -s /tmp/sxhkd.fifo
 ExecReload=/usr/bin/kill -SIGUSR1 $MAINPID
 Restart=on-failure

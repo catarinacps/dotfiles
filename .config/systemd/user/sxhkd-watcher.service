@@ -1,9 +1,10 @@
 [Unit]
 Description=A watcher script for sxhkd chords and i3
+BindsTo=sxhkd.service
 After=sxhkd.service
 
 [Service]
-ExecStart=$HOME/.scripts/sxhkd_watcher.sh
+ExecStart=%h/.scripts/sxhkd_watcher.sh
 Restart=on-failure
 
 [Install]
