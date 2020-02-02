@@ -1,17 +1,33 @@
-#  _  _________   ______ ___ _   _ ____ ___ _   _  ____ ____  
-# | |/ / ____\ \ / / __ )_ _| \ | |  _ \_ _| \ | |/ ___/ ___| 
-# | ' /|  _|  \ V /|  _ \| ||  \| | | | | ||  \| | |  _\___ \ 
-# | . \| |___  | | | |_) | || |\  | |_| | || |\  | |_| |___) |
-# |_|\_\_____| |_| |____/___|_| \_|____/___|_| \_|\____|____/ 
+# _________________________________________________________________
 #
+#     __              __    _           ___                 
+#    / /_____  __  __/ /_  (_)___  ____/ (_)___  ____ ______
+#   / //_/ _ \/ / / / __ \/ / __ \/ __  / / __ \/ __ `/ ___/
+#  / ,< /  __/ /_/ / /_/ / / / / / /_/ / / / / / /_/ (__  ) 
+# /_/|_|\___/\__, /_.___/_/_/ /_/\__,_/_/_/ /_/\__, /____/  
+#           /____/                            /____/        
+#
+# _________________________________________________________________
+#
+# by @hcpsilva
+#
+#
+# hey, have a look at the rest of my dotfiles also!
+#
+#  https://github.com/hcpsilva/dotfiles
+#
+
+
 
 #
 # keybinding related to the window-manager:
 #
 
+# window movement --------------------------------------------------------------
+
 # change the window in focus or move it
 super + {_,shift} {h,j,k,l}
-    i3-msg {focus,move} {left,down,up,right}
+    i3-msg {focus,move} {left,down,up,right} || i3-msg {focus,move} output {left,down,up,right}
 
 # move either focus or window to desired workspace
 super + {_,ctrl} + {1-8}
@@ -21,9 +37,17 @@ super + {_,ctrl} + {1-8}
 super + shift + {1-8}
     i3-msg move container to workspace {1-8}; i3-msg workspace {1-8}
 
+# window resizing --------------------------------------------------------------
+
+#+chord: resize
+super + r : {h,j,k,l}
+    i3-msg resize {shrink width,grow height,shrink height,grow width} 5 px or 5 ppt
+
 # make the window in focus fullscreen
 super + f
     i3-msg fullscreen toggle
+
+# cycling ----------------------------------------------------------------------
 
 # cycle between all workspaces
 super + ctrl + bracket{left,right}
@@ -37,6 +61,8 @@ super + b
 super + shift + b
     i3-msg move container to workspace back_and_forth; i3-msg workspace back_and_forth
 
+# floats -----------------------------------------------------------------------
+
 # make the window in focus floating
 super + shift + space
     i3-msg floating toggle
@@ -44,10 +70,6 @@ super + shift + space
 # change the focus between floating and tiling windows
 super + space
     i3-msg focus mode_toggle
-
-# kill the window in focus
-super + shift + q
-    i3-msg kill window
 
 # show windows in scratchpad (cycle through them)
 super + minus
@@ -57,6 +79,8 @@ super + minus
 super + shift + minus
     i3-msg move scratchpad
 
+# layout -----------------------------------------------------------------------
+
 # change new window tiling
 super + ctrl + {h,v,q}
     i3-msg split {h,v,toggle}
@@ -64,6 +88,12 @@ super + ctrl + {h,v,q}
 # change the window layout
 super + {s,w,e}
     i3-msg layout {stacking,tabbed,toggle split}
+
+# others -----------------------------------------------------------------------
+
+# kill the window in focus
+super + shift + q
+    i3-msg kill window
 
 # either reload the config or restart i3
 super + shift + {c,r}
@@ -113,6 +143,11 @@ super + F5
 super + shift + F3
     pcmanfm
 
+# do system related stuff!
+#+chord: (l)ock, (e)xit, switch_(u)ser, (s)uspend, (h)ibernate, (r)eboot, (Shift+s)hutdown
+super + 0 ; {l,e,u,s,h,r,shift + s}
+    $HOME/.scripts/i3_exit {lock,exit,switch_user,suspend,hibernate,reboot,shutdown}
+
 
 
 #
@@ -121,7 +156,7 @@ super + shift + F3
 
 # prints either the current screen or a section of the screen
 super + {_,shift,ctrl} + Print
-    $HOME/.scripts/i3-scrot -{w,s,d}
+    $HOME/.scripts/i3_scrot -{w,s,d}
 
 # for my notebook, toggles the touchpad
 XF86TouchpadToggle
@@ -137,12 +172,13 @@ XF86Audio{Play,Stop,Next,Prev}
 #
  
 # to start and stop compton
-super + t
-    systemctl --user stop picom.service
-super + ctrl + t
-    systemctl --user start picom.service
+super + {_,ctrl} + t
+    systemctl --user {stop,start} picom.service && notify-send 'picom {stop,start}'
 
 # restart the notification system
 super + shift + d
-    systemctl --user restart dunst.service && notify-send 'restart dunst'
+    systemctl --user restart dunst.service && notify-send 'restarted dunst'
+
+super + shift + x
+    systemctl --user reload sxhkd.service && notify-send 'reloaded sxhkd'
 
