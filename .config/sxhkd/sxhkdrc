@@ -27,7 +27,7 @@
 
 # change the window in focus or move it
 super + {_,shift} {h,j,k,l}
-    $HOME/.scripts/i3_try_move.sh {focus,move} {left,down,up,right}
+    i3_try_move.sh {focus,move} {left,down,up,right}
 
 # move either focus or window to desired workspace
 super + {_,ctrl} + {1-8}
@@ -146,7 +146,7 @@ super + shift + F3
 # do system related stuff!
 #+chord: '(l)ock, (e)xit, switch_(u)ser, (s)uspend, (h)ibernate, (r)eboot, (Shift+s)hutdown'
 super + 0 ; {l,e,u,s,h,r,shift + s}
-    $HOME/.scripts/i3_exit.sh {lock,exit,switch_user,suspend,hibernate,reboot,shutdown}
+    i3_exit.sh {lock,exit,switch_user,suspend,hibernate,reboot,shutdown}
 
 
 
@@ -156,11 +156,11 @@ super + 0 ; {l,e,u,s,h,r,shift + s}
 
 # prints either the current screen or a section of the screen
 super + {_,shift,ctrl} + Print
-    $HOME/.scripts/i3_scrot.sh -{w,s,d}
+    i3_scrot.sh -{w,s,d}
 
 # for my notebook, toggles the touchpad
 XF86TouchpadToggle
-    $HOME/.scripts/touch_toggle.sh
+    touch_toggle.sh
 
 XF86Audio{Play,Stop,Next,Prev}
     playerctl {play-pause,stop,next,previous}
