@@ -2,12 +2,12 @@
 Description=A fast and easy-to-use tool status bar
 Documentation=man:polybar(1)
 Wants=autorandr.service
-After=autorandr.service
+After=autorandr.service lightdm.service
 
 [Service]
 Type=simple
 ExecStart=%h/.config/polybar/launch.sh %U %h
-Restart=on-failure
+Restart=always
 
 [Install]
 WantedBy=default.target

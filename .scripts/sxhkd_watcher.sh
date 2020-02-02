@@ -3,26 +3,26 @@
 # a simple watcher script that tries to be smart about sxhkd chords
 
 # exits on failures
-set -euo pipefail
+set -eufx
 
-[ ! -d "/tmp/$USER" ] && mkdir -p "/tmp/$USER"
+HOME=$1
 
 CONFIG_FILE="$HOME/.config/sxhkd/sxhkdrc"
 FIFO_PIPE="/tmp/sxhkd.fifo"
 
-NAMES_FILE="/tmp/$USER/watcher_names"
-KEYBINDINGS_FILE="/tmp/$USER/watcher_keybindings"
-PAIRS_FILE="/tmp/$USER/watcher_pairs"
+NAMES_FILE="/tmp/watcher_names.tmp"
+KEYBINDINGS_FILE="/tmp/watcher_keybindings.tmp"
+PAIRS_FILE="/tmp/watcher_pairs.tmp"
 
 # collect all names from the annotations
-grep '#+chord:' | cut -d ' ' -f2- > $NAMES_FILE
+grep '#+chord:' "$CONFIG_FILE" | cut -d ' ' -f2- > $NAMES_FILE
 
 # collect the actual keys that follow said annotations
-sed '/#+chord:/{n; p;}' "$CONFIG_FILE" \
-    | tr -d ' ' | cut -d ':' -f1 > $KEYBINDINGS_FILE
+sed -n '/#+chord:/{n; p;}' "$CONFIG_FILE" \
+    | tr -d ' ' | tr ';' ':' | cut -d ':' -f1 > $KEYBINDINGS_FILE
 
 # paste them together
-paste -d ' ' $NAMES_FILE $KEYBINDINGS_FILE > $PAIRS_FILE
+paste -d ':' $NAMES_FILE $KEYBINDINGS_FILE > $PAIRS_FILE
 
 # while we read events
 cat $FIFO_PIPE | while read line; do
@@ -33,15 +33,15 @@ cat $FIFO_PIPE | while read line; do
             clean=$(echo $line | tr -d ' ' | cut -c2-)
 
             # test all pairs always
-            while read -r name key; do
+            while IFS=':' read -r name key; do
                 # if we found our match, lets put it in the bar
                 if [ $clean = $key ]; then
-                    i3-msg mode $name
+                    i3-msg mode "$name"
                     break
                 fi
             done < $PAIRS_FILE
             ;;
-        EEnd\ chain)
+        EEnd*)
             # if we are ending a chain, back to the default mode
             i3-msg mode 'default'
             ;;

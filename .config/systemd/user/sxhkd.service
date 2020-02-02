@@ -1,12 +1,11 @@
 [Unit]
 Description=Simple X Hotkey Daemon
 Documentation=man:sxhkd(1)
-# BindsTo=display-manager.service
-# After=display-manager.service
+Wants=sxhkd-fifo.service lightdm.service
+After=lightdm.service sxhkd-fifo.service
 
 [Service]
 Environment=DISPLAY=:0
-ExecStartPre=rm -f /tmp/sxhkd.fifo && mkfifo /tmp/sxhkd.fifo
 ExecStart=/usr/bin/sxhkd -s /tmp/sxhkd.fifo
 ExecReload=/usr/bin/kill -SIGUSR1 $MAINPID
 Restart=on-failure
