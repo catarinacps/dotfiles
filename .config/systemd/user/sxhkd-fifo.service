@@ -1,0 +1,13 @@
+[Unit]
+Description=Starts/creates the sxhkd fifo
+
+[Service]
+Environment=FIFO=/tmp/sxhkd.fifo 
+ExecStartPre=/usr/bin/rm -f $FIFO
+ExecStart=/usr/bin/mkfifo $FIFO
+Type=oneshot
+RemainAfterExit=false
+KillMode=process
+
+[Install]
+WantedBy=default.target

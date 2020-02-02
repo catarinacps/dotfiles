@@ -36,7 +36,7 @@ cat $FIFO_PIPE | while read line; do
             while IFS=':' read -r name key; do
                 # if we found our match, lets put it in the bar
                 if [ $clean = $key ]; then
-                    i3-msg mode "$name"
+                    i3-msg mode $name
                     break
                 fi
             done < $PAIRS_FILE

@@ -5,7 +5,7 @@ Wants=sxhkd-fifo.service lightdm.service
 After=lightdm.service sxhkd-fifo.service
 
 [Service]
-Environment=DISPLAY=:0
+Environment=DISPLAY=:0 SHELL=bash
 ExecStart=/usr/bin/sxhkd -s /tmp/sxhkd.fifo
 ExecReload=/usr/bin/kill -SIGUSR1 $MAINPID
 Restart=on-failure

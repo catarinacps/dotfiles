@@ -1,4 +1,4 @@
-# _________________________________________________________________
+# __________________________________________________________
 #
 #     __              __    _           ___                 
 #    / /_____  __  __/ /_  (_)___  ____/ (_)___  ____ ______
@@ -7,7 +7,7 @@
 # /_/|_|\___/\__, /_.___/_/_/ /_/\__,_/_/_/ /_/\__, /____/  
 #           /____/                            /____/        
 #
-# _________________________________________________________________
+# __________________________________________________________
 #
 # by @hcpsilva
 #
@@ -27,7 +27,7 @@
 
 # change the window in focus or move it
 super + {_,shift} {h,j,k,l}
-    i3-msg {focus,move} {left,down,up,right} || i3-msg {focus,move} output {left,down,up,right}
+    $HOME/.scripts/i3_try_move.sh {focus,move} {left,down,up,right}
 
 # move either focus or window to desired workspace
 super + {_,ctrl} + {1-8}
@@ -35,11 +35,11 @@ super + {_,ctrl} + {1-8}
 
 # move window and move to selected workspace
 super + shift + {1-8}
-    i3-msg move container to workspace {1-8}; i3-msg workspace {1-8}
+    tee >(xargs i3-msg move container to workspace) >(xargs i3-msg workspace) <<<'{1-8}'
 
 # window resizing --------------------------------------------------------------
 
-#+chord: resize
+#+chord: 'resize'
 super + r : {h,j,k,l}
     i3-msg resize {shrink width,grow height,shrink height,grow width} 5 px or 5 ppt
 
@@ -144,9 +144,9 @@ super + shift + F3
     pcmanfm
 
 # do system related stuff!
-#+chord: (l)ock, (e)xit, switch_(u)ser, (s)uspend, (h)ibernate, (r)eboot, (Shift+s)hutdown
+#+chord: '(l)ock, (e)xit, switch_(u)ser, (s)uspend, (h)ibernate, (r)eboot, (Shift+s)hutdown'
 super + 0 ; {l,e,u,s,h,r,shift + s}
-    $HOME/.scripts/i3_exit {lock,exit,switch_user,suspend,hibernate,reboot,shutdown}
+    $HOME/.scripts/i3_exit.sh {lock,exit,switch_user,suspend,hibernate,reboot,shutdown}
 
 
 
@@ -156,7 +156,7 @@ super + 0 ; {l,e,u,s,h,r,shift + s}
 
 # prints either the current screen or a section of the screen
 super + {_,shift,ctrl} + Print
-    $HOME/.scripts/i3_scrot -{w,s,d}
+    $HOME/.scripts/i3_scrot.sh -{w,s,d}
 
 # for my notebook, toggles the touchpad
 XF86TouchpadToggle
@@ -173,12 +173,13 @@ XF86Audio{Play,Stop,Next,Prev}
  
 # to start and stop compton
 super + {_,ctrl} + t
-    systemctl --user {stop,start} picom.service && notify-send 'picom {stop,start}'
+    tee >(xargs notify-send) >(xargs -n 2 systemctl --user) <<<'{stop,start} picom.service'
 
 # restart the notification system
 super + shift + d
-    systemctl --user restart dunst.service && notify-send 'restarted dunst'
+    tee >(xargs notify-send) >(xargs -n 2 systemctl --user) <<<'restart dunst.service'
 
+# reload sxhkd, useful if you added any new keybindings
 super + shift + x
-    systemctl --user reload sxhkd.service && notify-send 'reloaded sxhkd'
+    tee >(xargs notify-send) >(xargs -n 2 systemctl --user) <<<'reload sxhkd.service'
 
