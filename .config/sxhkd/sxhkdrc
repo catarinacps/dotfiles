@@ -102,8 +102,8 @@ super + shift + {c,r}
 #
 
 # opens a floating rofi window to either open new stuff or to change the current window
-super + {d,c,y}
-    rofi -modi drun,window,ssh -show {drun,window,ssh} -width 40 -drun-icon-theme 'Papirus'
+super + {d,x,y,c}
+    rofi -show {drun,window,ssh,calc}
 
 # opens a simple terminal window running zsh
 super + Return

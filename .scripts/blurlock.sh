@@ -22,7 +22,7 @@ PARAMS=(--insidecolor=${COLORS[0]}66 \
         --insidewrongcolor=${COLORS[7]}1c \
         --force-clock \
         --datestr="%A" \
-        --timestr="%H:%M:%S" \
+        --timestr="%H:%M" \
         --timecolor=${COLORS[7]}ff \
         --datecolor=${COLORS[7]}ff \
         --indicator \
