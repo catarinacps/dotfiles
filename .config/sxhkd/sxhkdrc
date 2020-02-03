@@ -144,9 +144,8 @@ super + shift + F3
     pcmanfm
 
 # do system related stuff!
-#+chord: '(l)ock, (e)xit, switch_(u)ser, (s)uspend, (h)ibernate, (r)eboot, (Shift+s)hutdown'
-super + 0 ; {l,e,u,s,h,r,shift + s}
-    i3_exit.sh {lock,exit,switch_user,suspend,hibernate,reboot,shutdown}
+super + 0
+    i3_exit.sh
 
 
 
