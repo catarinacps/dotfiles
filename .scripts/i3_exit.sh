@@ -30,8 +30,7 @@ case "$choice" in
         $logind poweroff
         ;;
     *)
-        notify-send -u normal "ERROR" "invalid choice for i3_exit.sh"
-        exit 2
+        echo "INFO [i3_exit.sh]: Aborted exit"
 esac
 
 exit 0
