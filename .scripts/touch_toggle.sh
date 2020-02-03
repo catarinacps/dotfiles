@@ -7,7 +7,7 @@
 
 set -euo pipefail
 
-[ "$1" = '-v' ] && VERBOSE='true' || VERBOSE='false'
+[ "${1:-}" = '-v' ] && VERBOSE='true' || VERBOSE='false'
 
 # Get the id number of the touchpad.
 tp_id=$(xinput list | grep -i touchpad | awk '{print $6}' | sed 's/id=//')
