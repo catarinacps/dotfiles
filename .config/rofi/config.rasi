@@ -35,7 +35,7 @@ configuration {
 /*  parse-hosts: false;*/
 /*  parse-known-hosts: true;*/
 /*  combi-modi: "window,run";*/
-    matching: "fuzzy";
+    matching: "normal";
 /*  tokenize: true;*/
     // m: "-4";
     line-margin: 2;
