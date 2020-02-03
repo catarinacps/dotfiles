@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # robust script, stops in case of failure
-set -euo pipefail
+set -euf
 
 # this script is supposed to be downloaded and ran before the cloning of
 # this repository, i.e. run this script to clone
@@ -9,7 +9,7 @@ set -euo pipefail
 
 # definitions
 GIT_DIR="$HOME/.cfg/"
-GIT_REPO="https://github.com/hcpsilva/dotfiles.git"
+GIT_REPO="git@github.com:hcpsilva/dotfiles.git"
 GIT_ALIAS="git --git-dir=$GIT_DIR --work-tree=$HOME"
 
 # set-up
