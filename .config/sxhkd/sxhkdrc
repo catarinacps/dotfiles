@@ -27,7 +27,7 @@
 
 # change the window in focus or move it
 super + {_,shift} {h,j,k,l}
-    i3_try_move.sh {focus,move} {left,down,up,right}
+    i3-msg {focus,move} {left,down,up,right}
 
 # move either focus or window to desired workspace
 super + {_,ctrl} + {1-8}
@@ -189,4 +189,3 @@ super + shift + d
 # reload sxhkd, useful if you added any new keybindings
 super + shift + x
     tee >(xargs notify-send) >(xargs -n 2 systemctl --user) <<<'reload sxhkd.service'
-
