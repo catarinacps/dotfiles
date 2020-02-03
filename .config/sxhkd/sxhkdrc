@@ -91,10 +91,6 @@ super + {s,w,e}
 
 # others -----------------------------------------------------------------------
 
-# kill the window in focus
-super + shift + q
-    i3-msg kill window
-
 # either reload the config or restart i3
 super + shift + {c,r}
     i3-msg {reload,restart}
@@ -112,6 +108,14 @@ super + {d,c,y}
 # opens a simple terminal window running zsh
 super + Return
     SHELL=zsh terminal
+
+# kill the window in focus
+super + shift + q
+    i3-msg kill window
+
+# kills the window you point to
+super + ctrl + x
+    xkill
 
 
 
@@ -142,6 +146,10 @@ super + F5
 # opens pcmanfm, sometimes you need x graphics
 super + shift + F3
     pcmanfm
+
+# opens alsamixer
+super + ctrl + m
+    terminal -e 'alsamixer'
 
 # do system related stuff!
 super + 0
