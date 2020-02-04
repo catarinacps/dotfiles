@@ -103,7 +103,7 @@ super + shift + {c,r}
 
 # opens a floating rofi window to either open new stuff or to change the current window
 super + {d,x,y,c}
-    rofi -show {drun,window,ssh,calc}
+    rofi -show {drun,window,run,calc}
 
 # opens a simple terminal window running zsh
 super + Return
@@ -189,3 +189,7 @@ super + shift + d
 # reload sxhkd, useful if you added any new keybindings
 super + shift + x
     tee >(xargs notify-send) >(xargs -n 2 systemctl --user) <<<'reload sxhkd.service'
+
+# restarts emacs
+super + shift + e
+    tee >(xargs notify-send) >(xargs -n 2 systemctl --user) <<<'restart emacs.service'

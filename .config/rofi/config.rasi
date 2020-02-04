@@ -1,9 +1,9 @@
 configuration {
-    modi: "window,run,ssh,calc";
+    modi: "window,run,drun,calc";
     width: 30;
     lines: 12;
 /*  columns: 1;*/
-    font: "xos4 Terminus 16";
+    font: "Terminus 16";
     bw: 4;
 /*  location: 0;*/
     padding: 2;
