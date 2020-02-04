@@ -35,7 +35,7 @@ super + {_,ctrl} + {1-8}
 
 # move window and move to selected workspace
 super + shift + {1-8}
-    tee >(xargs i3-msg move container to workspace) >(xargs i3-msg workspace) <<<'{1-8}'
+    WSP='{1-8}'; i3-msg "move container to workspace $WSP; workspace $WSP"
 
 # window resizing --------------------------------------------------------------
 
@@ -59,7 +59,7 @@ super + b
 
 # same as before but take the window in focus with you
 super + shift + b
-    i3-msg move container to workspace back_and_forth; i3-msg workspace back_and_forth
+    WSP='back_and_forth'; i3-msg "move container to workspace $WSP; workspace $WSP"
 
 # floats -----------------------------------------------------------------------
 
@@ -180,16 +180,19 @@ XF86Audio{Play,Stop,Next,Prev}
  
 # to start and stop compton
 super + {_,ctrl,shift} + t
-    tee >(xargs notify-send) >(xargs -n 2 systemctl --user) <<<'{stop,start,restart} picom.service'
+    CMD='{stop,start,restart} picom.service'; systemctl --user $CMD; notify-send $CMD
 
 # restart the notification system
 super + shift + d
-    tee >(xargs notify-send) >(xargs -n 2 systemctl --user) <<<'restart dunst.service'
+    CMD='restart dunst.service'; systemctl --user $CMD; notify-send $CMD
 
 # reload sxhkd, useful if you added any new keybindings
 super + shift + x
-    tee >(xargs notify-send) >(xargs -n 2 systemctl --user) <<<'reload sxhkd.service'
+    CMD='reload sxhkd.service'; systemctl --user $CMD; notify-send $CMD
 
 # restarts emacs
 super + shift + e
-    tee >(xargs notify-send) >(xargs -n 2 systemctl --user) <<<'restart emacs.service'
+    CMD='restart emacs.service'; systemctl --user $CMD; notify-send $CMD
+
+# i used to do things this way, which is way fancier btw:
+    # tee >(xargs notify-send) >(xargs -n 2 systemctl --user) <<<'restart emacs.service'
