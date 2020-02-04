@@ -782,8 +782,8 @@ whatnot.
   (:keymaps 'ivy-minibuffer-map
    "RET" 'ivy-alt-done
    "C-f" 'hcps/ivy-open-current-typed-path
-   "C-j" 'ivy-next-line
-   "C-k" 'ivy-previous-line)
+   "C-l" 'ivy-next-line
+   "C-h" 'ivy-previous-line)
   :config
   (ivy-mode 1))
 #+end_src
