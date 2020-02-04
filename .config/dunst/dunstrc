@@ -22,7 +22,7 @@
 
     horizontal_padding = 16
 
-    frame_width = 3
+    frame_width = 4
 
     frame_color = "#BE302F"
 
