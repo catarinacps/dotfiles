@@ -149,4 +149,3 @@ if [[ -z "$TMUX" ]] && [ "$SSH_CONNECTION" != "" ]; then
 fi
 
 alias clang-format='clang-format -fallback-style=WebKit'
-alias ssh='SHELL= ssh'
