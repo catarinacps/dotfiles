@@ -107,7 +107,7 @@ super + {d,x,y,c}
 
 # opens a simple terminal window running zsh
 super + Return
-    SHELL=zsh terminal
+    SHELL=/usr/bin/zsh terminal
 
 # kill the window in focus
 super + shift + q
@@ -162,7 +162,7 @@ super + 0
 #
 
 # prints either the current screen or a section of the screen
-super + {_,shift,ctrl} + Print
+@super + {_,shift,ctrl} + Print
     i3_scrot.sh -{w,s,d}
 
 # for my notebook, toggles the touchpad
@@ -179,8 +179,8 @@ XF86Audio{Play,Stop,Next,Prev}
 #
  
 # to start and stop compton
-super + {_,ctrl} + t
-    tee >(xargs notify-send) >(xargs -n 2 systemctl --user) <<<'{stop,start} picom.service'
+super + {_,ctrl,shift} + t
+    tee >(xargs notify-send) >(xargs -n 2 systemctl --user) <<<'{stop,start,restart} picom.service'
 
 # restart the notification system
 super + shift + d

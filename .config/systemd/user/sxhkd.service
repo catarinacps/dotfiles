@@ -6,7 +6,7 @@ Wants=graphical-session.target sxhkd-fifo.service
 After=graphical-session.target sxhkd-fifo.service
 
 [Service]
-Environment=DISPLAY=:0 SHELL=bash
+Environment=DISPLAY=:0 SHELL=/usr/bin/bash
 ExecStart=/usr/bin/sxhkd -s /tmp/sxhkd.fifo
 ExecReload=/usr/bin/kill -SIGUSR1 $MAINPID
 Restart=on-failure
