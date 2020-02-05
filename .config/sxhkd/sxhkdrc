@@ -39,7 +39,7 @@ super + shift + {1-8}
 
 # window resizing --------------------------------------------------------------
 
-#+chord: 'resize'
+#+chord: resize
 super + r : {h,j,k,l}
     i3-msg resize {shrink width,grow height,shrink height,grow width} 5 px or 5 ppt
 
@@ -162,7 +162,7 @@ super + 0
 #
 
 # prints either the current screen or a section of the screen
-@super + {_,shift,ctrl} + Print
+super + {_,shift,ctrl} + @Print
     i3_scrot.sh -{w,s,d}
 
 # for my notebook, toggles the touchpad
