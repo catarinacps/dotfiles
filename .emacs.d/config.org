@@ -37,6 +37,7 @@ Cool Emacs configs from cool people:
     - [[#file-management][File management]]
     - [[#environment-variables][Environment variables]]
     - [[#find-and-replace][Find and replace]]
+    - [[#lines-and-characters][Lines and characters]]
     - [[#mode-line-1][Mode line]]
     - [[#remote-editing][Remote editing]]
     - [[#completion][Completion]]
@@ -306,10 +307,24 @@ Almost every GUI element of Emacs is useless and a waste of screen space.
                            '((vertical-scroll-bars . nil)
                              (horizontal-scroll-bars . nil))))
 (add-hook 'after-make-frame-functions 'hcps/disable-scroll-bars)
+#+end_src
 
+To be fair, some stuff is really personal preference of mine.
+
+#+begin_src emacs-lisp :tangle yes
 (setq-default inhibit-startup-screen t
               initial-scratch-message ""
               initial-major-mode 'org-mode)
+#+end_src
+
+And then there's the title question. I for one like Emacs capitalized, so...
+
+#+begin_src emacs-lisp :tangle yes
+(setq-default frame-title-format
+              '("" (capitalize invocation-name)
+                " - " (:eval (if (buffer-file-name)
+                                 (abbreviate-file-name (buffer-file-name))
+                               "%b"))))
 #+end_src
 
 *** Font
@@ -445,19 +460,19 @@ I still need to add:
 Also, =prelude= packages that I like and still need to add:
 
 - [X] smartparens
-- [ ] which-key
+- [X] which-key
 - [X] projectile
 - [X] magit and additionals
 - [ ] flyspell (with aspell)
 - [ ] undo-tree
 - [ ] compile
-- [ ] whitespace
-- [ ] beacon
+- [X] whitespace
+- [X] beacon
 - [ ] switch-window
 - [ ] rainbow-delimiters
-- [ ] browse-kill-ring
+- [X] browse-kill-ring
 - [ ] uniquify
-- [ ] recentf
+- [X] recentf
 - [ ] supersave
 - [ ] eval-expr
 
@@ -556,7 +571,7 @@ overall more popular than the former.
   (treemacs-no-delete-other-windows t)
   (treemacs-project-follow-cleanup nil)
   (treemacs-persist-file (expand-file-name ".cache/treemacs-persist" user-emacs-directory))
-  (treemacs-position  'left)
+  (treemacs-position 'left)
   (treemacs-recenter-distance 0.1)
   (treemacs-recenter-after-file-follow nil)
   (treemacs-recenter-after-tag-follow nil)
@@ -650,6 +665,18 @@ And, to upgrade Emacs to the 21st century, I use =visual-regexp=!
   :custom
   (vr/default-feedback-limit 300)
   (vr/engine 'pcre2el))
+#+end_src
+
+*** Lines and characters
+
+Let's monitor ourselves with =whitespace=.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package whitespace
+  :demand
+  :custom
+  (whitespace-line-column 80)
+  (whitespace-style '(face tabs empty trailing lines-tail)))
 #+end_src
 
 *** Mode line
@@ -850,6 +877,18 @@ completion candidates.
   (company-tooltip-align-annotations t)
   :config
   (global-company-mode 1))
+#+end_src
+
+**** Help
+
+The package called =which-key= shows you possible completions to the command
+you're typing in the modeline.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package which-key
+  :demand
+  :config
+  (which-key-mode 1))
 #+end_src
 
 *** Language Server Protocol
@@ -1412,6 +1451,15 @@ When in need of smart pairing, look no further than =smartparens=!
   :config
   (require 'smartparens-config)
   (sp-use-paredit-bindings))
+#+end_src
+
+This little add-on will highlight big cursor movements.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package beacon
+  :demand
+  :config
+  (beacon-mode 1))
 #+end_src
 
 *** Indentation
