@@ -331,11 +331,12 @@ And then there's the title question. I for one like Emacs capitalized, so...
 
 I now use the =Inconsolata-g= font! As I couldn't find a GitHub of sorts, here's
 a link to a mirror [[https://www.fontmirror.com/inconsolata-g]]. Also, you may
-end up having some issues with this font, as Emacs only knows the XLFD, which
-splits the important font info by the '-', so our =Inconsolata-g= will face some
-issues here and there. To fix this, duplicate the font in your font directory
-(probably /usr/share/fonts/TTF) as this link indicates
-[[https://emacs.stackexchange.com/questions/16818/cocoa-emacs-24-5-font-issues-inconsolata-dz]].
+end up having some issues with this font, as Emacs only knows the XLFD (which
+splits the important font info by the '-'), so our =Inconsolata-g= will face
+some issues here and there. To fix this, duplicate the font in your font
+directory (probably /usr/share/fonts/TTF) and alter the copy's name as
+[[this][https://emacs.stackexchange.com/questions/16818/cocoa-emacs-24-5-font-issues-inconsolata-dz]].
+link indicates
 
 #+begin_src emacs-lisp :tangle yes
 (setq-default default-frame-alist '((font . "InconsolataG-12")))
@@ -2198,19 +2199,17 @@ So I have syntax highlighting while editing GLPK files.
 
 Packages to write Julia source code in Emacs.
 
-(=lsp-julia= kinda isn't working...)
-
 #+begin_src emacs-lisp :tangle yes
 (use-package lsp-julia
-  :init
-  (setq lsp-julia-default-environment "~/.julia/environments/v1.2"
-        lsp-julia-package-dir nil))
+  :custom
+  (lsp-julia-default-environment "~/.julia/environments/v1.2")
+  (lsp-julia-package-dir nil))
 #+end_src
 
 #+begin_src emacs-lisp :tangle yes
 (use-package julia-mode
   :ensure julia-repl
-  :ensure lsp-julia
+  :after lsp-julia
   :mode "\\.jl\\'"
   :hook
   ((julia-mode . julia-repl-mode)
@@ -2651,8 +2650,7 @@ To get the current selected text without newlines.
    (replace-regexp-in-string
     "\n" " "
     (if (use-region-p)
-        (let ((regionp (buffer-substring start end)))
-          (message regionp))))))
+        (regionp (buffer-substring start end))))))
 #+end_src
 
 *** Date
