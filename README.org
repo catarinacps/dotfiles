@@ -50,7 +50,7 @@ set -euf
 # definitions
 GIT_DIR="$HOME/.cfg/"
 GIT_REPO="git@github.com:hcpsilva/dotfiles.git"
-GIT_ALIAS="git --git-dir=$GIT_DIR --work-tree=$HOME"
+GIT_ALIAS="GIT_DIR=$GIT_DIR GIT_WORK_TREE=$HOME git"
 
 # set-up
 echo "alias dotgit='$GIT_ALIAS'" >> $HOME/.$(basename $SHELL)rc
