@@ -107,7 +107,7 @@ fi
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias dotgit='git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+alias dotgit='GIT_DIR=$HOME/.cfg/ GIT_WORK_TREE=$HOME git'
 compdef dotgit='git'
 alias dgcam='dotgit commit -am'
 alias dgp='dotgit push'
