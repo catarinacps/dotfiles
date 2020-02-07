@@ -108,6 +108,7 @@ fi
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias dotgit='git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+compdef dotgit='git'
 alias dgcam='dotgit commit -am'
 alias dgp='dotgit push'
 alias dgl='dotgit pull'
