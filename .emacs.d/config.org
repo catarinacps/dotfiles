@@ -115,6 +115,7 @@ You can find the following packages in this configuration file:
 - auctex-latexmk
 - auto-compile
 - bash-completion
+- beacon
 - bind-key
 - ccls
 - clang-format
@@ -136,6 +137,7 @@ You can find the following packages in this configuration file:
 - evil-matchit
 - evil-mc
 - evil-org
+- evil-smartparens
 - evil-surround
 - evil-visualstar
 - exec-path-from-shell
@@ -146,7 +148,10 @@ You can find the following packages in this configuration file:
 - gmpl-mode
 - gruvbox-theme
 - helpful
+- highlight-doxygen
+- highlight-escape-sequences
 - highlight-indent-guides
+- highlight-numbers
 - hydra
 - ivy
 - julia-mode
@@ -164,12 +169,14 @@ You can find the following packages in this configuration file:
 - openwith
 - org
 - org-journal
+- page-break-lines
 - perspective
 - plantuml-mode
 - projectile
 - ranger
 - sh-script
 - smart-mode-line
+- smartparens
 - ssh
 - tramp
 - treemacs
@@ -177,6 +184,9 @@ You can find the following packages in this configuration file:
 - treemacs-projectile
 - use-package-ensure-system-package
 - vimish-fold
+- visual-regexp-steroids
+- which-key
+- whitespace
 - windmove
 - yasnippet
 #+end_src
@@ -1584,6 +1594,10 @@ To make pretty page breaks in your Emacs buffers:
 (use-package page-break-lines
   :hook
   (prog-mode . page-break-lines-mode)
+  :custom
+  (page-break-lines-max-width (current-fill-column))
+  :custom-face
+  (page-break-lines ((t :inherit font-lock-comment-face :bold t :italic nil)))
   :config
   (global-page-break-lines-mode)
   (set-fontset-font "fontset-default"

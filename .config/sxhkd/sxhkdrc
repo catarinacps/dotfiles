@@ -153,7 +153,9 @@ super + ctrl + m
 
 # opens the video linked in the clipboard in mpv
 super + shift + v
-    notify-send 'mpv' 'opening video...'; xclip -o -selection clipboard | xargs mpv --volume=45
+    notify-send 'mpv' 'opening video...'; \
+    xclip -o -selection clipboard | \
+    xargs mpv --volume=50 --ytdl-format='bestvideo[height<=1080]+bestaudio/best'
 
 # do system related stuff!
 super + 0
