@@ -38,6 +38,7 @@ Cool Emacs configs from cool people:
     - [[#environment-variables][Environment variables]]
     - [[#find-and-replace][Find and replace]]
     - [[#lines-and-characters][Lines and characters]]
+    - [[#compilation][Compilation]]
     - [[#mode-line-1][Mode line]]
     - [[#remote-editing][Remote editing]]
     - [[#completion][Completion]]
@@ -74,6 +75,7 @@ Cool Emacs configs from cool people:
   - [[#meson][Meson]]
   - [[#bspwmsxhkd][bspwm/sxhkd]]
   - [[#systemd-services][systemd services]]
+  - [[#rust][Rust]]
 - [[#personal][Personal]]
   - [[#functions][Functions]]
     - [[#fetching-text][Fetching text]]
@@ -425,7 +427,6 @@ Random configs and definitions that don't have a clear category.
 (setq-default ad-redefinition-action 'accept       ; Silence warnings for redefinition
               confirm-kill-emacs 'yes-or-no-p      ; Confirm before exiting Emacs
               select-enable-clipboard t            ; Merge system's and Emacs' clipboard
-              uniquify-buffer-name-style 'forward  ; Uniquify buffer names
               window-combination-resize t          ; Resize windows proportionally
               ring-bell-function 'ignore)          ; No bell ring
 
@@ -441,33 +442,6 @@ Random configs and definitions that don't have a clear category.
 These are Emacs-behaviour related! In other words, these extend the capabilities
 of Emacs as an editor, and do NOT add support to other languages or etc.
 
-I still need to add:
-
-- [X] ranger
-- [X] treemacs
-- [X] smart-mode-line
-- [X] helpful
-- [X] gruvbox
-- [X] minions
-- [X] dumb-jump
-- [X] smex
-- [X] ivy and counsel
-- [X] counsel-tramp
-- [X] tramp
-- [X] autofill
-- [X] engine-mode
-- [X] no-littering
-- [X] perspective
-- [X] evil-mc
-- [X] evil-collection
-- [X] evil-nerd-commenter
-- [X] evil-matchit
-- [X] evil-leader
-- [X] pdf-tools
-- [X] exec-path-from-shell
-- [X] anzu
-- [X] lsp-mode
-
 Also, =prelude= packages that I like and still need to add:
 
 - [X] smartparens
@@ -476,13 +450,13 @@ Also, =prelude= packages that I like and still need to add:
 - [X] magit and additionals
 - [ ] flyspell (with aspell)
 - [ ] undo-tree
-- [ ] compile
+- [X] compile
 - [X] whitespace
 - [X] beacon
 - [ ] switch-window
 - [ ] rainbow-delimiters
 - [X] browse-kill-ring
-- [ ] uniquify
+- [X] uniquify
 - [X] recentf
 - [ ] supersave
 - [ ] eval-expr
@@ -688,6 +662,19 @@ Let's monitor ourselves with =whitespace=.
   :custom
   (whitespace-line-column 80)
   (whitespace-style '(face tabs empty trailing lines-tail)))
+#+end_src
+
+*** Compilation
+
+Emacs has a default compile command, and it tries its best. Here's some
+extra configuration about it:
+
+#+begin_src emacs-lisp :tangle yes
+(use-package compile
+  :custom
+  (compilation-ask-about-save nil)
+  (compilation-always-kill t)
+  (compilation-scroll-output 'first-error))
 #+end_src
 
 *** Mode line
@@ -1254,9 +1241,6 @@ pressed the hydra is killed and the keybindings deactivated.
 
 *** Buffers and windows
 
-- *TODO*: make a hydra to change buffers like tabs (=h= goes to previous buffer,
-  =l= to the next)
-
 =windmove= is a package that creates commands to move around windows.
 
 #+begin_src emacs-lisp
@@ -1280,14 +1264,16 @@ that kills old buffers.
    (append clean-buffer-list-kill-buffer-names '("*IBuffer*" "*Finder*"))))
 #+end_src
 
-Also, I use perspective to maintain multiple workspaces open with different
-buffers in each.
+=uniquify= creates automatic meaningful names for buffers with the same name:
 
 #+begin_src emacs-lisp :tangle yes
-(use-package perspective
-  :disabled
-  :config
-  (persp-mode))
+(use-package uniquify
+  :demand
+  :custom
+  (uniquify-buffer-name-style 'forward)
+  (uniquify-separator "/")
+  (uniquify-after-kill-buffer-p t)
+  (uniquify-ignore-buffers-re "^\\*"))
 #+end_src
 
 *** Templates and snippets
@@ -1462,6 +1448,12 @@ When in need of smart pairing, look no further than =smartparens=!
   :config
   (require 'smartparens-config)
   (sp-use-paredit-bindings))
+#+end_src
+
+With that, =rainbow-delimiters= is a great match:
+
+#+begin_src emacs-lisp :tangle yes
+(use-package rainbow-delimiters)
 #+end_src
 
 This little add-on will highlight big cursor movements.
@@ -1645,6 +1637,7 @@ I still need to add packages relating to these languages:
 - [X] Meson (the build system)
 - [X] bspwm/sxhkd
 - [X] systemd services/units
+- [X] Rust
 
 ** Org
 
@@ -1831,17 +1824,15 @@ And here I'll put some LaTeX classes that aren't default in org:
 Here I set some defaults I appreciate for cc-mode.
 
 #+begin_src emacs-lisp :tangle yes
-(defun c-mode-defaults ()
+(defun c-mode-defaults-hook ()
   (setq c-default-style "linux"
         c-basic-offset 4)
-  (c-set-offset 'substatement-open 0))
-
-(setq c-mode-defaults-hook 'c-mode-defaults)
-(add-hook 'c-mode-defaults-hook #'highlight-numbers-mode)
+  (c-set-offset 'substatement-open 0)
+  (highlight-numbers-mode 1))
 
 ;; this will affect all modes derived from cc-mode, like
 ;; java-mode, php-mode, etc
-(add-hook 'c-mode-common-hook (lambda () (run-hooks 'c-mode-defaults-hook)))
+(add-hook 'c-mode-common-hook #'c-mode-defaults-hook)
 #+end_src
 
 Better C++ font lock:
@@ -2043,7 +2034,7 @@ we'll set that up.
 #+begin_src emacs-lisp :tangle yes
 (defun makefile-mode-defaults ()
   (whitespace-toggle-options '(tabs))
-  (setq-local indent-tabs-mode t ))
+  (setq-local indent-tabs-mode t))
 
 (setq makefile-mode-hook 'makefile-mode-defaults)
 
@@ -2140,9 +2131,13 @@ Lisp function does not specify a special indentation."
 and the necessary hook:
 
 #+begin_src emacs-lisp :tangle yes
-(add-hook 'emacs-lisp-mode-hook
-          (lambda () (setq-local lisp-indent-function #'fuco1/lisp-indent-function)))
-(add-hook 'emacs-lisp-mode-hook #'highlight-numbers-mode)
+(defun lisp-coding-hook ()
+  (setq-local lisp-indent-function #'fuco1/lisp-indent-function)
+  (highlight-numbers-mode 1)
+  (smartparens-strict-mode 1)
+  (rainbow-delimiters-mode 1))
+
+(add-hook 'emacs-lisp-mode-hook #'lisp-coding-hook)
 #+end_src
 
 ** English
@@ -2637,6 +2632,22 @@ Just a little hook to start the desired =conf-mode= when we open these files.
 
 #+begin_src emacs-lisp :tangle yes
 (add-to-list 'auto-mode-alist '("\\.service\\'" . conf-mode))
+#+end_src
+
+** Rust
+
+The newest greatest compiled language!
+
+#+begin_src emacs-lisp :tangle yes
+(use-package rust-mode
+  :demand cargo
+  :demand flycheck-rust
+  :hook
+  ((rust-mode . lsp)
+   (rust-mode . cargo-minor-mode)
+   (rust-mode . subword-mode))
+  :custom
+  (rust-format-on-save t))
 #+end_src
 
 * Personal
