@@ -129,7 +129,7 @@ super + F1
 
 # opens the browser
 super + F2
-    chromium
+    firefox
 
 # opens ranger, the file browser
 super + F3
