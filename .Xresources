@@ -15,82 +15,46 @@ XTerm*reverseVideo:      on
 XTerm*selectToClipboard: true
 
 ! special
-*.foreground:   #eff0eb
-*.background:   #272727
-*.cursorColor:  #eff0eb
+*.foreground:   #ffffff
+*.background:   #1e1e1e
+*.cursorColor:  #ffffff
 
 ! black
-*.color0:       #33303b
-*.color8:       #4f4b58
+*.color0:       #5a7260
+*.color8:       #8da691
 
 ! red
-*.color1:       #ff5c57
-*.color9:       #ff5c57
+*.color1:       #8f423c
+*.color9:       #eeaa88
 
 ! green
-*.color2:       #5af78e
-*.color10:      #5af78e
+*.color2:       #bbbb88
+*.color10:      #ccc68d
 
 ! yellow
-*.color3:       #fff074
-*.color11:      #ffe674
+*.color3:       #f9d25b
+*.color11:      #eedd99
 
 ! blue
-*.color4:       #57c7ff
-*.color12:      #57c7ff
+*.color4:       #e0ba69
+*.color12:      #c9b957
 
 ! magenta
-*.color5:       #ff6ac1
-*.color13:      #ff6ac1
+*.color5:       #709289
+*.color13:      #ffcbab
 
 ! cyan
-*.color6:       #9aedfe
-*.color14:      #9aedfe
+*.color6:       #d13516
+*.color14:      #c25431
 
 ! white
-*.color7:       #eff0eb
-*.color15:      #eff0eb
+*.color7:       #efe2e0
+*.color15:      #f9f1ed
 
-
-!*background:                      #222D31
-!*foreground:                      #d8d8d8
 *fading:                          8
 *fadeColor:                       black
-!*cursorColor:                     #1ABB9B
-*pointerColorBackground:          #2B2C2B
-*pointerColorForeground:          #16A085
-
-! black dark/light
-!*color0:                          #222D31
-!*color8:                          #585858
-
-! red dark/light
-!*color1:                          #ab4642
-!*color9:                          #ab4642
-
-! green dark/light
-!*color2:                          #7E807E
-!*color10:                         #8D8F8D
-
-! yellow dark/light
-!*color3:                          #f7ca88
-!*color11:                         #f7ca88
-
-! blue dark/light
-!*color4:                          #7cafc2
-!*color12:                         #7cafc2
-
-! magenta dark/light
-!*color5:                          #ba8baf
-!*color13:                         #ba8baf
-
-! cyan dark/light
-!*color6:                          #1ABB9B
-!*color14:                         #1ABB9B
-
-! white dark/light
-!*color7:                          #d8d8d8
-!*color15:                         #f8f8f8
+*pointerColorBackground:          #2b2c2b
+*pointerColorForeground:          #16a085
 
 Xcursor.theme:                    xcursor-breeze
 Xcursor.size:                     0
@@ -102,7 +66,7 @@ terminal*font:                    xft:TerminessTTFNerdFontMono:size=14:minspace=
 URxvt.letterSpace:                0
 
 URxvt.depth:                      32
-URxvt.background:                 [93]#272727
+URxvt.background:                 [93]#1e1e1e
 URxvt*scrollBar:                  false
 URxvt*mouseWheelScrollPage:       false
 URxvt*cursorBlink:                true

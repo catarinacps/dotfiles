@@ -8,51 +8,26 @@ set $mod Mod4
 # workspace_layout tabbed <stacking|tabbed>
 
 # Configure border style <normal|1pixel|pixel xx|none|pixel>
-new_window none
-new_float none
+new_window pixel 4
+new_float pixel 4
 
 # Hide borders
 hide_edge_borders none
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font xft:Hack 11
+font xft:Terminus 12
 
 # Use Mouse+$mod to drag floating windows
 floating_modifier $mod
 
 ################################################################################################
-## sound-section - DO NOT EDIT if you wish to automatically upgrade Alsa -> Pulseaudio later! ##
-################################################################################################
-
-# exec --no-startup-id volumeicon
-# bindsym $mod+Ctrl+m exec terminal -e 'alsamixer'
-# exec --no-startup-id pulseaudio
-# exec --no-startup-id pa-applet
-# bindsym $mod+Ctrl+m exec pavucontrol
-
-################################################################################################
-
-# Screen brightness controls
-# bindsym XF86MonBrightnessUp exec "xbacklight -inc 10; notify-send 'brightness up'"
-# bindsym XF86MonBrightnessDown exec "xbacklight -dec 10; notify-send 'brightness down'"
-
-# bindsym $mod+Ctrl+x --release exec --no-startup-id xkill
 
 focus_follows_mouse yes
 
 # workspace back and forth (with/without active container)
 workspace_auto_back_and_forth yes
 
-# toggle sticky
-# bindsym $mod+Shift+s sticky toggle
-
-# focus the parent container
-# bindsym $mod+a focus parent
-
-#navigate workspaces next / previous
-# bindsym $mod+Ctrl+Right workspace next
-# bindsym $mod+Ctrl+Left workspace prev
 # Workspace names
 # to display names or symbols instead of plain workspace numbers you can use
 # something like: set $ws1 1:mail
@@ -103,12 +78,6 @@ for_window [class="Xfburn"] floating enable
 # switch to workspace with urgent window automatically
 for_window [urgent=latest] focus
 
-# exit i3 (logs you out of your X session)
-
-# bindsym $mod+Shift+e exec "i3-nagbar -t warning -m\
-# 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.'\
-# -b 'Yes, exit i3' 'i3-msg exit'"
-
 # Set shut down, restart and locking features
 # bindsym $mod+0 mode "$mode_system"
 set $mode_system (l)ock, (e)xit, switch_(u)ser, (s)uspend, (h)ibernate, (r)eboot, (Shift+s)hutdown
@@ -116,18 +85,6 @@ mode "$mode_system" {
      bindsym Return mode "default"
      bindsym Escape mode "default"
 }
-#     bindsym l exec --no-startup-id $HOME/.scripts/i3_exit lock, mode "default"
-#     bindsym s exec --no-startup-id $HOME/.scripts/i3_exit suspend, mode "default"
-#     bindsym u exec --no-startup-id $HOME/.scripts/i3_exit switch_user, mode "default"
-#     bindsym e exec --no-startup-id $HOME/.scripts/i3_exit logout, mode "default"
-#     bindsym h exec --no-startup-id $HOME/.scripts/i3_exit hibernate, mode "default"
-#     bindsym r exec --no-startup-id $HOME/.scripts/i3_exit reboot, mode "default"
-#     bindsym Shift+s exec --no-startup-id $HOME/.scripts/i3_exit shutdown, mode "default"
-
-#     # exit system mode: "Enter" or "Escape"
-#     bindsym Return mode "default"
-#     bindsym Escape mode "default"
-# }
 
 # Resize window (you can also use the mouse for that)
 # bindsym $mod+r mode "resize"
@@ -135,43 +92,6 @@ mode "resize" {
      bindsym Return mode "default"
      bindsym Escape mode "default"
 }
-#         # These bindings trigger as soon as you enter the resize mode
-#         # Pressing left will shrink the window’s width.
-#         # Pressing right will grow the window’s width.
-#         # Pressing up will sh'rink the window’s height.
-#         # Pressing down will grow the window’s height.
-#         bindsym h resize shrink width 5 px or 5 ppt
-#         bindsym j resize grow height 5 px or 5 ppt
-#         bindsym k resize shrink height 5 px or 5 ppt
-#         bindsym l resize grow width 5 px or 5 ppt
-
-#         # same bindings, but for the arrow keys
-#         bindsym Left resize shrink width 5 px or 5 ppt
-#         bindsym Down resize grow height 5 px or 5 ppt
-#         bindsym Up resize shrink height 5 px or 5 ppt
-#         bindsym Right resize grow width 5 px or 5 ppt
-
-#         # exit resize mode: Enter or Escape
-#         bindsym Return mode "default"
-#         bindsym Escape mode "default"
-# }
-
-# Lock screen
-# bindsym $mod+9 exec --no-startup-id blurlock
-
-# Autostart applications
-# exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-# exec --no-startup-id manjaro-hello
-# exec --no-startup-id nm-applet
-# exec --no-startup-id xfce4-power-manager
-# exec --no-startup-id pamac-tray
-# exec --no-startup-id clipit
-# exec --no-startup-id blueman-applet
-# exec --no-startup-id start_conky_maia
-# exec --no-startup-id start_conky_green
-# exec --no-startup-id xautolock -time 10 -locker blurlock
-# exec_always --no-startup-id ff-theme-util
-# exec_always --no-startup-id fix_xcursor
 
 # Color palette used for the terminal ( ~/.Xresources file )
 # Colors are gathered based on the documentation:
@@ -204,43 +124,11 @@ set_from_resource $term_color13    color13
 set_from_resource $term_color14    color14
 set_from_resource $term_color15    color15
 
-# Start i3bar to display a workspace bar (plus the system information i3status if available)
-# bar {
-#     i3bar_command i3bar -t
-#     status_command i3status
-#     position top
-
-# ## please set your primary output first. Example: 'xrandr --output eDP1 --primary'
-# #   tray_output primary
-# #   tray_output eDP1
-
-#     bindsym button4 nop
-#     bindsym button5 nop
-# #   font xft:URWGothic-Book 11
-#     strip_workspace_numbers yes
-
-#     colors {
-#         background #222D31A0
-#         statusline #F9FAF9
-#         separator  #454947
-
-# #                      border  backgr. text
-#         focused_workspace  #EC0000 #222D31D0 #EC0000
-#         active_workspace   #222D31 #222D31D0 #FDF6E3
-#         inactive_workspace #222D31 #222D31D0 #BBB6A7
-#         urgent_workspace   #222D31 #EC0000D0 #F9FAF9
-#         binding_mode       #C80000 #FDF6E3D0 #EC0000
-#     }
-# }
-
-# hide/unhide i3status bar
-# bindsym $mod+m bar mode toggle
-
 # Theme colors
 # class                   border  backgr. text    indic.   child_border
-client.focused          #556064 #556064 #FDF6E3 #FDF6E3   #285577
-client.focused_inactive #2F3D44 #2F3D44 #FDF6E3 #454948   #5F676A
-client.unfocused        #2F3D44 #2F3D44 #FDF6E3 #454948   #222222
+client.focused          #BE302F #556064 #FDF6E3 #BE302F   #BE302F
+client.focused_inactive #272727 #2F3D44 #FDF6E3 #272727   #272727
+client.unfocused        #272727 #2F3D44 #FDF6E3 #272727   #272727
 client.urgent           #CB4B16 #FDF6E3 #900000 #900000   #900000
 client.placeholder      #000000 #0C0C0C #FFFFFF #000000   #0C0C0C
 
@@ -264,7 +152,7 @@ gaps outer 0
 # Smart borders (draw borders around container only if it is not the only
 # container on this workspace) on|no_gaps (on=always activate and no_gaps=only
 # activate if the gap size to the edge of the screen is 0)
-smart_borders on
+# smart_borders no
 
 # Press $mod+Shift+g to enter the gap mode. Choose o or i for modifying
 # outer/inner gaps. Press one of + / - (in-/decrement for current workspace) or

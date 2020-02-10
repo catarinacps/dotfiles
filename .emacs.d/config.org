@@ -454,11 +454,11 @@ Also, =prelude= packages that I like and still need to add:
 - [X] whitespace
 - [X] beacon
 - [ ] switch-window
-- [ ] rainbow-delimiters
+- [X] rainbow-delimiters
 - [X] browse-kill-ring
 - [X] uniquify
 - [X] recentf
-- [ ] supersave
+- [ ] super-save
 - [ ] eval-expr
 
 *** Package loading
@@ -1651,6 +1651,7 @@ automatically maintain an updated table of contents of your =.org= file.
   :ensure org-plus-contrib
   :ensure toc-org
   :ensure ob-async
+  :ensure ox-twbs
   :preface
   (defun org-export-output-file-name-modified (orig-fun extension &optional subtreep pub-dir)
     (unless pub-dir
@@ -1689,6 +1690,7 @@ automatically maintain an updated table of contents of your =.org= file.
   (org-src-tab-acts-natively t)
   (org-src-window-setup 'current-window)
   (org-modules (append org-modules '(org-tempo org-inlinetask ox-extra ob-async)))
+  (org-export-backends (append org-export-backends '(md man twbs)))
   (org-export-allow-bind-keywords t)
   (org-export-with-latex t)
   (org-export-babel-evaluate t)
