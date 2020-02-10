@@ -125,7 +125,7 @@ super + ctrl + x
 
 # opens neomutt, the email client
 super + F1
-    terminal -e 'neomutt'
+    thunderbird
 
 # opens the browser
 super + F2
