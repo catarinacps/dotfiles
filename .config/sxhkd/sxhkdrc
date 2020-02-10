@@ -123,7 +123,7 @@ super + ctrl + x
 # keybindings that are really just shortcuts
 #
 
-# opens neomutt, the email client
+# opens thunderbird, the email client
 super + F1
     thunderbird
 

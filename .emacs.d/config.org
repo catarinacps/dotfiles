@@ -1018,7 +1018,8 @@ have the best of both worlds!
     (evil-normal-state)
     (evil-visual-restore))
   :init
-  (defconst hcps/leader-key "SPC")
+  (defconst hcps/leader-key "SPC"
+    "Leader key for some special commands in normal mode.")
   :general
   (:states '(normal visual)
    :prefix hcps/leader-key
