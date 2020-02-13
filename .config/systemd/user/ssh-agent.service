@@ -1,5 +1,6 @@
 [Unit]
 Description=SSH key agent
+Before=emacs.service
 
 [Service]
 Type=simple
