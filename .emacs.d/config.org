@@ -1653,6 +1653,7 @@ automatically maintain an updated table of contents of your =.org= file.
   :ensure toc-org
   :ensure ob-async
   :ensure ox-twbs
+  :ensure htmlize
   :preface
   (defun org-export-output-file-name-modified (orig-fun extension &optional subtreep pub-dir)
     (unless pub-dir
