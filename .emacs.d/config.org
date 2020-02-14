@@ -37,6 +37,7 @@ Cool Emacs configs from cool people:
     - [[#file-management][File management]]
     - [[#environment-variables][Environment variables]]
     - [[#find-and-replace][Find and replace]]
+    - [[#history][History]]
     - [[#lines-and-characters][Lines and characters]]
     - [[#compilation][Compilation]]
     - [[#mode-line-1][Mode line]]
@@ -449,7 +450,7 @@ Also, =prelude= packages that I like and still need to add:
 - [X] projectile
 - [X] magit and additionals
 - [ ] flyspell (with aspell)
-- [ ] undo-tree
+- [X] undo-tree
 - [X] compile
 - [X] whitespace
 - [X] beacon
@@ -643,6 +644,21 @@ And, to upgrade Emacs to the 21st century, I use =visual-regexp=!
   :custom
   (vr/default-feedback-limit 300)
   (vr/engine 'pcre2el))
+#+end_src
+
+*** History
+
+Undo and redo and kools with =undo-tree=!
+
+#+begin_src emacs-lisp :tangle yes
+(use-package undo-tree
+  :hook
+  (after-init . global-undo-tree-mode)
+  :custom
+  (undo-tree-visualizer-timestamps t)
+  (undo-tree-enable-undo-in-region nil)
+  (undo-tree-auto-save-history nil)
+  (undo-tree-viualizer-diff t))
 #+end_src
 
 *** Lines and characters
@@ -1021,6 +1037,7 @@ have the best of both worlds!
    ""  nil
    "f" 'counsel-find-file
    "b" 'ivy-switch-buffer
+   "B" 'ibuffer
    "k" 'kill-this-buffer
    "K" 'kill-buffer
    "r" 'counsel-recentf
@@ -1031,6 +1048,7 @@ have the best of both worlds!
    "w" 'delete-window
    "g" 'magit-status
    "o" 'ace-window
+   "u" 'undo-tree-visualize
    "y" 'counsel-yank-pop
    "p" '(:keymap projectile-command-map :package projectile)
    "ESC" 'evil-mc-undo-all-cursors
