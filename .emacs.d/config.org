@@ -449,7 +449,7 @@ Also, =prelude= packages that I like and still need to add:
 - [X] which-key
 - [X] projectile
 - [X] magit and additionals
-- [ ] flyspell (with aspell)
+- [X] flyspell (with aspell)
 - [X] undo-tree
 - [X] compile
 - [X] whitespace
@@ -998,6 +998,20 @@ And this is to highlight escape sequences in some common modes:
                             (shell-script-mode . hes-shell-escape-sequence-re)))))
 #+end_src
 
+Of course, =flyspell= corrects your writing!
+
+#+begin_src emacs-lisp :tangle yes
+(use-package flyspell
+  :demand
+  :hook
+  (prog-mode . 'flyspell-prog-mode)
+  :custom
+  (ispell-program-name "aspell")
+  (ispell-extra-args '("--sug-mode=ultra"))
+  :config
+  (flyspell-mode 1))
+#+end_src
+
 *** Keybindings
 
 These packages change keybindings and the default editing modes of Emacs.
@@ -1311,6 +1325,7 @@ loses focus, etc.
   (super-save-auto-save-when-idle t)
   (super-save-remote-files nil)
   :config
+  (add-to-list 'super-save-triggers 'ace-window)
   (super-save-mode 1))
 #+end_src
 
