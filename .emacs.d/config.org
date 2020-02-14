@@ -53,6 +53,7 @@ Cool Emacs configs from cool people:
     - [[#versioning][Versioning]]
     - [[#regions-pointers-and-pairs][Regions, pointers and pairs]]
     - [[#indentation][Indentation]]
+    - [[#command-evaluation][Command evaluation]]
     - [[#utilities][Utilities]]
   - [[#theme][Theme]]
 - [[#languages][Languages]]
@@ -460,7 +461,7 @@ Also, =prelude= packages that I like and still need to add:
 - [X] uniquify
 - [X] recentf
 - [X] super-save
-- [ ] eval-expr
+- [X] eval-expr
 
 *** Package loading
 
@@ -1553,6 +1554,17 @@ of the box.
   (highlight-indent-guides-auto-character-face-perc 10)
   :hook
   (prog-mode . highlight-indent-guides-mode))
+#+end_src
+
+*** Command evaluation
+
+This package enhances the default =eval-expression= function.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package eval-expr
+  :demand
+  :config
+  (eval-expr-install))
 #+end_src
 
 *** Utilities
