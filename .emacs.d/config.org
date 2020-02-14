@@ -607,7 +607,7 @@ And the loading of the =ssh= environment...
   (and (exec-path-from-shell-copy-env "SSH_AGENT_PID")
        (exec-path-from-shell-copy-env "SSH_AUTH_SOCK")))
 
-(add-hook 'after-make-frame-functions 'hcps/get-ssh-env)
+(add-hook 'after-make-frame-functions #'hcps/get-ssh-env)
 #+end_src
 
 *** Find and replace
@@ -1269,6 +1269,7 @@ that kills old buffers.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package uniquify
+  :ensure nil
   :demand
   :custom
   (uniquify-buffer-name-style 'forward)

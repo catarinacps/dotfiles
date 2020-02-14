@@ -4,7 +4,7 @@ Before=emacs.service
 
 [Service]
 Type=simple
-Environment=SSH_AUTH_SOCK=%t/ssh-agent.socket
+Environment=SSH_AUTH_SOCK=%h/ssh-agent.socket
 ExecStart=/usr/bin/ssh-agent -D -a $SSH_AUTH_SOCK
 
 [Install]
