@@ -113,6 +113,7 @@ You can find the following packages in this configuration file:
 
 #+RESULTS:
 #+begin_src org
+- ace-window
 - aggressive-indent
 - anzu
 - auctex
@@ -126,6 +127,7 @@ You can find the following packages in this configuration file:
 - cmake-font-lock
 - company
 - company-lsp
+- compile
 - counsel
 - counsel-projectile
 - counsel-tramp
@@ -136,6 +138,7 @@ You can find the following packages in this configuration file:
 - elpy
 - engine-mode
 - ess-r-mode
+- eval-expr
 - evil
 - evil-collection
 - evil-matchit
@@ -147,6 +150,7 @@ You can find the following packages in this configuration file:
 - exec-path-from-shell
 - expand-region
 - flycheck
+- flyspell
 - general
 - git-timemachine
 - gmpl-mode
@@ -174,18 +178,22 @@ You can find the following packages in this configuration file:
 - org
 - org-journal
 - page-break-lines
-- perspective
 - plantuml-mode
 - projectile
+- rainbow-delimiters
 - ranger
+- rust-mode
 - sh-script
 - smart-mode-line
 - smartparens
 - ssh
+- super-save
 - tramp
 - treemacs
 - treemacs-evil
 - treemacs-projectile
+- undo-tree
+- uniquify
 - use-package-ensure-system-package
 - vimish-fold
 - visual-regexp-steroids
@@ -866,13 +874,13 @@ with possible =ssh= connections AND docker containers (thanks to
 
 I use =company= as my completion framework. In the words of Dmitry Gutov:
 
-#+BEGIN_QUOTE
+#+begin_quote
 Company is a text completion framework for Emacs. The name stands for "complete
 anything". It uses pluggable back-ends and front-ends to retrieve and display
 completion candidates.
 
 [[http://company-mode.github.io/][Dmitry Gutov]]
-#+END_QUOTE
+#+end_quote
 
 #+begin_src emacs-lisp :tangle yes
 (use-package company
@@ -883,6 +891,9 @@ completion candidates.
   :custom
   (company-idle-delay .2)
   (company-minimum-prefix-length 1)
+  (company-show-numbers t)
+  (company-tooltip-limit 10)
+  (company-tooltip-flip-when-above t)
   (company-require-match nil)
   (company-tooltip-align-annotations t)
   :config
@@ -1005,7 +1016,7 @@ Of course, =flyspell= corrects your writing!
 (use-package flyspell
   :demand
   :hook
-  (prog-mode . 'flyspell-prog-mode)
+  (prog-mode . flyspell-prog-mode)
   :custom
   (ispell-program-name "aspell")
   (ispell-extra-args '("--sug-mode=ultra"))
@@ -1456,7 +1467,17 @@ universe, nay, in the whole multiverse.
    "s-m f" 'magit-file-dispatch
    "s-m l" 'magit-log
    "s-m b" 'magit-blame
-   "s-m t" 'git-timemachine))
+   "s-m t" 'git-timemachine)
+  :config
+  (evil-add-hjkl-bindings magit-log-mode-map 'emacs)
+  (evil-add-hjkl-bindings magit-commit-mode-map 'emacs)
+  (evil-add-hjkl-bindings magit-branch-manager-mode-map 'emacs
+    "K" 'magit-discard
+    "L" 'magit-log-popup)
+  (evil-add-hjkl-bindings magit-status-mode-map 'emacs
+    "K" 'magit-discard
+    "l" 'magit-log-popup
+    "h" 'magit-diff-toggle-refine-hunk))
 #+end_src
 
 Also, =git-timemachine= is a beautiful way to walk through git history:
@@ -1729,6 +1750,7 @@ automatically maintain an updated table of contents of your =.org= file.
     (interactive)
     (let ((current-prefix-arg '(4)))
       (call-interactively 'org-babel-tangle)))
+  (setq inferior-julia-program-name "/usr/bin/julia")
   :init
   (advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified)
   :hook
@@ -1736,9 +1758,7 @@ automatically maintain an updated table of contents of your =.org= file.
    (org-mode . toc-org-mode)
    (org-mode . turn-on-auto-fill)
    (org-mode . (lambda () (ox-extras-activate '(ignore-headlines))))
-   (org-babel-after-execute . org-redisplay-inline-images)
-   (ob-async-pre-execute-src-block . (lambda ()
-                                       (setq inferior-julia-program-name "/usr/bin/julia"))))
+   (org-babel-after-execute . org-redisplay-inline-images))
   :custom
   (org-return-follows-link t)
   ;; the following used to be '(latex script entities)
@@ -1837,8 +1857,8 @@ automatically maintain an updated table of contents of your =.org= file.
      (perl . t)
      (screen . t)
      (plantuml . t)
-     (julia . t)
      (latex . t)
+     (julia . t)
      (jupyter . t)
      (lilypond . t))))
 #+end_src
@@ -2205,6 +2225,7 @@ and the necessary hook:
   (smartparens-strict-mode 1)
   (rainbow-delimiters-mode 1))
 
+(add-hook 'lisp-mode-hook #'lisp-coding-hook)
 (add-hook 'emacs-lisp-mode-hook #'lisp-coding-hook)
 #+end_src
 
@@ -2291,9 +2312,7 @@ Packages to write Julia source code in Emacs.
   :hook
   ((julia-mode . julia-repl-mode)
    (julia-mode . (lambda () (require 'lsp-julia) (lsp)))
-   (julia-mode . highlight-numbers-mode))
-  :init
-  (setq inferior-julia-program-name "/usr/bin/julia"))
+   (julia-mode . highlight-numbers-mode)))
 #+end_src
 
 ** Jupyter

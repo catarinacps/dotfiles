@@ -155,12 +155,6 @@ This is DEPRECATED, use %s instead." prelude-modules-file))
 
 (message "Prelude is ready to do thy bidding, Master %s!" current-user)
 
-;; Patch security vulnerability in Emacs versions older than 25.3
-(when (version< emacs-version "25.3")
-  (with-eval-after-load "enriched"
-    (defun enriched-decode-display-prop (start end &optional param)
-      (list start end))))
-
 (prelude-eval-after-init
  ;; greet the use with some useful tip
  (run-at-time 5 nil 'prelude-tip-of-the-day))
