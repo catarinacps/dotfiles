@@ -338,22 +338,10 @@ As in "where we are", as there isn't a direct way of getting such info.
 Almost every GUI element of Emacs is useless and a waste of screen space.
 
 #+begin_src emacs-lisp :tangle yes
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
-
-(when (fboundp 'tool-bar-mode)
-  (tool-bar-mode -1))
-(when (fboundp 'scroll-bar-mode)
-  (scroll-bar-mode -1))
-(when (fboundp 'horizontal-scroll-bar-mode)
-  (horizontal-scroll-bar-mode -1))
-
-(defun hcps/disable-scroll-bars (frame)
-  (modify-frame-parameters frame
-                           '((vertical-scroll-bars . nil)
-                             (horizontal-scroll-bars . nil))))
-(add-hook 'after-make-frame-functions 'hcps/disable-scroll-bars)
+(customize-set-variable 'scroll-bar-mode nil)
+(customize-set-variable 'horizontal-scroll-bar-mode nil)
+(customize-set-variable 'menu-bar-mode nil)
+(customize-set-variable 'tool-bar-mode nil)
 #+end_src
 
 To be fair, some stuff is really personal preference of mine.
