@@ -356,10 +356,10 @@ And then there's the title question. I for one like Emacs capitalized, so...
 
 #+begin_src emacs-lisp :tangle yes
 (setq-default frame-title-format
-              '("" (capitalize invocation-name)
-                " - " (:eval (if (buffer-file-name)
-                                 (abbreviate-file-name (buffer-file-name))
-                               "%b"))))
+              '((capitalize invocation-name)
+                (:eval (if (buffer-file-name)
+                           (abbreviate-file-name (buffer-file-name))
+                         "%b"))))
 #+end_src
 
 *** Font
@@ -483,6 +483,7 @@ Also, =prelude= packages that I like and still need to add:
 - [X] recentf
 - [X] super-save
 - [X] eval-expr
+- [ ] emacs-dashboard
 
 *** Package loading
 
