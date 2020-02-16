@@ -26,6 +26,8 @@ Cool Emacs configs from cool people:
     - [[#config][:config]]
 - [[#the-editor][The editor]]
   - [[#definitions-and-preferences][Definitions and preferences]]
+    - [[#package-servers][Package servers]]
+    - [[#paths][Paths]]
     - [[#gui-elements][GUI elements]]
     - [[#font][Font]]
     - [[#text][Text]]
@@ -64,6 +66,7 @@ Cool Emacs configs from cool people:
   - [[#makefile][Makefile]]
   - [[#plantuml][PlantUML]]
   - [[#lisp][Lisp]]
+  - [[#elisp][Elisp]]
   - [[#english][English]]
   - [[#python][Python]]
   - [[#cmake][CMake]]
@@ -135,6 +138,7 @@ You can find the following packages in this configuration file:
 - deadgrep
 - dockerfile-mode
 - dumb-jump
+- elisp-slime-nav
 - elpy
 - engine-mode
 - ess-r-mode
@@ -307,6 +311,27 @@ Everything related to Emacs as the editor and platform.
 ** Definitions and preferences
 
 Defaults that are better if defined /other/ way.
+
+*** Package servers
+
+By default we only get the GNU one...
+
+#+begin_src emacs-lisp :tangle yes
+(setq-default package-archives
+              '(("melpa" . "https://melpa.org/packages/")
+                ("org" . "https://orgmode.org/elpa/")
+                ("gnu" . "https://elpa.gnu.org/packages/")))
+#+end_src
+
+*** Paths
+
+As in "where we are", as there isn't a direct way of getting such info.
+
+#+begin_src emacs-lisp :tangle yes
+(defvar root-dir (file-name-directory load-file-name) "The root dir of Emacs.")
+
+(setq package-user-dir (expand-file-name "elpa" root-dir))
+#+end_src
 
 *** GUI elements
 
@@ -1552,7 +1577,7 @@ I use =aggressive-indent= to keep my code indented as I type.
   :hook
   ((emacs-lisp-mode . aggressive-indent-mode)
    (lisp-mode . aggressive-indent-mode)
-   (c-mode-common-hook . aggressive-indent-mode))
+   (c-mode-common . aggressive-indent-mode))
   :custom
   (aggressive-indent-comments-too t)
   :config
@@ -1858,7 +1883,7 @@ automatically maintain an updated table of contents of your =.org= file.
      (screen . t)
      (plantuml . t)
      (latex . t)
-     (julia . t)
+     ;; (julia . t)
      (jupyter . t)
      (lilypond . t))))
 #+end_src
@@ -2226,7 +2251,32 @@ and the necessary hook:
   (rainbow-delimiters-mode 1))
 
 (add-hook 'lisp-mode-hook #'lisp-coding-hook)
-(add-hook 'emacs-lisp-mode-hook #'lisp-coding-hook)
+#+end_src
+
+** Elisp
+
+Emacs version!
+
+#+begin_src emacs-lisp :tangle yes
+(use-package elisp-slime-nav)
+
+(defun recompile-elc-on-save ()
+  "Recompile your elc when saving an elisp file."
+  (add-hook
+   'after-save-hook
+   (lambda ()
+     (when (and
+            (string-prefix-p prelude-dir (file-truename buffer-file-name))
+            (file-exists-p (byte-compile-dest-file buffer-file-name)))
+       (emacs-lisp-byte-compile)))
+   nil
+   t))
+
+(defun elisp-coding-hook ()
+  (lisp-coding-hook)
+  (recompile-elc-on-save))
+
+(add-hook 'emacs-lisp-mode-hook #'elisp-coding-hook)
 #+end_src
 
 ** English
@@ -2340,7 +2390,8 @@ theoretically it should come bundled with Emacs).
    (latex-mode . company-auctex-init)
    (tex-mode . turn-on-auto-fill)
    (latex-mode . turn-on-auto-fill)
-   (latex-mode . rainbow-delimiters-mode))
+   (latex-mode . rainbow-delimiters-mode-enable)
+   (latex-mode . turn-on-smartparens-mode))
   :custom
   (TeX-auto-save t)
   (TeX-parse-self t)
