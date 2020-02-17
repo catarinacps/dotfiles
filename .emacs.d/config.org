@@ -553,7 +553,7 @@ cool extension that provides such functionality.
   (dashboard-set-heading-icons t)
   (dashboard-set-file-icons nil)
   (dashboard-startup-banner 'logo)
-  (dashboard-items '((recents  . 5)
+  (dashboard-items '((recents  . 10)
                      (projects . 5)
                      (bookmarks . 5)
                      (agenda . 5)))
@@ -1097,6 +1097,10 @@ have the best of both worlds!
     (evil-shift-right (region-beginning) (region-end))
     (evil-normal-state)
     (evil-visual-restore))
+  (defun hcps/open-scratch ()
+    "Switch to the *scratch* buffer whenever you are."
+    (interactive)
+    (switch-to-buffer "*scratch*" nil t))
   :init
   (defconst hcps/leader-key "SPC"
     "Leader key for some special commands in normal mode.")
@@ -1119,6 +1123,7 @@ have the best of both worlds!
    "o" 'ace-window
    "u" 'undo-tree-visualize
    "y" 'counsel-yank-pop
+   "n" 'hcps/open-scratch
    "p" '(:keymap projectile-command-map :package projectile)
    "ESC" 'evil-mc-undo-all-cursors
    ;; misc bindings under 'm'
