@@ -547,6 +547,7 @@ cool extension that provides such functionality.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package dashboard
+  :ensure all-the-icons
   :custom
   (initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
   (dashboard-banner-logo-title (format "Welcome to Emacs, %s!" current-user))
@@ -746,6 +747,14 @@ very pretty on =gruvbox=).
 #+begin_src emacs-lisp :tangle yes
 (use-package smart-mode-line
   :demand
+  :init
+  (setq sml/no-confirm-load-theme t)
+  :custom
+  (sml/shorten-directory nil)
+  (sml/shorten-modes t)
+  (sml/mode-width 'right)
+  (sml/name-width 30)
+  (sml/theme 'respectful)
   :config
   (sml/setup))
 #+end_src
@@ -755,6 +764,7 @@ one wanna see what minor modes are active ALL of the time, right?
 
 #+begin_src emacs-lisp :tangle yes
 (use-package minions
+  :disabled
   :after smart-mode-line
   :custom
   (minions-mode-line-lighter "...")
@@ -1724,11 +1734,7 @@ To make pretty page breaks in your Emacs buffers:
   (page-break-lines-max-width nil)
   (page-break-lines-char ?-)
   :custom-face
-  (page-break-lines ((t :inherit font-lock-comment-face :bold t :italic nil)))
-  :config
-  (set-fontset-font "fontset-default"
-                    (cons page-break-lines-char page-break-lines-char)
-                    (face-attribute 'default :family)))
+  (page-break-lines ((t :inherit font-lock-comment-face :bold t :italic nil))))
 #+end_src
 
 ** Theme
