@@ -540,6 +540,17 @@ this file.
   :demand)
 #+end_src
 
+And we'll use =delight= to hide minor-modes names and such.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package delight
+  :demand
+  :delight
+  (auto-fill-function " af")
+  (eldoc-mode " eldoc")
+  (editorconfig-mode))
+#+end_src
+
 *** Splash screen
 
 There's some utility in having a cool initial screen actually. And there's a
@@ -951,11 +962,12 @@ completion candidates.
 **** Help
 
 The package called =which-key= shows you possible completions to the command
-you're typing in the modeline.
+you're typing in the mode-line.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package which-key
   :demand
+  :delight
   :config
   (which-key-mode 1))
 #+end_src
@@ -1017,7 +1029,9 @@ This package does have 2 extra sister packages: =lsp-ui= and =lsp-company=
 #+begin_src emacs-lisp
 (use-package flycheck
   :demand
-  :init (global-flycheck-mode)
+  :delight flycheck-mode
+  :init
+  (global-flycheck-mode)
   :custom
   (flycheck-check-syntax-automatically '(save mode-enabled))
   (flycheck-disabled-checkers '(emacs-lisp-checkdoc))
@@ -1063,6 +1077,7 @@ Of course, =flyspell= corrects your writing!
 #+begin_src emacs-lisp :tangle yes
 (use-package flyspell
   :demand
+  :delight
   :hook
   (prog-mode . flyspell-prog-mode)
   :custom
@@ -1386,6 +1401,7 @@ loses focus, etc.
 #+begin_src emacs-lisp :tangle yes
 (use-package super-save
   :demand
+  :delight
   :custom
   (super-save-auto-save-when-idle t)
   (super-save-remote-files nil)
@@ -1447,6 +1463,7 @@ or searching the whole project and replacing something.
 #+begin_src emacs-lisp :tangle yes
 (use-package projectile
   :defer t
+  :delight '(:eval (concat " " (projectile-project-name)))
   :custom
   (projectile-completion-system 'ivy)
   (projectile-find-dir-includes-top-level t)
@@ -1571,6 +1588,7 @@ When in need of smart pairing, look no further than =smartparens=!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package smartparens
+  :delight (smartparens-mode " sp")
   :custom
   (sp-base-key-bindings 'paredit)
   (sp-autoskip-closing-pair 'always)
@@ -1591,6 +1609,7 @@ This little add-on will highlight big cursor movements.
 #+begin_src emacs-lisp :tangle yes
 (use-package beacon
   :demand
+  :delight
   :config
   (beacon-mode 1))
 #+end_src
@@ -1725,6 +1744,7 @@ To make pretty page breaks in your Emacs buffers:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package page-break-lines
+  :delight
   :hook
   (prog-mode . page-break-lines-mode)
   :custom
@@ -1790,6 +1810,9 @@ automatically maintain an updated table of contents of your =.org= file.
   :ensure ob-async
   :ensure ox-twbs
   :ensure htmlize
+  :delight
+  (org-indent-mode)
+  (org-src-mode)
   :preface
   (defun org-export-output-file-name-modified (orig-fun extension &optional subtreep pub-dir)
     (unless pub-dir
@@ -1805,8 +1828,7 @@ automatically maintain an updated table of contents of your =.org= file.
   :init
   (advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified)
   :hook
-  ((org-mode . org-indent-mode)
-   (org-mode . toc-org-mode)
+  ((org-mode . toc-org-mode)
    (org-mode . turn-on-auto-fill)
    (org-mode . display-line-numbers-mode)
    (org-mode . (lambda () (ox-extras-activate '(ignore-headlines))))
@@ -1827,6 +1849,7 @@ automatically maintain an updated table of contents of your =.org= file.
   (org-src-fontify-natively t)
   (org-src-tab-acts-natively t)
   (org-src-window-setup 'current-window)
+  (org-startup-indented t)
   (org-modules (append org-modules '(org-tempo org-inlinetask ox-extra ob-async)))
   (org-export-backends (append org-export-backends '(md man twbs)))
   (org-export-allow-bind-keywords t)
