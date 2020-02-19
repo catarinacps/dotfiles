@@ -13,6 +13,6 @@ pos 0x0
 rate 59.95
 output VGA1
 crtc 0
-mode 1680x1050
+mode 1280x1024
 pos 1680x0
-rate 59.95
+rate 60.02
