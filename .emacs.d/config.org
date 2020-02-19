@@ -548,7 +548,8 @@ And we'll use =delight= to hide minor-modes names and such.
   :delight
   (auto-fill-function " af")
   (eldoc-mode " eldoc")
-  (editorconfig-mode))
+  (editorconfig-mode)
+  (prelude-mode))
 #+end_src
 
 *** Splash screen
@@ -599,6 +600,7 @@ overall more popular than the former.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package treemacs
+  :demand
   :ensure treemacs-evil
   :ensure treemacs-projectile
   :general
@@ -1270,6 +1272,7 @@ And to use better bindings to =smartparens=, =evil-smartparens=!
 #+begin_src emacs-lisp :tangle yes
 (use-package evil-smartparens
   :after smartparens
+  :delight
   :hook
   (smartparens-enabled . evil-smartparens-mode))
 #+end_src
@@ -1463,11 +1466,11 @@ or searching the whole project and replacing something.
 #+begin_src emacs-lisp :tangle yes
 (use-package projectile
   :defer t
-  :delight '(:eval (concat " " (projectile-project-name)))
+  :delight '(:eval (concat " [" (projectile-project-name) "]"))
   :custom
   (projectile-completion-system 'ivy)
+  (projectile-switch-project-action 'projectile-find-file)
   (projectile-find-dir-includes-top-level t)
-  (projectile-switch-project-action 'neotree-projectile-action)
   (projectile-project-root-files-top-down-recurring
    (append '("compile_commands.json" ".ccls")
            projectile-project-root-files-top-down-recurring))
@@ -1811,7 +1814,7 @@ automatically maintain an updated table of contents of your =.org= file.
   :ensure ox-twbs
   :ensure htmlize
   :delight
-  (org-indent-mode)
+  (org-indent-mode nil org-indent)
   (org-src-mode)
   :preface
   (defun org-export-output-file-name-modified (orig-fun extension &optional subtreep pub-dir)
