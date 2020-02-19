@@ -729,6 +729,10 @@ Let's monitor ourselves with =whitespace=.
 #+begin_src emacs-lisp :tangle yes
 (use-package whitespace
   :demand
+  :hook
+  ((after-save . whitespace-cleanup)
+   (text-mode . (lambda () (whitespace-mode 1)))
+   (prog-mode . (lambda () (whitespace-mode 1))))
   :custom
   (whitespace-line-column 80)
   (whitespace-style '(face tabs empty trailing lines-tail)))
@@ -866,6 +870,7 @@ whatnot.
 (use-package ivy
   :ensure flx
   :demand
+  :delight
   :preface
   (defun hcps/ivy-open-current-typed-path ()
     (interactive)
@@ -1420,6 +1425,7 @@ I use =yasnippet= to handle my snippet needs.
 #+begin_src emacs-lisp :tangle yes
 (use-package yasnippet
   :demand
+  :delight yas-minor-mode
   :init
   (add-to-list 'hippie-expand-try-functions-list 'yas-hippie-try-expand)
   :general
@@ -2838,7 +2844,8 @@ The newest greatest compiled language!
    (rust-mode . cargo-minor-mode)
    (rust-mode . subword-mode))
   :custom
-  (rust-format-on-save t))
+  (rust-format-on-save t)
+  (rust-indent-method-chain t))
 #+end_src
 
 * Personal
