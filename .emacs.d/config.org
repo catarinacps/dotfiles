@@ -762,6 +762,7 @@ very pretty on =gruvbox=).
   :init
   (setq sml/no-confirm-load-theme t)
   :custom
+  (sml/projectile-replacement-format "[%s] ")
   (sml/shorten-directory nil)
   (sml/shorten-modes t)
   (sml/mode-width 'right)
@@ -1472,7 +1473,9 @@ or searching the whole project and replacing something.
 #+begin_src emacs-lisp :tangle yes
 (use-package projectile
   :defer t
-  :delight '(:eval (concat " [" (projectile-project-name) "]"))
+  ;; there's already a hint to the project name in the name of the buffer,
+  ;; thanks to smart-mode-line
+  :delight
   :custom
   (projectile-completion-system 'ivy)
   (projectile-switch-project-action 'projectile-find-file)
