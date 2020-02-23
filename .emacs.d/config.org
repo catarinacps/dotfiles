@@ -1166,6 +1166,7 @@ have the best of both worlds!
    "y" 'counsel-yank-pop
    "n" 'hcps/open-scratch
    "p" '(:keymap projectile-command-map :package projectile)
+   "P" 'counsel-package
    "ESC" 'evil-mc-undo-all-cursors
    ;; misc bindings under 'm'
    "m c" 'comment-dwim
