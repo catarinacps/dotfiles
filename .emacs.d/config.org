@@ -35,7 +35,9 @@ Cool Emacs configs from cool people:
     - [[#line-numbering-and-scrolling][Line numbering and scrolling]]
     - [[#randoms][Randoms]]
   - [[#extensions][Extensions]]
-    - [[#package-loading][Package loading]]
+    - [[#package-loading-setup][Package loading setup]]
+    - [[#keybindings][Keybindings]]
+    - [[#completion-framework][Completion framework]]
     - [[#splash-screen][Splash screen]]
     - [[#file-management][File management]]
     - [[#environment-variables][Environment variables]]
@@ -45,10 +47,10 @@ Cool Emacs configs from cool people:
     - [[#compilation][Compilation]]
     - [[#mode-line-1][Mode line]]
     - [[#remote-editing][Remote editing]]
-    - [[#completion][Completion]]
+    - [[#helpful-completion][Helpful completion]]
     - [[#language-server-protocol][Language Server Protocol]]
     - [[#syntax-and-highlighting][Syntax and Highlighting]]
-    - [[#keybindings][Keybindings]]
+    - [[#hydra][Hydra]]
     - [[#buffers-and-windows][Buffers and windows]]
     - [[#templates-and-snippets][Templates and snippets]]
     - [[#folding][Folding]]
@@ -470,27 +472,7 @@ Random configs and definitions that don't have a clear category.
 These are Emacs-behaviour related! In other words, these extend the capabilities
 of Emacs as an editor, and do NOT add support to other languages or etc.
 
-Also, =prelude= packages that I like and still need to add:
-
-- [X] smartparens
-- [X] which-key
-- [X] projectile
-- [X] magit and additionals
-- [X] flyspell (with aspell)
-- [X] undo-tree
-- [X] compile
-- [X] whitespace
-- [X] beacon
-- [X] ace-window
-- [X] rainbow-delimiters
-- [X] browse-kill-ring
-- [X] uniquify
-- [X] recentf
-- [X] super-save
-- [X] eval-expr
-- [X] emacs-dashboard
-
-*** Package loading
+*** Package loading setup
 
 I use =use-package= to load my packages and to organize them neatly in this org
 file. I plan to gradually rip everything I want from =prelude= and put it here
@@ -538,7 +520,11 @@ this file.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package general
-  :demand)
+  :demand
+  :preface
+  (defconst hcps/leader-key "SPC"
+    "Leader key for some special commands.")
+  (global-unset-key (kbd hcps/leader-key)))
 #+end_src
 
 And we'll use =delight= to hide minor-modes names and such.
@@ -552,6 +538,225 @@ And we'll use =delight= to hide minor-modes names and such.
   (editorconfig-mode)
   (prelude-mode)
   (abbrev-mode))
+#+end_src
+
+*** Keybindings
+
+=evil=, or /Extensible vi Layer/, is a minor mode that changes Emacs text
+editing keybindings to match the modal edit modes of vi and vim. Yes, you can
+have the best of both worlds!
+
+#+begin_src emacs-lisp :tangle yes
+(use-package evil
+  :demand
+  :ensure evil-numbers
+  :ensure evil-surround
+  :ensure evil-visualstar
+  :ensure evil-collection
+  :preface
+  (defun hcps/yank-to-eol ()
+    "Yank to the EOL."
+    (interactive)
+    (evil-yank (point) (point-at-eol)))
+  (defun hcps/shift-left-region ()
+    "Shift left and restore visual selection."
+    (interactive)
+    (evil-shift-left (region-beginning) (region-end))
+    (evil-normal-state)
+    (evil-visual-restore))
+  (defun hcps/shift-right-region ()
+    "Shift right and restore visual selection."
+    (interactive)
+    (evil-shift-right (region-beginning) (region-end))
+    (evil-normal-state)
+    (evil-visual-restore))
+  :general
+  (:states '(normal visual)
+   "C-u" 'evil-scroll-up
+   "C-d" 'evil-scroll-down
+   "C-a" 'evil-numbers/inc-at-pt
+   "C-S-a" 'evil-numbers/dec-at-pt)
+  (:states 'insert
+   "<up>" 'previous-line
+   "<down>" 'next-line
+   "<left>" 'left-char
+   "<right>" 'right-char
+   "<tab>" 'indent-for-tab-command)
+  (:states 'normal
+   "Y" 'hcps/yank-to-eol)
+  (:states 'visual
+   ">" 'hcps/shift-right-region
+   "<" 'hcps/shift-left-region)
+  :custom
+  (evil-esc-delay 0)
+  (evil-shift-width 2)
+  (evil-want-keybinding nil)
+  (evil-auto-indent t)
+  (evil-want-fine-undo t)
+  (evil-search-wrap t)
+  (evil-regexp-search t)
+  (evil-search-module 'isearch)
+  (evil-emacs-state-cursor  '("red" box))
+  (evil-normal-state-cursor '("gray" box))
+  (evil-visual-state-cursor '("gray" hollow))
+  (evil-insert-state-cursor '("gray" bar))
+  (evil-motion-state-cursor '("gray" hbar))
+  (evil-operator-state-cursor '("gray" evil-half-cursor))
+  (evil-mode-line-format '(before . mode-line-front-space))
+  (evil-normal-state-tag   (propertize "   NORMAL   " 'face '((:background "DarkGoldenrod2" :foreground "black"))))
+  (evil-emacs-state-tag    (propertize "   EMACS    " 'face '((:background "SkyBlue2"       :foreground "black"))))
+  (evil-insert-state-tag   (propertize "   INSERT   " 'face '((:background "chartreuse3"    :foreground "black"))))
+  (evil-replace-state-tag  (propertize "  REPLACE   " 'face '((:background "chocolate"      :foreground "black"))))
+  (evil-motion-state-tag   (propertize "   MOTION   " 'face '((:background "plum3"          :foreground "black"))))
+  (evil-visual-state-tag   (propertize "   VISUAL   " 'face '((:background "gray"           :foreground "black"))))
+  (evil-operator-state-tag (propertize "  OPERATOR  " 'face '((:background "sandy brown"    :foreground "black"))))
+  :config
+  (evil-mode 1)
+  (global-evil-surround-mode 1)
+  (evil-collection-init))
+#+end_src
+
+Also I use =evil-surround=, which is a port of =surround= from vim and allow you
+to quickly delete or change surrounding ="= and ='= from words or paragraphs or
+whatever, as it integrates with vim's verb way of expressing actions.
+
+=evil-visualstar= enables searching visual selections with the =*= key.
+
+The package =evil-collection= adds a bunch of cool =evil= keybindings to other
+popular packages.
+
+=evil-mc= implements the =multiple-cursors= functionality to =evil-mode=.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package evil-mc
+  :after evil
+  :general
+  (:states 'visual
+   "A" 'evil-mc-make-cursor-in-visual-selection-end
+   "I" 'evil-mc-make-cursor-in-visual-selection-beg)
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   "ESC" 'evil-mc-undo-all-cursors)
+  :config
+  (global-evil-mc-mode 1))
+#+end_src
+
+=evil-matchit= allows you to jump between tags automatically!
+
+#+begin_src emacs-lisp :tangle yes
+(use-package evil-matchit
+  :after evil
+  :custom
+  (evilmi-may-jump-by-percentage nil)
+  :config
+  (global-evil-matchit-mode 1))
+#+end_src
+
+And to use better bindings to =smartparens=, =evil-smartparens=!
+
+#+begin_src emacs-lisp :tangle yes
+(use-package evil-smartparens
+  :after smartparens
+  :delight
+  :hook
+  (smartparens-enabled . evil-smartparens-mode))
+#+end_src
+
+*** Completion framework
+
+=ivy= is like =ido= but better, I guess. It does fuzzy matching of searches to
+open files and such. =flx= is required here in order to have fuzzy matching and
+whatnot.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package ivy
+  :ensure flx
+  :demand
+  :delight
+  :preface
+  (defun hcps/ivy-open-current-typed-path ()
+    (interactive)
+    (when ivy--directory
+      (let* ((dir ivy--directory)
+             (text-typed ivy-text)
+             (path (concat dir text-typed)))
+        (delete-minibuffer-contents)
+        (ivy--done path))))
+  :custom
+  (ivy-count-format "(%d/%d) ")
+  (ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
+  (ivy-height 8)
+  (ivy-extra-directories nil)
+  (ivy-wrap t)
+  (ivy-action-wrap t)
+  (ivy-initial-inputs-alist nil)
+  (ivy-format-functions-alist '((t . ivy-format-function-line)))
+  :custom-face
+  (ivy-current-match ((t :inherit hl-line :bold t :underline nil)))
+  :general
+  ("C-x b" 'ivy-switch-buffer)
+  (:keymaps 'ivy-minibuffer-map
+   "RET" 'ivy-alt-done
+   "C-f" 'hcps/ivy-open-current-typed-path
+   "C-l" 'ivy-next-line
+   "C-h" 'ivy-previous-line)
+  :config
+  (ivy-mode 1))
+#+end_src
+
+=counsel= uses =ivy= to find files and commands. =smex= is required here to
+make sure that =counsel-M-x= has decent candidate sorting.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package counsel
+  :ensure smex
+  :after ivy
+  :demand
+  :preface
+  (defun hcps/override-yank-pop (&optional arg)
+    "Delete the region before inserting poped string."
+    (when (and evil-mode (eq 'visual evil-state))
+      (kill-region (region-beginning) (region-end))))
+  :init
+  (advice-add 'counsel-yank-pop :before #'hcps/override-yank-pop)
+  :general
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   "b" 'counsel-switch-buffer
+   "f" 'counsel-find-file
+   "r" 'counsel-recentf
+   "y" 'counsel-yank-pop
+   "P" 'counsel-package
+   "m b" 'counsel-bookmark)
+  ("M-x" 'counsel-M-x))
+#+end_src
+
+As you may know, in Emacs we use =tramp= to edit files remotely using =ssh= and
+to edit local files as =root=. With the package =counsel-tramp= we have an
+=counsel=-powered interface to use that mechanism!
+
+This package looks up your hosts defined in =~/.ssh/config= to generate a list
+with possible =ssh= connections AND docker containers (thanks to
+=docker-tramp=), along with =sudo= possibilities (including =localhost=!).
+
+#+begin_src emacs-lisp :tangle yes
+(use-package counsel-tramp
+  :ensure docker-tramp
+  :after counsel
+  :general
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   "m t" 'counsel-tramp))
+#+end_src
+
+And, as a bonus, I've added the package =ivy-rich= to make the =ivy= minibuffer
+the prettiest on all the land.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package ivy-rich
+  :after ivy
+  :config
+  (ivy-rich-mode 1))
 #+end_src
 
 *** Splash screen
@@ -593,7 +798,11 @@ the default =dired=.
   (ranger-dont-show-binary t)
   (ranger-max-preview-size 10)
   :config
-  (ranger-override-dired-mode t))
+  (ranger-override-dired-mode t)
+  :general
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   "d" 'ranger))
 #+end_src
 
 While I've somewhat used =neotree.el=, I believe that =treemacs= is turning out
@@ -676,6 +885,10 @@ also like to use =anzu=.
 (use-package anzu
   :custom
   (anzu-cons-mode-line nil)
+  :general
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   "m r" 'anzu-replace-at-cursor-thing)
   :config
   (global-anzu-mode 1))
 #+end_src
@@ -689,6 +902,10 @@ slowness of it. So, I use =deadgrep=!
 #+begin_src emacs-lisp :tangle yes
 (use-package deadgrep
   :after evil-collection
+  :general
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   "m g" 'deadgrep)
   :config
   (evil-collection-deadgrep-setup))
 #+end_src
@@ -696,17 +913,20 @@ slowness of it. So, I use =deadgrep=!
 And, to upgrade Emacs to the 21st century, I use =visual-regexp=!
 
 #+begin_src emacs-lisp :tangle yes
-(use-package visual-regexp-steroids
-  :ensure visual-regexp
+(use-package visual-regexp
+  :ensure visual-regexp-steroids
   :ensure pcre2el
-  :after (visual-regexp pcre2el)
   :init
   (advice-add 'vr--get-regexp-modifiers-prefix
               :filter-return (lambda (fun-ret)
                                (if (not (string= "" fun-ret)) (concat fun-ret " "))))
   :custom
   (vr/default-feedback-limit 300)
-  (vr/engine 'pcre2el))
+  (vr/engine 'pcre2el)
+  :general
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   "R" 'vr/query-replace))
 #+end_src
 
 *** History
@@ -727,6 +947,10 @@ Undo and redo and kools with =undo-tree=!
   (undo-tree-enable-undo-in-region nil)
   (undo-tree-auto-save-history nil)
   (undo-tree-visualizer-diff t)
+  :general
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   "u" 'undo-tree-visualize)
   :config
   (advice-add 'undo-tree-visualize :before #'reset-visualizer-diff))
 #+end_src
@@ -773,6 +997,7 @@ very pretty on =gruvbox=).
   :custom
   (sml/projectile-replacement-format "[%s] ")
   (sml/size-indication-format " %I ")
+  (sml/line-number-format "%4l")
   (sml/use-projectile-p 'before-prefixes)
   (sml/shorten-directory nil)
   (sml/shorten-modes t)
@@ -846,105 +1071,20 @@ Here's a small package that allows remotely opening sessions.
   (shell-command-dont-erase-buffer t)
   (ssh-default-server "bolsa.inf")
   (ssh-directory-tracking-mode t)
+  :general
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   "m s" 'hcps/ssh-user-connect
+   "m S" 'hcps/store-user-remote)
   :config
   (shell-dirtrack-mode t)
   (setenv "SSH_AUTH_SOCK"
           (concat (getenv "XDG_RUNTIME_DIR") "/gnupg/S.gpg-agent.ssh")))
 #+end_src
 
-*** Completion
+*** Helpful completion
 
-This section comprises of both text completion and fuzzy command and path
-completion.
-
-**** Path and command
-
-=ivy= is like =ido= but better, I guess. It does fuzzy matching of searches to
-open files and such. =flx= is required here in order to have fuzzy matching and
-whatnot.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package ivy
-  :ensure flx
-  :demand
-  :delight
-  :preface
-  (defun hcps/ivy-open-current-typed-path ()
-    (interactive)
-    (when ivy--directory
-      (let* ((dir ivy--directory)
-             (text-typed ivy-text)
-             (path (concat dir text-typed)))
-        (delete-minibuffer-contents)
-        (ivy--done path))))
-  :custom
-  (ivy-count-format "(%d/%d) ")
-  (ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
-  (ivy-height 8)
-  (ivy-extra-directories nil)
-  (ivy-wrap t)
-  (ivy-action-wrap t)
-  (ivy-initial-inputs-alist nil)
-  (ivy-format-functions-alist '((t . ivy-format-function-line)))
-  :custom-face
-  (ivy-current-match ((t :inherit hl-line :bold t :underline nil)))
-  :general
-  ("C-x b" 'ivy-switch-buffer)
-  (:keymaps 'ivy-minibuffer-map
-   "RET" 'ivy-alt-done
-   "C-f" 'hcps/ivy-open-current-typed-path
-   "C-l" 'ivy-next-line
-   "C-h" 'ivy-previous-line)
-  :config
-  (ivy-mode 1))
-#+end_src
-
-=counsel= uses =ivy= to find files and commands. =smex= is required here to
-make sure that =counsel-M-x= has decent candidate sorting.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package counsel
-  :ensure smex
-  :after ivy
-  :demand
-  :preface
-  (defun hcps/override-yank-pop (&optional arg)
-    "Delete the region before inserting poped string."
-    (when (and evil-mode (eq 'visual evil-state))
-      (kill-region (region-beginning) (region-end))))
-  :init
-  (advice-add 'counsel-yank-pop :before #'hcps/override-yank-pop)
-  :general
-  ("M-x" 'counsel-M-x)
-  ("C-x C-f" 'counsel-find-file)
-  ("C-x r b" 'counsel-bookmark))
-#+end_src
-
-As you may know, in Emacs we use =tramp= to edit files remotely using =ssh= and
-to edit local files as =root=. With the package =counsel-tramp= we have an
-=counsel=-powered interface to use that mechanism!
-
-This package looks up your hosts defined in =~/.ssh/config= to generate a list
-with possible =ssh= connections AND docker containers (thanks to
-=docker-tramp=), along with =sudo= possibilities (including =localhost=!).
-
-#+begin_src emacs-lisp :tangle yes
-(use-package counsel-tramp
-  :ensure docker-tramp
-  :after counsel
-  :general
-  ("C-c C-f" 'counsel-tramp))
-#+end_src
-
-And, as a bonus, I've added the package =ivy-rich= to make the =ivy= minibuffer
-the prettiest on all the land.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package ivy-rich
-  :after ivy
-  :config
-  (ivy-rich-mode 1))
-#+end_src
+This section comprises of text and command completion.
 
 **** Text
 
@@ -1102,182 +1242,15 @@ Of course, =flyspell= corrects your writing!
   :custom
   (ispell-program-name "aspell")
   (ispell-extra-args '("--sug-mode=ultra"))
+  :general
+  (:state '(normal visual)
+   :prefix hcps/leader-key
+   "m d" 'ispell-change-dictionary)
   :config
   (flyspell-mode 1))
 #+end_src
 
-*** Keybindings
-
-These packages change keybindings and the default editing modes of Emacs.
-
-**** Evil
-
-=evil=, or /Extensible vi Layer/, is a minor mode that changes Emacs text
-editing keybindings to match the modal edit modes of vi and vim. Yes, you can
-have the best of both worlds!
-
-#+begin_src emacs-lisp :tangle yes
-(use-package evil
-  :demand
-  :preface
-  (defun hcps/yank-to-eol ()
-    "Yank to the EOL."
-    (interactive)
-    (evil-yank (point) (point-at-eol)))
-  (defun hcps/shift-left-region ()
-    "Shift left and restore visual selection."
-    (interactive)
-    (evil-shift-left (region-beginning) (region-end))
-    (evil-normal-state)
-    (evil-visual-restore))
-  (defun hcps/shift-right-region ()
-    "Shift right and restore visual selection."
-    (interactive)
-    (evil-shift-right (region-beginning) (region-end))
-    (evil-normal-state)
-    (evil-visual-restore))
-  :init
-  (defconst hcps/leader-key "SPC"
-    "Leader key for some special commands in normal mode.")
-  :general
-  (:states '(normal visual)
-   :prefix hcps/leader-key
-   ""  nil
-   "f" 'counsel-find-file
-   "b" 'ivy-switch-buffer
-   "r" 'counsel-recentf
-   "R" 'vr/query-replace
-   "t" 'counsel-tramp
-   "d" 'ranger
-   "w" 'delete-window
-   "g" 'magit-status
-   "o" 'ace-window
-   "u" 'undo-tree-visualize
-   "y" 'counsel-yank-pop
-   "p" '(:keymap projectile-command-map :package projectile)
-   "P" 'counsel-package
-   "ESC" 'evil-mc-undo-all-cursors
-   ;; misc bindings under 'm'
-   "m c" 'comment-dwim
-   "m i" 'indent-region
-   "m t" 'git-timemachine
-   "m d" 'ispell-change-dictionary
-   "m g" 'deadgrep
-   "m b" 'counsel-bookmark
-   "m r" 'anzu-replace-at-cursor-thing
-   "m s" 'hcps/ssh-user-connect
-   "m S" 'hcps/store-user-remote
-   "m j" 'org-journal-new-entry)
-  (:states '(normal visual)
-   "C-u" 'evil-scroll-up
-   "C-d" 'evil-scroll-down)
-  (:states 'insert
-   "<up>" 'previous-line
-   "<down>" 'next-line
-   "<left>" 'left-char
-   "<right>" 'right-char
-   "<tab>" 'indent-for-tab-command)
-  (:states 'normal
-   "Y" 'hcps/yank-to-eol)
-  (:states 'visual
-   ">" 'hcps/shift-right-region
-   "<" 'hcps/shift-left-region)
-  :custom
-  (evil-esc-delay 0)
-  (evil-shift-width 2)
-  (evil-want-keybinding nil)
-  (evil-auto-indent t)
-  (evil-want-fine-undo t)
-  (evil-search-wrap t)
-  (evil-regexp-search t)
-  (evil-search-module 'isearch)
-  (evil-emacs-state-cursor  '("red" box))
-  (evil-normal-state-cursor '("gray" box))
-  (evil-visual-state-cursor '("gray" hollow))
-  (evil-insert-state-cursor '("gray" bar))
-  (evil-motion-state-cursor '("gray" hbar))
-  (evil-operator-state-cursor '("gray" evil-half-cursor))
-  (evil-mode-line-format '(before . mode-line-front-space))
-  (evil-normal-state-tag   (propertize "   NORMAL   " 'face '((:background "DarkGoldenrod2" :foreground "black"))))
-  (evil-emacs-state-tag    (propertize "   EMACS    " 'face '((:background "SkyBlue2"       :foreground "black"))))
-  (evil-insert-state-tag   (propertize "   INSERT   " 'face '((:background "chartreuse3"    :foreground "black"))))
-  (evil-replace-state-tag  (propertize "  REPLACE   " 'face '((:background "chocolate"      :foreground "black"))))
-  (evil-motion-state-tag   (propertize "   MOTION   " 'face '((:background "plum3"          :foreground "black"))))
-  (evil-visual-state-tag   (propertize "   VISUAL   " 'face '((:background "gray"           :foreground "black"))))
-  (evil-operator-state-tag (propertize "  OPERATOR  " 'face '((:background "sandy brown"    :foreground "black"))))
-  :config
-  (evil-mode 1))
-#+end_src
-
-Now, you may be asking yourself "why are you defining some of the keybindings
-here under evil and other in their respective packages?". That's a great
-question! My intention was to define everything =evil= and global here, maybe
-some of it got scattered around the rest of the config files, but I'm slowly
-collecting these occurrences.
-
-Also I use =evil-surround=, which is a port of =surround= from vim and allow you
-to quickly delete or change surrounding ="= and ='= from words or paragraphs or
-whatever, as it integrates with vim's verb way of expressing actions.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package evil-surround
-  :after evil
-  :config
-  (global-evil-surround-mode 1))
-#+end_src
-
-=evil-visualstar= enables searching visual selections with the =*= key.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package evil-visualstar
-  :after evil)
-#+end_src
-
-The package =evil-collection= adds a bunch of cool =evil= keybindings to other
-popular packages.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package evil-collection
-  :after evil
-  :config
-  (evil-collection-init))
-#+end_src
-
-=evil-mc= implements the =multiple-cursors= functionality to =evil-mode=.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package evil-mc
-  :after evil
-  :general
-  (:states 'visual
-   "A" 'evil-mc-make-cursor-in-visual-selection-end
-   "I" 'evil-mc-make-cursor-in-visual-selection-beg)
-  :config
-  (global-evil-mc-mode 1))
-#+end_src
-
-=evil-matchit= allows you to jump between tags automatically!
-
-#+begin_src emacs-lisp :tangle yes
-(use-package evil-matchit
-  :after evil
-  :custom
-  (evilmi-may-jump-by-percentage nil)
-  :config
-  (global-evil-matchit-mode 1))
-#+end_src
-
-And to use better bindings to =smartparens=, =evil-smartparens=!
-
-#+begin_src emacs-lisp :tangle yes
-(use-package evil-smartparens
-  :after smartparens
-  :delight
-  :hook
-  (smartparens-enabled . evil-smartparens-mode))
-#+end_src
-
-**** Hydra
+*** Hydra
 
 =hydra= is a package that allows keybindings to be activated under the pressing
 of a specific combination of keys. These will then be active as long as only
@@ -1300,7 +1273,7 @@ pressed the hydra is killed and the keybindings deactivated.
   (hydra-default-hint nil))
 #+end_src
 
-***** Eyebrowse
+**** Eyebrowse
 
  #+begin_src emacs-lisp
  (defhydra hydra-eyebrowse (:color blue)
@@ -1324,7 +1297,7 @@ pressed the hydra is killed and the keybindings deactivated.
    ("s" eyebrowse-switch-to-window-config))
  #+end_src
 
-***** Flycheck
+**** Flycheck
 
  #+begin_src emacs-lisp
  (defhydra hydra-flycheck (:color pink)
@@ -1392,10 +1365,12 @@ that kills old buffers.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ace-window
-  :general
-  ("M-o" 'ace-window)
   :custom
-  (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
+  (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
+  :general
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   "w o" 'ace-window))
 #+end_src
 
 =super-save= auto-saves buffers when you switch or close buffers or when Emacs
@@ -1482,6 +1457,9 @@ or searching the whole project and replacing something.
   :general
   ("s-p" '(:keymap projectile-command-map :package projectile)
    [remap compile] 'projectile-compile-project)
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   "p" '(:keymap projectile-command-map :package projectile))
   :config
   (projectile-global-mode)
   ;; clean dead projects when Emacs is idle
@@ -1510,7 +1488,7 @@ universe, nay, in the whole multiverse.
   :defer t
   :hook
   ((after-save . magit-after-save-refresh-status)
-   (git-commit-mode . evil-insert-state))
+   (git-commit-mode . evil-emacs-state))
   :preface
   ;; easy on-off for the following function
   (defcustom magit-push-protected-branch nil
@@ -1544,8 +1522,15 @@ universe, nay, in the whole multiverse.
    "s-m d" 'magit-dispatch
    "s-m f" 'magit-file-dispatch
    "s-m l" 'magit-log
-   "s-m b" 'magit-blame
-   "s-m t" 'git-timemachine)
+   "s-m b" 'magit-blame)
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   "g p" 'magit-list-repositories
+   "g g" 'magit-status
+   "g d" 'magit-dispatch
+   "g f" 'magit-file-dispatch
+   "g l" 'magit-log
+   "g b" 'magit-blame)
   :config
   (evil-add-hjkl-bindings magit-log-mode-map 'emacs)
   (evil-add-hjkl-bindings magit-commit-mode-map 'emacs)
@@ -1574,6 +1559,10 @@ Also, =git-timemachine= is a beautiful way to walk through git history:
    "w" 'git-timemachine-kill-abbreviated-revision
    "g" 'git-timemachine-show-nth-revision
    "c" 'git-timemachine-show-commit)
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   "g t" 'git-timemachine)
+  ("s-m t" 'git-timemachine)
   :config
   (evil-make-overriding-map git-timemachine-mode-map 'normal))
 #+end_src
@@ -1913,15 +1902,18 @@ automatically maintain an updated table of contents of your =.org= file.
   (:states '(normal visual)
    :keymaps 'org-mode-map
    :prefix hcps/leader-key
-   "e" 'org-export-dispatch
-   "x" 'org-babel-execute-buffer
-   "q" 'org-set-tags-command
-   "a" 'org-attach
-   "z" 'org-babel-tangle-block
-   "Z" 'org-babel-tangle)
+   "l e" 'org-export-dispatch
+   "l x" 'org-babel-execute-buffer
+   "l t" 'org-set-tags-command
+   "l a" 'org-attach
+   "l z" 'org-babel-tangle-block
+   "l Z" 'org-babel-tangle)
   (:states 'insert
    :keymaps 'org-mode-map
    "<tab>" 'org-cycle)
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   "m j" 'org-journal-new-entry)
   :config
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -2037,8 +2029,7 @@ really be of great use while editing C and C++ code.
   (:states '(normal visual)
    :keymaps 'c-mode-base-map
    :prefix hcps/leader-key
-   "c" 'clang-format-region
-   "C" 'clang-format-buffer)
+   "i" 'clang-format-region)
   :hook
   (before-save-hook . #'cc-format-on-save-hook)
   :custom
@@ -2937,11 +2928,14 @@ related to some package configured in the sections above"!
  "C-S-l" 'next-buffer)
 
 (general-define-key
- :prefix hcps/leader-key
  :states '(normal visual)
+ :prefix hcps/leader-key
  "B" 'ibuffer
  "s" 'save-buffer
  "n" 'hcps/open-scratch
  "k" 'kill-this-buffer
- "K" 'kill-buffer)
+ "K" 'kill-buffer
+ "i" 'indent-region
+ "c" 'comment-dwim
+ "w k" 'delete-window)
 #+end_src
