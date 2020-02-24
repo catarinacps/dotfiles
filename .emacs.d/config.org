@@ -86,6 +86,7 @@ Cool Emacs configs from cool people:
   - [[#functions][Functions]]
     - [[#fetching-text][Fetching text]]
     - [[#date][Date]]
+    - [[#opening-things][Opening things]]
   - [[#keybindings-1][Keybindings]]
 
 * Introduction
@@ -549,7 +550,8 @@ And we'll use =delight= to hide minor-modes names and such.
   (auto-fill-function " af")
   (eldoc-mode " eldoc")
   (editorconfig-mode)
-  (prelude-mode))
+  (prelude-mode)
+  (abbrev-mode))
 #+end_src
 
 *** Splash screen
@@ -763,28 +765,15 @@ very pretty on =gruvbox=).
   (setq sml/no-confirm-load-theme t)
   :custom
   (sml/projectile-replacement-format "[%s] ")
+  (sml/size-indication-format " %I ")
+  (sml/use-projectile-p 'before-prefixes)
   (sml/shorten-directory nil)
   (sml/shorten-modes t)
   (sml/mode-width 'right)
-  (sml/name-width 30)
+  (sml/name-width 40)
   (sml/theme 'respectful)
   :config
   (sml/setup))
-#+end_src
-
-Also, =minions= is useful to not show those pesky minor-modes all the time. No
-one wanna see what minor modes are active ALL of the time, right?
-
-#+begin_src emacs-lisp :tangle yes
-(use-package minions
-  :disabled
-  :after smart-mode-line
-  :custom
-  (minions-mode-line-lighter "...")
-  (minions-mode-line-delimiters '("" . ""))
-  :config
-  (add-to-list 'minions-whitelist '(projectile-mode . t))
-  (minions-mode 1))
 #+end_src
 
 *** Remote editing
@@ -891,7 +880,7 @@ whatnot.
   (ivy-initial-inputs-alist nil)
   (ivy-format-functions-alist '((t . ivy-format-function-line)))
   :custom-face
-  (ivy-current-match ((t :inherit hl-line :bold t :underline nil :foreground "white")))
+  (ivy-current-match ((t :inherit hl-line :bold t :underline nil)))
   :general
   ("C-x b" 'ivy-switch-buffer)
   (:keymaps 'ivy-minibuffer-map
@@ -1099,6 +1088,8 @@ Of course, =flyspell= corrects your writing!
 (use-package flyspell
   :demand
   :delight
+  (flyspell-mode " fly")
+  (flyspell-prog-mode " flyp")
   :hook
   (prog-mode . flyspell-prog-mode)
   :custom
@@ -1138,10 +1129,6 @@ have the best of both worlds!
     (evil-shift-right (region-beginning) (region-end))
     (evil-normal-state)
     (evil-visual-restore))
-  (defun hcps/open-scratch ()
-    "Switch to the *scratch* buffer whenever you are."
-    (interactive)
-    (switch-to-buffer "*scratch*" nil t))
   :init
   (defconst hcps/leader-key "SPC"
     "Leader key for some special commands in normal mode.")
@@ -1151,20 +1138,15 @@ have the best of both worlds!
    ""  nil
    "f" 'counsel-find-file
    "b" 'ivy-switch-buffer
-   "B" 'ibuffer
-   "k" 'kill-this-buffer
-   "K" 'kill-buffer
    "r" 'counsel-recentf
    "R" 'vr/query-replace
    "t" 'counsel-tramp
-   "s" 'save-buffer
    "d" 'ranger
    "w" 'delete-window
    "g" 'magit-status
    "o" 'ace-window
    "u" 'undo-tree-visualize
    "y" 'counsel-yank-pop
-   "n" 'hcps/open-scratch
    "p" '(:keymap projectile-command-map :package projectile)
    "P" 'counsel-package
    "ESC" 'evil-mc-undo-all-cursors
@@ -1181,9 +1163,7 @@ have the best of both worlds!
    "m j" 'org-journal-new-entry)
   (:states '(normal visual)
    "C-u" 'evil-scroll-up
-   "C-d" 'evil-scroll-down
-   "C-S-h" 'previous-buffer
-   "C-S-l" 'next-buffer)
+   "C-d" 'evil-scroll-down)
   (:states 'insert
    "<up>" 'previous-line
    "<down>" 'next-line
@@ -1209,7 +1189,15 @@ have the best of both worlds!
   (evil-visual-state-cursor '("gray" hollow))
   (evil-insert-state-cursor '("gray" bar))
   (evil-motion-state-cursor '("gray" hbar))
-  (evil-mode-line-format 'before)
+  (evil-operator-state-cursor '("gray" evil-half-cursor))
+  (evil-mode-line-format '(before . mode-line-front-space))
+  (evil-normal-state-tag   (propertize "   NORMAL   " 'face '((:background "DarkGoldenrod2" :foreground "black"))))
+  (evil-emacs-state-tag    (propertize "   EMACS    " 'face '((:background "SkyBlue2"       :foreground "black"))))
+  (evil-insert-state-tag   (propertize "   INSERT   " 'face '((:background "chartreuse3"    :foreground "black"))))
+  (evil-replace-state-tag  (propertize "  REPLACE   " 'face '((:background "chocolate"      :foreground "black"))))
+  (evil-motion-state-tag   (propertize "   MOTION   " 'face '((:background "plum3"          :foreground "black"))))
+  (evil-visual-state-tag   (propertize "   VISUAL   " 'face '((:background "gray"           :foreground "black"))))
+  (evil-operator-state-tag (propertize "  OPERATOR  " 'face '((:background "sandy brown"    :foreground "black"))))
   :config
   (evil-mode 1))
 #+end_src
@@ -1229,21 +1217,6 @@ whatever, as it integrates with vim's verb way of expressing actions.
   :after evil
   :config
   (global-evil-surround-mode 1))
-#+end_src
-
-=evil-org= adds a lot of useful keybindings to =org-mode=. I'm still not aware
-of how much this adds or how similar they are to =prelude='s keys to org on
-=evil=.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package evil-org
-  :disabled
-  :after (org evil)
-  :hook
-  ((org-mode . evil-org-mode)
-   (evil-org-mode . (lambda () (evil-org-set-key-theme))))
-  :config
-  (evil-org-agenda-set-keys))
 #+end_src
 
 =evil-visualstar= enables searching visual selections with the =*= key.
@@ -2929,12 +2902,39 @@ Insert the current date.
   (insert (format-time-string "%Y.%m.%d %H:%M")))
 #+end_src
 
-** Keybindings
+*** Opening things
 
-Here I'll define some of my personal keybindings.
+Like the title says...
 
 #+begin_src emacs-lisp :tangle yes
-(global-set-key (kbd "C-x k") 'kill-this-buffer)
-(global-set-key (kbd "C-c x") 'hcps/date-iso)
-(global-set-key (kbd "<f9>") 'hcps/get-selected-text)
+(defun hcps/open-scratch ()
+  "Switch to the *scratch* buffer whenever you are."
+  (interactive)
+  (switch-to-buffer "*scratch*" nil t))
+#+end_src
+
+** Keybindings
+
+Here I'll define some of my personal keybindings, which means "keybindings not
+related to some package configured in the sections above"!
+
+#+begin_src emacs-lisp :tangle yes
+(general-define-key
+ "C-x k" 'kill-this-buffer
+ "C-c x" 'hcps/date-iso
+ "<f9>" 'hcps/get-selected-text)
+
+(general-define-key
+ :states '(normal visual)
+ "C-S-h" 'previous-buffer
+ "C-S-l" 'next-buffer)
+
+(general-define-key
+ :prefix hcps/leader-key
+ :states '(normal visual)
+ "B" 'ibuffer
+ "s" 'save-buffer
+ "n" 'hcps/open-scratch
+ "k" 'kill-this-buffer
+ "K" 'kill-buffer)
 #+end_src
