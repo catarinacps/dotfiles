@@ -717,11 +717,18 @@ Undo and redo and kools with =undo-tree=!
 (use-package undo-tree
   :hook
   (after-init . global-undo-tree-mode)
+  :preface
+  (defun reset-visualizer-diff ()
+    "Because undo-tree-visualize sets the value of this variable to nil on quit."
+    (setq undo-tree-visualizer-diff
+          (eval (car (get 'undo-tree-visualizer-diff 'customized-value)))))
   :custom
   (undo-tree-visualizer-timestamps t)
   (undo-tree-enable-undo-in-region nil)
   (undo-tree-auto-save-history nil)
-  (undo-tree-viualizer-diff t))
+  (undo-tree-visualizer-diff t)
+  :config
+  (advice-add 'undo-tree-visualize :before #'reset-visualizer-diff))
 #+end_src
 
 *** Lines and characters
