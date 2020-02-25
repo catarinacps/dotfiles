@@ -1,10 +1,20 @@
-#+TITLE: All my relevant personal dotfiles
-#+AUTHOR: Henrique Silva
+#+author: Henrique Silva
 #+email: hcpsilva@inf.ufrgs.br
-#+INFOJS_OPT:
-#+PROPERTY: cache yes
-#+PROPERTY: exports both
-#+PROPERTY: tangle yes
+#+infojs_opt:
+#+property: cache yes
+#+property: exports both
+#+property: tangle yes
+#+options: title:nil
+
+#+begin_example
+     __          __       ___      ___
+    /\ \        /\ \__  /'___\ __ /\_ \
+    \_\ \    ___\ \ ,_\/\ \__//\_\\//\ \      __    ____
+    /'_` \  / __`\ \ \/\ \ ,__\/\ \ \ \ \   /'__`\ /',__\
+ __/\ \L\ \/\ \L\ \ \ \_\ \ \_/\ \ \ \_\ \_/\  __//\__, `\
+/\_\ \___,_\ \____/\ \__\\ \_\  \ \_\/\____\ \____\/\____/
+\/_/\/__,_ /\/___/  \/__/ \/_/   \/_/\/____/\/____/\/___/
+#+end_example
 
 I intend to use this repository (and also this README file) as a tool to
 organize myself and my configurations. That way I can incrementally rip
