@@ -1243,7 +1243,7 @@ Of course, =flyspell= corrects your writing!
   (ispell-program-name "aspell")
   (ispell-extra-args '("--sug-mode=ultra"))
   :general
-  (:state '(normal visual)
+  (:states '(normal visual)
    :prefix hcps/leader-key
    "m d" 'ispell-change-dictionary)
   :config
