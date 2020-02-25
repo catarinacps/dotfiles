@@ -886,8 +886,18 @@ also like to use =anzu=.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package anzu
+  :delight isearch-mode
+  :preface
+  (defun hcps/anzu-update-func (here total)
+    (when anzu--state
+      (let ((status (cl-case anzu--state
+                      (search (format "(%d/%d) " here total))
+                      (replace-query (format "(%d replaces) " total))
+                      (replace (format "(%d/%d) " here total)))))
+        (propertize status 'face 'anzu-mode-line))))
   :custom
-  (anzu-cons-mode-line nil)
+  (anzu-cons-mode-line-p t)
+  (anzu-mode-line-update-function #'hcps/anzu-update-func)
   :general
   (:states '(normal visual)
    :prefix hcps/leader-key
@@ -1914,9 +1924,6 @@ automatically maintain an updated table of contents of your =.org= file.
   (:states 'insert
    :keymaps 'org-mode-map
    "<tab>" 'org-cycle)
-  (:states '(normal visual)
-   :prefix hcps/leader-key
-   "m j" 'org-journal-new-entry)
   :config
   (org-babel-do-load-languages
    'org-babel-load-languages
@@ -1980,7 +1987,10 @@ And here I'll put some LaTeX classes that aren't default in org:
   (org-journal-date-format "%e %b %Y (%A)")
   (org-journal-time-format "")
   :general
-  ("C-c t" 'org-journal-new-entry))
+  ("C-c t" 'org-journal-new-entry)
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   "m j" 'org-journal-new-entry))
 #+end_src
 
 ** C/C++
@@ -2034,7 +2044,7 @@ really be of great use while editing C and C++ code.
    :prefix hcps/leader-key
    "i" 'clang-format-region)
   :hook
-  (before-save-hook . #'cc-format-on-save-hook)
+  (before-save-hook . cc-format-on-save-hook)
   :custom
   (clang-format-style "webkit"))
 #+end_src
