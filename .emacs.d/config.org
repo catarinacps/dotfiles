@@ -524,7 +524,11 @@ this file.
   :preface
   (defconst hcps/leader-key "SPC"
     "Leader key for some special commands.")
-  (global-unset-key (kbd hcps/leader-key)))
+  :config
+  (general-define-key
+   :states '(normal visual)
+   :prefix hcps/leader-key
+   "" nil))
 #+end_src
 
 And we'll use =delight= to hide minor-modes names and such.
@@ -694,7 +698,6 @@ whatnot.
   :custom-face
   (ivy-current-match ((t :inherit hl-line :bold t :underline nil)))
   :general
-  ("C-x b" 'ivy-switch-buffer)
   (:keymaps 'ivy-minibuffer-map
    "RET" 'ivy-alt-done
    "C-f" 'hcps/ivy-open-current-typed-path
@@ -2937,5 +2940,7 @@ related to some package configured in the sections above"!
  "K" 'kill-buffer
  "i" 'indent-region
  "c" 'comment-dwim
- "w k" 'delete-window)
+ "w k" 'delete-window
+ "w v" 'split-window-vertically
+ "w h" 'split-window-horizontally)
 #+end_src
