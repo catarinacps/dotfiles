@@ -465,6 +465,10 @@ Random configs and definitions that don't have a clear category.
 
 ; Set Emacs to call the garbage collector on focus-out
 (add-hook 'focus-out-hook #'garbage-collect)
+
+; use GPG-agent instead of the default
+(setenv "SSH_AUTH_SOCK"
+          (concat (getenv "XDG_RUNTIME_DIR") "/gnupg/S.gpg-agent.ssh"))
 #+end_src
 
 ** Extensions
@@ -1083,9 +1087,7 @@ Here's a small package that allows remotely opening sessions.
    "m s" 'hcps/ssh-user-connect
    "m S" 'hcps/store-user-remote)
   :config
-  (shell-dirtrack-mode t)
-  (setenv "SSH_AUTH_SOCK"
-          (concat (getenv "XDG_RUNTIME_DIR") "/gnupg/S.gpg-agent.ssh")))
+  (shell-dirtrack-mode t))
 #+end_src
 
 *** Helpful completion
