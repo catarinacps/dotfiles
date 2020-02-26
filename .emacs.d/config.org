@@ -495,13 +495,6 @@ in the system before proceeding (useful to LaTeX, for example)!
 (use-package use-package-ensure-system-package)
 #+end_src
 
-As we'll use the =:bind= and variants in our =use-package= statements, we'll
-have to demand the =bind-key= package.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package bind-key)
-#+end_src
-
 Having that said, I too use =auto-compile= to always compile packages and to
 have their newest version.
 
@@ -525,7 +518,7 @@ this file.
   (defconst hcps/leader-key "SPC"
     "Leader key for some special commands.")
   :config
-  (general-define-key
+  (general-def
    :states '(normal visual)
    :prefix hcps/leader-key
    "" nil))
@@ -1588,8 +1581,8 @@ the structure of the current major mode.
 #+begin_src emacs-lisp
 (use-package expand-region
   :general
-  ("C-+" 'er/contract-region)
-  ("C-=" 'er/expand-region))
+  ("C-+" 'er/contract-region
+   "C-=" 'er/expand-region))
 #+end_src
 
 When in need of smart pairing, look no further than =smartparens=!
@@ -2930,27 +2923,29 @@ Here I'll define some of my personal keybindings, which means "keybindings not
 related to some package configured in the sections above"!
 
 #+begin_src emacs-lisp :tangle yes
-(general-define-key
- "C-x k" 'kill-this-buffer
- "C-c x" 'hcps/date-iso
- "<f9>" 'hcps/get-selected-text)
+(general-def
+  "C-x k" 'kill-this-buffer
+  "C-c x" 'hcps/date-iso
+  "<f9>" 'hcps/get-selected-text
+  "M--" 'text-scale-decrease
+  "M-+" 'text-scale-increase)
 
-(general-define-key
- :states '(normal visual)
- "C-S-h" 'previous-buffer
- "C-S-l" 'next-buffer)
+(general-def
+  :states '(normal visual)
+  "C-S-h" 'previous-buffer
+  "C-S-l" 'next-buffer)
 
-(general-define-key
- :states '(normal visual)
- :prefix hcps/leader-key
- "B" 'ibuffer
- "s" 'save-buffer
- "n" 'hcps/open-scratch
- "k" 'kill-this-buffer
- "K" 'kill-buffer
- "i" 'indent-region
- "c" 'comment-dwim
- "w k" 'delete-window
- "w v" 'split-window-vertically
- "w h" 'split-window-horizontally)
+(general-def
+  :states '(normal visual)
+  :prefix hcps/leader-key
+  "B" 'ibuffer
+  "s" 'save-buffer
+  "n" 'hcps/open-scratch
+  "k" 'kill-this-buffer
+  "K" 'kill-buffer
+  "i" 'indent-region
+  "c" 'comment-dwim
+  "w k" 'delete-window
+  "w v" 'split-window-vertically
+  "w h" 'split-window-horizontally)
 #+end_src
