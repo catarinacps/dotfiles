@@ -1812,6 +1812,7 @@ automatically maintain an updated table of contents of your =.org= file.
   :ensure toc-org
   :ensure ob-async
   :ensure ox-twbs
+  :ensure ox-hugo
   :ensure htmlize
   :delight
   (org-indent-mode nil org-indent)
@@ -1853,8 +1854,10 @@ automatically maintain an updated table of contents of your =.org= file.
   (org-src-tab-acts-natively t)
   (org-src-window-setup 'current-window)
   (org-startup-indented t)
-  (org-modules (append org-modules '(org-tempo org-inlinetask ox-extra ob-async)))
-  (org-export-backends (append org-export-backends '(md man twbs)))
+  (org-modules
+   (append org-modules '(org-tempo org-inlinetask ox-extra ob-async ox-hugo)))
+  (org-export-backends
+   (append org-export-backends '(twbs man md hugo)))
   (org-export-allow-bind-keywords t)
   (org-export-with-latex t)
   (org-export-babel-evaluate t)
