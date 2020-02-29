@@ -1405,6 +1405,11 @@ I use =yasnippet= to handle my snippet needs.
 (use-package yasnippet
   :demand
   :delight yas-minor-mode
+  :hook
+  ((emacs-lisp-mode . yas-minor-mode)
+   (html-mode . yas-minor-mode)
+   (org-mode . yas-minor-mode)
+   (tex-mode . yas-minor-mode))
   :init
   (add-to-list 'hippie-expand-try-functions-list 'yas-hippie-try-expand)
   :general
@@ -1413,11 +1418,6 @@ I use =yasnippet= to handle my snippet needs.
    "<tab>" yas-maybe-expand)
   :custom
   (yas-snippet-dirs '("~/.emacs.d/snippets"))
-  :hook
-  ((emacs-lisp-mode . yas-minor-mode)
-   (html-mode . yas-minor-mode)
-   (org-mode . yas-minor-mode)
-   (tex-mode . yas-minor-mode))
   :config
   (yas-reload-all))
 #+end_src
@@ -1450,7 +1450,8 @@ or searching the whole project and replacing something.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package projectile
-  :defer t
+  :hook
+  (after-init . projectile-mode)
   ;; there's already a hint to the project name in the name of the buffer,
   ;; thanks to smart-mode-line
   :delight
@@ -1468,7 +1469,6 @@ or searching the whole project and replacing something.
    :prefix hcps/leader-key
    "p" '(:keymap projectile-command-map :package projectile))
   :config
-  (projectile-global-mode)
   ;; clean dead projects when Emacs is idle
   (run-with-idle-timer 10 nil #'projectile-cleanup-known-projects))
 #+end_src
@@ -1503,7 +1503,7 @@ universe, nay, in the whole multiverse.
     :type 'string
     :safe #'stringp
     :group 'magit)
-  ;; are you sure you wanna push to main?
+  ;; are you sure you wanna push to master?
   (defun magit-push--protected-branch (magit-push-fun &rest args)
     "Ask for confirmation before pushing a protected branch."
     (if (equal magit-push-protected-branch (magit-get-current-branch))
@@ -1524,12 +1524,6 @@ universe, nay, in the whole multiverse.
   (magit-revision-show-gravatars nil)
   (magit-bury-buffer-function 'magit-mode-quit-window)
   :general
-  ("s-m p" 'magit-list-repositories
-   "s-m g" 'magit-status
-   "s-m d" 'magit-dispatch
-   "s-m f" 'magit-file-dispatch
-   "s-m l" 'magit-log
-   "s-m b" 'magit-blame)
   (:states '(normal visual)
    :prefix hcps/leader-key
    "g p" 'magit-list-repositories
@@ -1543,10 +1537,10 @@ universe, nay, in the whole multiverse.
   (evil-add-hjkl-bindings magit-commit-mode-map 'emacs)
   (evil-add-hjkl-bindings magit-branch-manager-mode-map 'emacs
     "K" 'magit-discard
-    "L" 'magit-log-popup)
+    "L" 'magit-log)
   (evil-add-hjkl-bindings magit-status-mode-map 'emacs
     "K" 'magit-discard
-    "l" 'magit-log-popup
+    "l" 'magit-log
     "h" 'magit-diff-toggle-refine-hunk))
 #+end_src
 
@@ -1569,7 +1563,6 @@ Also, =git-timemachine= is a beautiful way to walk through git history:
   (:states '(normal visual)
    :prefix hcps/leader-key
    "g t" 'git-timemachine)
-  ("s-m t" 'git-timemachine)
   :config
   (evil-make-overriding-map git-timemachine-mode-map 'normal))
 #+end_src
