@@ -89,6 +89,7 @@ Cool Emacs configs from cool people:
     - [[#fetching-text][Fetching text]]
     - [[#date][Date]]
     - [[#opening-things][Opening things]]
+    - [[#crux-facilitators][Crux facilitators]]
   - [[#keybindings-1][Keybindings]]
 
 * Introduction
@@ -714,7 +715,7 @@ make sure that =counsel-M-x= has decent candidate sorting.
   :demand
   :preface
   (defun hcps/override-yank-pop (&optional arg)
-    "Delete the region before inserting poped string."
+    "Delete the region before inserting popped string."
     (when (and evil-mode (eq 'visual evil-state))
       (kill-region (region-beginning) (region-end))))
   :init
@@ -722,8 +723,8 @@ make sure that =counsel-M-x= has decent candidate sorting.
   :general
   (:states '(normal visual)
    :prefix hcps/leader-key
+   "f f" 'counsel-find-file
    "b" 'counsel-switch-buffer
-   "f" 'counsel-find-file
    "r" 'counsel-recentf
    "y" 'counsel-yank-pop
    "P" 'counsel-package
@@ -1008,7 +1009,7 @@ very pretty on =gruvbox=).
   (sml/projectile-replacement-format "[%s] ")
   (sml/size-indication-format " %I ")
   (sml/line-number-format "%4l")
-  (sml/use-projectile-p 'before-prefixes)
+  (sml/use-projectile-p 'after-prefixes)
   (sml/shorten-directory nil)
   (sml/shorten-modes t)
   (sml/mode-width 'right)
@@ -1223,18 +1224,17 @@ And this is to highlight escape sequences in some common modes:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package highlight-escape-sequences
-  :disabled
-  :init
-  (turn-on-hes-mode)
+  :hook
+  (after-init . turn-on-hes-mode)
   :preface
   (defconst hes-shell-escape-sequence-re
     (rx (submatch
          (and ?\\ (submatch (any "\"\'\\bfnrtv")))))
     "Simple regex to match any common escaped character in sh-mode")
-  :custom
-  (hes-mode-alist (append hes-mode-alist
-                          '((sh-mode . hes-shell-escape-sequence-re)
-                            (shell-script-mode . hes-shell-escape-sequence-re)))))
+  :config
+  (add-to-list hes-mode-alist '(sh-mode . hes-shell-escape-sequence-re))
+  (add-to-list hes-mode-alist '(shell-script-mode . hes-shell-escape-sequence-re)))
+
 #+end_src
 
 Of course, =flyspell= corrects your writing!
@@ -1353,7 +1353,8 @@ that kills old buffers.
   (clean-buffer-list-delay-general 0.5)
   (clean-buffer-list-delay-special (* 1 3600))
   (clean-buffer-list-kill-buffer-names
-   (append clean-buffer-list-kill-buffer-names '("*IBuffer*" "*Finder*"))))
+   '("*Help*" "*Apropos*" "*Buffer List*" "*Compile-Log*" "*info*" "*vc*"
+     "*vc-diff*" "*diff*" "*IBuffer*" "*Finder*")))
 #+end_src
 
 =uniquify= creates automatic meaningful names for buffers with the same name:
@@ -1458,13 +1459,11 @@ or searching the whole project and replacing something.
   (projectile-switch-project-action 'projectile-find-file)
   (projectile-find-dir-includes-top-level t)
   (projectile-project-root-files-top-down-recurring
-   (append '("compile_commands.json" ".ccls")
-           projectile-project-root-files-top-down-recurring))
+   '("compile_commands.json" ".ccls" ".svn" "CVS" "Makefile"))
   (projectile-globally-ignored-file-suffixes '(".elc" ".pyc" ".o"))
   (projectile-globally-ignored-files '(".DS_Store" "Icon" "TAGS" "__PYCACHE__"))
   :general
-  ("s-p" '(:keymap projectile-command-map :package projectile)
-   [remap compile] 'projectile-compile-project)
+  ([remap compile] 'projectile-compile-project)
   (:states '(normal visual)
    :prefix hcps/leader-key
    "p" '(:keymap projectile-command-map :package projectile))
@@ -1739,6 +1738,30 @@ diverse media files.
      ("\\.mp4\\'" "mpv" (file))))
   :config
   (openwith-mode t))
+#+end_src
+
+**** =crux=
+
+Which stands for...
+
+#+begin_quote
+A Collection of Ridiculously Useful eXtensions for Emacs.
+#+end_quote
+
+... yeah.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package crux
+  :demand
+  :general
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   ;; file stuff
+   "f s" 'crux-sudo-edit
+   "f r" 'crux-rename-buffer-and-file
+   "f d" 'crux-delete-buffer-and-file
+   "f c" 'crux-find-user-custom-file
+   "f i" 'crux-find-user-init-file))
 #+end_src
 
 **** =page-break-lines=
@@ -2030,19 +2053,20 @@ really be of great use while editing C and C++ code.
 #+begin_src emacs-lisp :tangle yes
 (use-package clang-format
   :ensure-system-package clang
+  :hook
+  (before-save-hook . cc-format-on-save-hook)
   :preface
   (defun cc-format-on-save-hook ()
     (when c-buffer-is-cc-mode
       (clang-format-buffer)))
+  (defun hcps/clang-format-region-or-buffer ()
+    (interactive)
+    (crux-with-region-or-buffer clang-format-region))
   :general
-  (:keymaps 'c-mode-base-map
-   "C-M-<tab>" 'clang-format-buffer)
   (:states '(normal visual)
    :keymaps 'c-mode-base-map
    :prefix hcps/leader-key
-   "i" 'clang-format-region)
-  :hook
-  (before-save-hook . cc-format-on-save-hook)
+   "i" 'hcps/clang-format-region-or-buffer)
   :custom
   (clang-format-style "webkit"))
 #+end_src
@@ -2922,6 +2946,17 @@ Like the title says...
   (switch-to-buffer "*scratch*" nil t))
 #+end_src
 
+*** Crux facilitators
+
+At the moment, just one.
+
+#+begin_src emacs-lisp :tangle yes
+(defun hcps/indent-region-or-buffer ()
+  "Uses crux to make it work with the whole buffer when there isn't a region enabled"
+  (interactive)
+  (crux-with-region-or-buffer indent-region))
+#+end_src
+
 ** Keybindings
 
 Here I'll define some of my personal keybindings, which means "keybindings not
@@ -2948,7 +2983,7 @@ related to some package configured in the sections above"!
   "n" 'hcps/open-scratch
   "k" 'kill-this-buffer
   "K" 'kill-buffer
-  "i" 'indent-region
+  "i" 'hcps/indent-region-or-buffer
   "c" 'comment-dwim
   "w k" 'delete-window
   "w v" 'split-window-vertically
