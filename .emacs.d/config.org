@@ -129,7 +129,6 @@ You can find the following packages in this configuration file:
 - auto-compile
 - bash-completion
 - beacon
-- bind-key
 - ccls
 - clang-format
 - cmake-font-lock
@@ -139,8 +138,11 @@ You can find the following packages in this configuration file:
 - counsel
 - counsel-projectile
 - counsel-tramp
+- crux
 - cuda-mode
+- dashboard
 - deadgrep
+- delight
 - dockerfile-mode
 - dumb-jump
 - elisp-slime-nav
@@ -149,13 +151,9 @@ You can find the following packages in this configuration file:
 - ess-r-mode
 - eval-expr
 - evil
-- evil-collection
 - evil-matchit
 - evil-mc
-- evil-org
 - evil-smartparens
-- evil-surround
-- evil-visualstar
 - exec-path-from-shell
 - expand-region
 - flycheck
@@ -171,6 +169,7 @@ You can find the following packages in this configuration file:
 - highlight-numbers
 - hydra
 - ivy
+- ivy-rich
 - julia-mode
 - jupyter
 - lsp-julia
@@ -179,7 +178,6 @@ You can find the following packages in this configuration file:
 - magit
 - meson-mode
 - midnight
-- minions
 - modern-cpp-font-lock
 - mw-thesaurus
 - no-littering
@@ -199,13 +197,11 @@ You can find the following packages in this configuration file:
 - super-save
 - tramp
 - treemacs
-- treemacs-evil
-- treemacs-projectile
 - undo-tree
 - uniquify
 - use-package-ensure-system-package
 - vimish-fold
-- visual-regexp-steroids
+- visual-regexp
 - which-key
 - whitespace
 - windmove
@@ -433,6 +429,7 @@ I like the vim style of relative numbering of lines.
 
 ;; I used to do this globally, but now let's only do selectively
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(add-hook 'conf-mode-hook 'display-line-numbers-mode)
 #+end_src
 
 And I also like the vim style of scrolling better.
@@ -1232,9 +1229,8 @@ And this is to highlight escape sequences in some common modes:
          (and ?\\ (submatch (any "\"\'\\bfnrtv")))))
     "Simple regex to match any common escaped character in sh-mode")
   :config
-  (add-to-list hes-mode-alist '(sh-mode . hes-shell-escape-sequence-re))
-  (add-to-list hes-mode-alist '(shell-script-mode . hes-shell-escape-sequence-re)))
-
+  (add-to-list 'hes-mode-alist '(sh-mode . hes-shell-escape-sequence-re))
+  (add-to-list 'hes-mode-alist '(shell-script-mode . hes-shell-escape-sequence-re)))
 #+end_src
 
 Of course, =flyspell= corrects your writing!
@@ -2836,6 +2832,7 @@ the 'x' in 'for_window [x=y]'.")
 
 #+begin_src emacs-lisp :tangle yes
 (add-to-list 'auto-mode-alist '("sxhkdrc\\'" . bspwm-config-mode))
+(add-to-list 'auto-mode-alist '("bspwmrc\\'" . bspwm-config-mode))
 (add-hook 'bspwm-config-mode-hook #'page-break-lines-mode)
 #+end_src
 
@@ -2871,7 +2868,7 @@ coded yourself.
 
 To-do:
 
-- [ ] Increase/decrease font size
+- [X] Increase/decrease font size
 - [ ] Input date on command (and as a new heading in =org-mode=)
 
 ** Functions
@@ -2973,11 +2970,10 @@ related to some package configured in the sections above"!
   :prefix hcps/leader-key
   "B" 'ibuffer
   "s" 'save-buffer
-  "n" 'hcps/open-scratch
   "k" 'kill-this-buffer
-  "K" 'kill-buffer
   "i" 'hcps/indent-region-or-buffer
   "c" 'comment-dwim
+  "f n" 'hcps/open-scratch
   "w k" 'delete-window
   "w v" 'split-window-vertically
   "w h" 'split-window-horizontally)
