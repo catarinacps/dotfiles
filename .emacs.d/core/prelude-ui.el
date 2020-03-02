@@ -71,8 +71,8 @@
                                           "%b"))))
 
 ;; use zenburn as the default theme
-(when prelude-theme
-  (load-theme prelude-theme t))
+;; (when prelude-theme
+;;   (load-theme prelude-theme t))
 
 ;; show the cursor when moving after big movements in the window
 (require 'beacon)

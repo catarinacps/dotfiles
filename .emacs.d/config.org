@@ -1029,7 +1029,7 @@ very pretty on =gruvbox=).
   (sml/shorten-modes t)
   (sml/mode-width 'right)
   (sml/name-width 40)
-  (sml/theme 'automatic)
+  (sml/theme 'respectful)
   :config
   (sml/setup))
 #+end_src
