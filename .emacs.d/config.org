@@ -2136,20 +2136,17 @@ really be of great use while editing C and C++ code.
 (use-package clang-format
   :defer t
   :ensure-system-package clang
-  :hook
-  (before-save-hook . cc-format-on-save-hook)
+  ;; :hook
+  ;; (before-save-hook . cc-format-on-save-hook)
   :preface
   (defun cc-format-on-save-hook ()
     (when c-buffer-is-cc-mode
       (clang-format-buffer)))
-  (defun hcps/clang-format-region-or-buffer ()
-    (interactive)
-    (crux-with-region-or-buffer clang-format-region))
   :general
   (:states '(normal visual)
    :keymaps 'c-mode-base-map
    :prefix hcps/leader-key
-   "i" 'hcps/clang-format-region-or-buffer)
+   "i" 'clang-format)
   :custom
   (clang-format-style "webkit"))
 #+end_src
@@ -2283,7 +2280,9 @@ As for shell-scripting:
   :custom
   (prezto-files '("zlogin" "zlogin" "zlogout" "zpreztorc" "zprofile" "zshenv" "zshrc"))
   :hook
-  (sh-mode . zsh-prezto-files)
+  ((sh-mode . zsh-prezto-files)
+   (sh-mode . aggressive-indent-mode)
+   (sh-mode . smartparens-strict-mode))
   :config
   (font-lock-add-keywords
    'sh-mode `((sh--match-variables-in-quotes
@@ -3095,7 +3094,7 @@ related to some package configured in the sections above"!
   "B" 'ibuffer
   "s" 'save-buffer
   "k" 'kill-this-buffer
-  "i" 'hcps/indent-region-or-buffer
+  "i" 'indent-region
   "c" 'comment-dwim
   "f n" 'hcps/open-scratch
   "w k" 'delete-window
