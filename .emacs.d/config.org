@@ -520,6 +520,7 @@ have their newest version.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package auto-compile
+  :demand
   :custom
   (load-prefer-newer t)
   :config
