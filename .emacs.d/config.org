@@ -63,6 +63,9 @@ Cool Emacs configs from cool people:
   - [[#theme][Theme]]
 - [[#languages][Languages]]
   - [[#org][Org]]
+    - [[#export][Export]]
+    - [[#babel][Babel]]
+    - [[#journal][Journal]]
   - [[#cc][C/C++]]
   - [[#r][R]]
   - [[#shell][Shell]]
@@ -181,9 +184,14 @@ You can find the following packages in this configuration file:
 - modern-cpp-font-lock
 - mw-thesaurus
 - no-littering
+- ob
 - openwith
 - org
 - org-journal
+- ox
+- ox-hugo
+- ox-latex
+- ox-twbs
 - page-break-lines
 - plantuml-mode
 - projectile
@@ -318,10 +326,14 @@ Defaults that are better if defined /other/ way.
 By default we only get the GNU one...
 
 #+begin_src emacs-lisp :tangle yes
+(require 'package)
+
 (setq-default package-archives
               '(("melpa" . "https://melpa.org/packages/")
                 ("org" . "https://orgmode.org/elpa/")
                 ("gnu" . "https://elpa.gnu.org/packages/")))
+
+(package-initialize)
 #+end_src
 
 *** Paths
@@ -486,6 +498,7 @@ eventually, using =use-package=.
 
 #+begin_src emacs-lisp :tangle yes
 (unless (package-installed-p 'use-package)
+  (package-refresh-contents)
   (package-install 'use-package))
 
 (require 'use-package-ensure)
@@ -507,7 +520,6 @@ have their newest version.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package auto-compile
-  :disabled
   :custom
   (load-prefer-newer t)
   :config
@@ -815,7 +827,7 @@ overall more popular than the former.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package treemacs
-  :demand
+  :defer t
   :ensure treemacs-evil
   :ensure treemacs-projectile
   :general
@@ -1017,7 +1029,7 @@ very pretty on =gruvbox=).
   (sml/shorten-modes t)
   (sml/mode-width 'right)
   (sml/name-width 40)
-  (sml/theme 'respectful)
+  (sml/theme 'automatic)
   :config
   (sml/setup))
 #+end_src
@@ -1822,37 +1834,19 @@ I still need to add packages relating to these languages:
 anyone should try Emacs. With it I also use =toc-org=, which is an useful way to
 automatically maintain an updated table of contents of your =.org= file.
 
-#+begin_src emacs-lisp :tangle yes :results output
+#+begin_src emacs-lisp :tangle yes
 (use-package org
   :defer t
   :mode (("\\.org\\'" . org-mode))
   :ensure org-plus-contrib
   :ensure toc-org
-  :ensure ob-async
-  :ensure ox-twbs
-  :ensure ox-hugo
-  :ensure htmlize
   :delight
   (org-indent-mode nil org-indent)
-  (org-src-mode)
-  :preface
-  (defun org-export-output-file-name-modified (orig-fun extension &optional subtreep pub-dir)
-    (unless pub-dir
-      (setq pub-dir "org-exports")
-      (unless (file-directory-p pub-dir)
-        (make-directory pub-dir)))
-    (apply orig-fun extension subtreep pub-dir nil))
-  (defun org-babel-tangle-block ()
-    (interactive)
-    (let ((current-prefix-arg '(4)))
-      (call-interactively 'org-babel-tangle)))
-  (setq inferior-julia-program-name "/usr/bin/julia")
   :hook
   ((org-mode . toc-org-mode)
    (org-mode . turn-on-auto-fill)
    (org-mode . yas-minor-mode)
    (org-mode . display-line-numbers-mode)
-   (org-mode . (lambda () (ox-extras-activate '(ignore-headlines))))
    (org-babel-after-execute . org-redisplay-inline-images))
   :custom
   (org-return-follows-link t)
@@ -1863,54 +1857,10 @@ automatically maintain an updated table of contents of your =.org= file.
   (org-link-descriptive nil)
   (org-log-done t)
   (org-directory "~/org/")
-  (org-cycle-emulate-tab t)
-  (org-edit-src-content-indentation 0)
-  (org-edit-src-persistent-message nil)
-  (org-src-preserve-identation t)
-  (org-src-fontify-natively t)
-  (org-src-tab-acts-natively t)
-  (org-src-window-setup 'current-window)
+  (org-cycle-emulate-tab 'exc-hl-bol)
   (org-startup-indented t)
   (org-modules
-   (append org-modules '(org-tempo org-inlinetask ox-extra ob-async ox-hugo)))
-  (org-export-backends
-   (append org-export-backends '(twbs man md hugo)))
-  (org-export-allow-bind-keywords t)
-  (org-export-with-latex t)
-  (org-export-babel-evaluate t)
-  (org-latex-image-default-width "1\\linewidth")
-  (org-latex-packages-alist
-   '(("cache=false,outputdir=org-exports" "minted")
-     ("T1" "fontenc")
-     ("utf8" "inputenx")
-     ("" "placeins")))
-  (org-latex-listings 'minted)
-  (org-latex-minted-options
-   '(("breaklines")
-     ("breakafter" "d")
-     ("linenos" "true")
-     ("xleftmargin" "\\parindent")))
-  (org-latex-pdf-process
-   '("latexmk -pdflatex='pdflatex -shell-escape -interaction=nonstopmode' -f -pdf -outdir=%o %f"))
-  (org-babel-default-header-args
-   '((:async . "yes")
-     (:session . "none")
-     (:results . "value replace")
-     (:exports . "code")
-     (:cache . "none")
-     (:noweb . "no")
-     (:hlines . "no")
-     (:tangle . "no")))
-  (org-babel-default-header-args:jupyter-julia
-   '((:eval . "no-export")
-     (:exports . "both")
-     (:kernel . "julia-1.2")))
-  (org-babel-default-header-args:jupyter-python
-   '((:eval . "no-export")
-     (:exports . "both")
-     (:kernel . "python3")))
-  (ob-async-no-async-languages-alist
-   '("ipython" "jupyter-julia" "jupyter-python"))
+   (append org-modules '(org-tempo org-inlinetask)))
   :general
   (:states '(normal visual)
    :keymaps 'org-mode-map
@@ -1930,19 +1880,172 @@ automatically maintain an updated table of contents of your =.org= file.
   (:states '(normal visual)
    :keymaps 'org-mode-map
    :prefix hcps/leader-key
-   "l e" 'org-export-dispatch
-   "l x" 'org-babel-execute-buffer
    "l t" 'org-set-tags-command
-   "l a" 'org-attach
-   "l z" 'org-babel-tangle-block
-   "l Z" 'org-babel-tangle)
+   "l a" 'org-attach)
   (:states 'insert
    :keymaps 'org-mode-map
-   "<tab>" 'org-cycle)
+   "<tab>" 'org-cycle))
+#+end_src
+
+*** Export
+
+Configurations relating all the numerous org exporters.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package ox
+  :ensure nil
+  :defer t
+  :after org
+  :ensure htmlize
+  :preface
+  (defun org-export-output-file-name-modified (orig-fun extension &optional subtreep pub-dir)
+    (unless pub-dir
+      (setq pub-dir "org-exports")
+      (unless (file-directory-p pub-dir)
+        (make-directory pub-dir)))
+    (apply orig-fun extension subtreep pub-dir nil))
+  (defun org-export-add-backends (new-backends)
+    "Adds a new backend to the backends list."
+    (progn
+      (setq org-export-registered-backends
+            (cl-remove-if-not
+             (lambda (backend)
+               (let ((name (org-export-backend-name backend)))
+                 (or (memq name new-backends)
+                     (catch 'parentp
+                       (dolist (b new-backends)
+                         (and (org-export-derived-backend-p b name)
+                              (throw 'parentp t)))))))
+             org-export-registered-backends))
+      (let ((new-list (mapcar #'org-export-backend-name
+                              org-export-registered-backends)))
+        (dolist (backend new-backends)
+          (cond
+           ((not (load (format "ox-%s" backend) t t))
+            (message "Problems while trying to load export back-end \\=`%s\\='"
+                     backend))
+           ((not (memq backend new-list)) (push backend new-list))))
+        (set-default 'org-export-backends new-list))))
+  :custom
+  (org-export-backends '(latex html ascii))
+  (org-export-allow-bind-keywords t)
+  (org-export-with-latex t)
+  (org-export-babel-evaluate t)
+  (org-export-in-background t)
+  :general
+  (:states '(normal visual)
+   :keymaps 'org-mode-map
+   :prefix hcps/leader-key
+   "l e" 'org-export-dispatch)
   :config
-  (advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified)
-  (org-babel-do-load-languages
-   'org-babel-load-languages
+  (require 'ox-extra)
+  (ox-extras-activate '(ignore-headlines))
+  (advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified))
+#+end_src
+
+**** LaTeX
+
+Configurations to the LaTeX org exporter.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package ox-latex
+  :ensure nil
+  :after ox
+  :custom
+  (org-latex-image-default-width "1\\linewidth")
+  (org-latex-packages-alist
+   '(("cache=false,outputdir=org-exports" "minted")
+     ("T1" "fontenc")
+     ("utf8" "inputenx")
+     ("" "placeins")))
+  (org-latex-listings 'minted)
+  (org-latex-minted-options
+   '(("breaklines")
+     ("breakafter" "d")
+     ("linenos" "true")
+     ("xleftmargin" "\\parindent")))
+  (org-latex-pdf-process
+   '("latexmk -pdflatex='pdflatex -shell-escape -interaction=nonstopmode' -f -pdf -outdir=%o %f"))
+  :config
+  (add-to-list 'org-latex-classes
+               '("iiufrgs"
+                 "\\documentclass{iiufrgs}"
+                 ("\\chapter{%s}" . "\\chapter*{%s}")
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")))
+  (add-to-list 'org-latex-classes
+               '("newlfm"
+                 "\\documentclass{newlfm}"
+                 ("\\chapter{%s}" . "\\chapter*{%s}")
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
+  (add-to-list 'org-latex-classes
+               '("IEEEtran"
+                 "\\documentclass{IEEEtran}"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
+#+end_src
+
+**** Hugo
+
+To the oh-so-pretty Hugo markdown format!
+
+#+begin_src emacs-lisp :tangle yes
+(use-package ox-hugo
+  :after ox)
+#+end_src
+
+**** Twitter Bootstrap HTML
+
+It's very pretty oh-kay?
+
+#+begin_src emacs-lisp :tangle yes
+(use-package ox-twbs
+  :after ox)
+#+end_src
+
+*** Babel
+
+Now, some configurations relating org-babel and its magic source blocks.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package ob
+  :ensure nil
+  :defer t
+  :after org
+  :ensure ob-async
+  :delight
+  (org-src-mode)
+  :preface
+  (defun org-babel-tangle-block ()
+    (interactive)
+    (let ((current-prefix-arg '(4)))
+      (call-interactively 'org-babel-tangle)))
+  :custom
+  (org-edit-src-content-indentation 0)
+  (org-edit-src-persistent-message nil)
+  (org-src-preserve-identation t)
+  (org-src-fontify-natively t)
+  (org-src-tab-acts-natively t)
+  (org-src-window-setup 'current-window)
+  (org-babel-default-header-args
+   '((:async . "yes")
+     (:session . "none")
+     (:results . "value replace")
+     (:exports . "code")
+     (:cache . "none")
+     (:noweb . "no")
+     (:hlines . "no")
+     (:tangle . "no")))
+  (ob-async-no-async-languages-alist
+   '("ipython" "jupyter-julia" "jupyter-python"))
+  (org-babel-load-languages
    '((shell . t)
      (python . t)
      (makefile . t)
@@ -1956,46 +2059,29 @@ automatically maintain an updated table of contents of your =.org= file.
      (perl . t)
      (screen . t)
      (plantuml . t)
-     (latex . t)
      ;; (julia . t)
+     (latex . t)
      (jupyter . t)
-     (lilypond . t))))
+     (lilypond . t)
+     (emacs-lisp . t)))
+  :general
+  (:states '(normal visual)
+   :keymaps 'org-mode-map
+   :prefix hcps/leader-key
+   "l x" 'org-babel-execute-buffer
+   "l z" 'org-babel-tangle-block
+   "l Z" 'org-babel-tangle)
+  :config
+  (require 'ob-async))
 #+end_src
 
-And here I'll put some LaTeX classes that aren't default in org:
-
-#+begin_src emacs-lisp :tangle no
-(add-to-list 'org-latex-classes
-             '("iiufrgs"
-               "\\documentclass{iiufrgs}"
-               ("\\chapter{%s}" . "\\chapter*{%s}")
-               ("\\section{%s}" . "\\section*{%s}")
-               ("\\subsection{%s}" . "\\subsection*{%s}")
-               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-               ("\\paragraph{%s}" . "\\paragraph*{%s}")))
-
-(add-to-list 'org-latex-classes
-             '("newlfm"
-               "\\documentclass{newlfm}"
-               ("\\chapter{%s}" . "\\chapter*{%s}")
-               ("\\section{%s}" . "\\section*{%s}")
-               ("\\subsection{%s}" . "\\subsection*{%s}")
-               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")))
-
-(add-to-list 'org-latex-classes
-             '("IEEEtran"
-               "\\documentclass{IEEEtran}"
-               ("\\section{%s}" . "\\section*{%s}")
-               ("\\subsection{%s}" . "\\subsection*{%s}")
-               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-               ("\\paragraph{%s}" . "\\paragraph*{%s}")
-               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-#+end_src
+*** Journal
 
 =org-journal= is a powerful tool to journal your day.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package org-journal
+  :defer t
   :after org
   :custom
   (org-journal-dir (format-time-string "~/OneDrive/Documentos/Journal/%Y/"))
@@ -2047,8 +2133,8 @@ really be of great use while editing C and C++ code.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package clang-format
-  :ensure-system-package clang
   :defer t
+  :ensure-system-package clang
   :hook
   (before-save-hook . cc-format-on-save-hook)
   :preface
@@ -2447,13 +2533,15 @@ Packages to write Julia source code in Emacs.
 #+begin_src emacs-lisp :tangle yes
 (use-package julia-mode
   :defer t
-  :ensure julia-repl
   :after lsp-julia
+  :ensure julia-repl
   :mode "\\.jl\\'"
   :hook
   ((julia-mode . julia-repl-mode)
    (julia-mode . (lambda () (require 'lsp-julia) (lsp)))
-   (julia-mode . highlight-numbers-mode)))
+   (julia-mode . highlight-numbers-mode))
+  :custom
+  (inferior-julia-program-name "/usr/bin/julia"))
 #+end_src
 
 ** Jupyter
@@ -2464,7 +2552,16 @@ An interface to communicate with Jupyter kernels in Emacs.
 (use-package jupyter
   :defer t
   :ensure zmq
-  :ensure websocket)
+  :ensure websocket
+  :custom
+  (org-babel-default-header-args:jupyter-julia
+   '((:eval . "no-export")
+     (:exports . "both")
+     (:kernel . "julia-1.2")))
+  (org-babel-default-header-args:jupyter-python
+   '((:eval . "no-export")
+     (:exports . "both")
+     (:kernel . "python3"))))
 #+end_src
 
 ** LaTeX

@@ -65,6 +65,7 @@ HYPHEN_INSENSITIVE="true"
 plugins=(
     git
     cp
+    pass
     colored-man-pages
     zsh-syntax-highlighting
     zsh-completions

@@ -146,12 +146,16 @@ This is DEPRECATED, use %s instead." prelude-modules-file))
 ;; config changes made through the customize UI will be stored here
 (setq custom-file (expand-file-name "custom.el" prelude-personal-dir))
 
+(load custom-file)
+
 ;; load the personal settings (this includes `custom-file')
-(when (file-exists-p prelude-personal-dir)
-  (message "Loading personal configuration files in %s..." prelude-personal-dir)
-  (mapc 'load (delete
-               prelude-modules-file
-               (directory-files prelude-personal-dir 't "^[^#\.].*\\.el$"))))
+;; (when (file-exists-p prelude-personal-dir)
+;;   (message "Loading personal configuration files in %s..." prelude-personal-dir)
+;;   (mapc 'load (delete
+;;                prelude-modules-file
+;;                (directory-files prelude-personal-dir 't "^[^#\.].*\\.el$"))))
+
+(org-babel-load-file "~/.emacs.d/config.org")
 
 (message "Prelude is ready to do thy bidding, Master %s!" current-user)
 
