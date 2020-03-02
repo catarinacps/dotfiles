@@ -349,8 +349,8 @@ To be fair, some stuff is really personal preference of mine.
 
 #+begin_src emacs-lisp :tangle yes
 (setq-default inhibit-startup-screen t
-              initial-scratch-message ""
-              initial-major-mode 'org-mode)
+              initial-scratch-message nil
+              initial-major-mode 'text-mode)
 #+end_src
 
 And then there's the title question. I for one like Emacs capitalized, so...
@@ -474,6 +474,10 @@ Random configs and definitions that don't have a clear category.
 These are Emacs-behaviour related! In other words, these extend the capabilities
 of Emacs as an editor, and do NOT add support to other languages or etc.
 
+*TO-DO list*:
+
+- [ ] recentf
+
 *** Package loading setup
 
 I use =use-package= to load my packages and to organize them neatly in this org
@@ -485,7 +489,8 @@ eventually, using =use-package=.
   (package-install 'use-package))
 
 (require 'use-package-ensure)
-(setq use-package-always-ensure t)
+(setq use-package-always-ensure t
+      use-package-verbose t)
 #+end_src
 
 In order to demand that certain system packages are installed, I use the helper
@@ -535,6 +540,7 @@ And we'll use =delight= to hide minor-modes names and such.
   (auto-fill-function " af")
   (eldoc-mode " eldoc")
   (editorconfig-mode)
+  (flymake-mode " flymk")
   (prelude-mode)
   (abbrev-mode))
 #+end_src
@@ -724,7 +730,7 @@ make sure that =counsel-M-x= has decent candidate sorting.
    "b" 'counsel-switch-buffer
    "r" 'counsel-recentf
    "y" 'counsel-yank-pop
-   "P" 'counsel-package
+   "m p" 'counsel-package
    "m b" 'counsel-bookmark)
   ("M-x" 'counsel-M-x))
 #+end_src
@@ -1189,8 +1195,9 @@ This package does have 2 extra sister packages: =lsp-ui= and =lsp-company=
 
 =Flycheck= provides a reliable source to syntax checking in Emacs.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle yes
 (use-package flycheck
+  :disabled
   :demand
   :delight flycheck-mode
   :init
@@ -1239,8 +1246,8 @@ Of course, =flyspell= corrects your writing!
 (use-package flyspell
   :demand
   :delight
-  (flyspell-mode " fly")
-  (flyspell-prog-mode " flyp")
+  (flyspell-mode " flysp")
+  (flyspell-prog-mode " flysp")
   :hook
   (prog-mode . flyspell-prog-mode)
   :custom
@@ -1403,9 +1410,7 @@ I use =yasnippet= to handle my snippet needs.
   :delight yas-minor-mode
   :hook
   ((emacs-lisp-mode . yas-minor-mode)
-   (html-mode . yas-minor-mode)
-   (org-mode . yas-minor-mode)
-   (tex-mode . yas-minor-mode))
+   (html-mode . yas-minor-mode))
   :init
   (add-to-list 'hippie-expand-try-functions-list 'yas-hippie-try-expand)
   :general
@@ -1512,7 +1517,7 @@ universe, nay, in the whole multiverse.
   (advice-add 'magit-push-current-to-pushremote :around #'magit-push--protected-branch)
   (advice-add 'magit-push-current-to-upstream :around #'magit-push--protected-branch)
   :custom
-  (git-commit-major-mode 'org-mode)
+  (git-commit-major-mode 'text-mode)
   (magit-push-protected-branch "master")
   (magit-save-repository-buffers 'dontask)
   (magit-refs-show-commit-count 'all)
@@ -1819,6 +1824,7 @@ automatically maintain an updated table of contents of your =.org= file.
 
 #+begin_src emacs-lisp :tangle yes :results output
 (use-package org
+  :defer t
   :mode (("\\.org\\'" . org-mode))
   :ensure org-plus-contrib
   :ensure toc-org
@@ -1841,11 +1847,10 @@ automatically maintain an updated table of contents of your =.org= file.
     (let ((current-prefix-arg '(4)))
       (call-interactively 'org-babel-tangle)))
   (setq inferior-julia-program-name "/usr/bin/julia")
-  :init
-  (advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified)
   :hook
   ((org-mode . toc-org-mode)
    (org-mode . turn-on-auto-fill)
+   (org-mode . yas-minor-mode)
    (org-mode . display-line-numbers-mode)
    (org-mode . (lambda () (ox-extras-activate '(ignore-headlines))))
    (org-babel-after-execute . org-redisplay-inline-images))
@@ -1935,6 +1940,7 @@ automatically maintain an updated table of contents of your =.org= file.
    :keymaps 'org-mode-map
    "<tab>" 'org-cycle)
   :config
+  (advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified)
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((shell . t)
@@ -1958,7 +1964,7 @@ automatically maintain an updated table of contents of your =.org= file.
 
 And here I'll put some LaTeX classes that aren't default in org:
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :tangle no
 (add-to-list 'org-latex-classes
              '("iiufrgs"
                "\\documentclass{iiufrgs}"
@@ -1997,7 +2003,6 @@ And here I'll put some LaTeX classes that aren't default in org:
   (org-journal-date-format "%e %b %Y (%A)")
   (org-journal-time-format "")
   :general
-  ("C-c t" 'org-journal-new-entry)
   (:states '(normal visual)
    :prefix hcps/leader-key
    "m j" 'org-journal-new-entry))
@@ -2023,6 +2028,7 @@ Better C++ font lock:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package modern-cpp-font-lock
+  :defer t
   :config
   (modern-c++-font-lock-global-mode t))
 #+end_src
@@ -2031,9 +2037,9 @@ LSP integration:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ccls
+  :defer t
   :hook
-  ((c-mode c++-mode objc-mode cuda-mode) .
-   (lambda () (require 'ccls) (lsp))))
+  ((c-mode c++-mode objc-mode cuda-mode) . (lambda () (require 'ccls) (lsp))))
 #+end_src
 
 In the department of code formatting, =clang-format= is a lovely tool that can
@@ -2042,6 +2048,7 @@ really be of great use while editing C and C++ code.
 #+begin_src emacs-lisp :tangle yes
 (use-package clang-format
   :ensure-system-package clang
+  :defer t
   :hook
   (before-save-hook . cc-format-on-save-hook)
   :preface
@@ -2064,6 +2071,7 @@ This little package highlights doxygen-style comments:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package highlight-doxygen
+  :defer t
   :hook
   ((c-mode c++-mode) . highlight-doxygen-mode))
 #+end_src
@@ -2075,11 +2083,15 @@ It provides you with everything you need from R.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ess-r-mode
+  :defer t
+  ;; as we gotta add the extra lsp client
+  :after lsp-mode
   :ensure ess
   :commands R
   :hook
   ((ess-r-mode . aggressive-indent-mode)
-   (ess-r-mode . highlight-numbers-mode))
+   (ess-r-mode . highlight-numbers-mode)
+   (ess-r-mode . lsp))
   :preface
   (defcustom existing-remote-session nil
     "Defines the existence of a remote R session."
@@ -2106,19 +2118,18 @@ It provides you with everything you need from R.
     (if (not existing-remote-session)
         (hcps/make-remote-r-session (get-buffer-create ssh-current-server)))
     ssh-current-server)
-  :init
-  (lsp-register-client
-   (make-lsp-client :new-connection
-     (lsp-stdio-connection '("R" "--slave" "-e" "languageserver::run()"))
-     :major-modes '(ess-r-mode inferior-ess-r-mode)
-     :server-id 'lsp-R))
   :general
   (:states 'insert
    :keymaps 'ess-r-mode-map
    "M-RET" 'hcps/insert-r-pipe)
   :custom
   (ess-auto-width 'frame)
-  (ess-style 'RStudio))
+  (ess-style 'RStudio)
+  (lsp-register-client
+   (make-lsp-client :new-connection
+     (lsp-stdio-connection '("R" "--slave" "-e" "languageserver::run()"))
+     :major-modes '(ess-r-mode inferior-ess-r-mode)
+     :server-id 'lsp-R)))
 #+end_src
 
 ** Shell
@@ -2127,6 +2138,7 @@ As for shell-scripting:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package sh-script
+  :defer t
   :preface
   (defvar more-sh-utilities
     '("addbib" "apropos" "ar" "at" "awk" "banner" "basename" "batch" "biff"
@@ -2232,6 +2244,7 @@ mainly focusing on /UML/, of course.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package plantuml-mode
+  :defer t
   :mode "\\.plantuml\\'"
   :interpreter "plantuml")
 #+end_src
@@ -2329,7 +2342,8 @@ and the necessary hook:
 Emacs version!
 
 #+begin_src emacs-lisp :tangle yes
-(use-package elisp-slime-nav)
+(use-package elisp-slime-nav
+  :defer t)
 
 (defun recompile-elc-on-save ()
   "Recompile your elc when saving an elisp file."
@@ -2357,6 +2371,7 @@ which provides a nice interface for the Merriam-Webster thesaurus.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package mw-thesaurus
+  :defer t
   :after evil
   :general
   (:states '(normal visual)
@@ -2389,6 +2404,7 @@ colors them accordingly.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package cmake-font-lock
+  :defer t
   :commands cmake-font-lock-activate
   :init
   (advice-add 'cmake-mode :after 'cmake-font-lock-activate))
@@ -2401,6 +2417,7 @@ directly from the buffer using =C-c C-b=.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package dockerfile-mode
+  :defer t
   :ensure docker-compose-mode
   :mode "Dockerfile\\'")
 #+end_src
@@ -2411,6 +2428,7 @@ So I have syntax highlighting while editing GLPK files.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package gmpl-mode
+  :defer t
   :mode "\\.mod\\'")
 #+end_src
 
@@ -2420,6 +2438,7 @@ Packages to write Julia source code in Emacs.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package lsp-julia
+  :defer t
   :custom
   (lsp-julia-default-environment "~/.julia/environments/v1.2")
   (lsp-julia-package-dir nil))
@@ -2427,6 +2446,7 @@ Packages to write Julia source code in Emacs.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package julia-mode
+  :defer t
   :ensure julia-repl
   :after lsp-julia
   :mode "\\.jl\\'"
@@ -2442,6 +2462,7 @@ An interface to communicate with Jupyter kernels in Emacs.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package jupyter
+  :defer t
   :ensure zmq
   :ensure websocket)
 #+end_src
@@ -2453,6 +2474,7 @@ theoretically it should come bundled with Emacs).
 
 #+begin_src emacs-lisp :tangle yes
 (use-package auctex
+  :defer t
   :ensure company-auctex
   :ensure company-reftex
   :mode (("\\.tex\\'" . latex-mode))
@@ -2460,6 +2482,7 @@ theoretically it should come bundled with Emacs).
   ((latex-mode . turn-on-reftex)
    (latex-mode . company-auctex-init)
    (tex-mode . turn-on-auto-fill)
+   (tex-mode . yas-minor-mode)
    (latex-mode . turn-on-auto-fill)
    (latex-mode . rainbow-delimiters-mode-enable)
    (latex-mode . turn-on-smartparens-mode))
@@ -2525,6 +2548,7 @@ types that CUDA introduces. So, let's install =cuda-mode=:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package cuda-mode
+  :defer t
   :mode "\\.cu\\'"
   :commands cuda
   :hook
@@ -2542,6 +2566,7 @@ Syntax support for the Meson build system DSL (which is based from Python).
 
 #+begin_src emacs-lisp :tangle yes
 (use-package meson-mode
+  :defer t
   :mode "meson.build\\'"
   :commands meson
   :hook
@@ -2850,6 +2875,7 @@ The newest greatest compiled language!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package rust-mode
+  :defer t
   :demand cargo
   :demand flycheck-rust
   :hook
