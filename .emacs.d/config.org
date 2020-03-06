@@ -1780,7 +1780,8 @@ To make pretty page breaks in your Emacs buffers:
 (use-package page-break-lines
   :delight
   :hook
-  (prog-mode . page-break-lines-mode)
+  ((prog-mode . page-break-lines-mode)
+   (text-mode . page-break-lines-mode))
   :custom
   (page-break-lines-max-width nil)
   (page-break-lines-char ?-)
