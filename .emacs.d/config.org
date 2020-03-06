@@ -1548,6 +1548,7 @@ universe, nay, in the whole multiverse.
    "g b" 'magit-blame)
   :config
   (evil-add-hjkl-bindings magit-log-mode-map 'emacs)
+  (evil-add-hjkl-bindings magit-diff-mode-map 'emacs)
   (evil-add-hjkl-bindings magit-commit-mode-map 'emacs)
   (evil-add-hjkl-bindings magit-branch-manager-mode-map 'emacs
     "K" 'magit-discard
@@ -2282,7 +2283,7 @@ As for shell-scripting:
   :hook
   ((sh-mode . zsh-prezto-files)
    (sh-mode . aggressive-indent-mode)
-   (sh-mode . smartparens-strict-mode))
+   (sh-mode . smartparens-mode))
   :config
   (font-lock-add-keywords
    'sh-mode `((sh--match-variables-in-quotes
@@ -2314,13 +2315,15 @@ In Makefile files we have a special case: it /needs/ tabulators to work. So,
 we'll set that up.
 
 #+begin_src emacs-lisp :tangle yes
-(defun makefile-mode-defaults ()
-  (whitespace-toggle-options '(tabs))
-  (setq-local indent-tabs-mode t))
-
-(setq makefile-mode-hook 'makefile-mode-defaults)
-
-(add-hook 'makefile-mode-hook (lambda () (run-hooks 'makefile-mode-hook)))
+(use-package make-mode
+  :ensure nil
+  :preface
+  (defun makefile-mode-defaults ()
+    (whitespace-toggle-options '(tabs))
+    (setq-local indent-tabs-mode t))
+  :hook
+  ((makefile-mode . makefile-mode-defaults)
+   (makefile-mode . smartparens-strict-mode)))
 #+end_src
 
 ** PlantUML
@@ -2428,26 +2431,21 @@ and the necessary hook:
 Emacs version!
 
 #+begin_src emacs-lisp :tangle yes
-(use-package elisp-slime-nav
-  :defer t)
-
-(defun recompile-elc-on-save ()
-  "Recompile your elc when saving an elisp file."
-  (add-hook
-   'after-save-hook
-   (lambda ()
-     (when (and
-            (string-prefix-p prelude-dir (file-truename buffer-file-name))
-            (file-exists-p (byte-compile-dest-file buffer-file-name)))
-       (emacs-lisp-byte-compile)))
-   nil
-   t))
-
-(defun elisp-coding-hook ()
-  (lisp-coding-hook)
-  (recompile-elc-on-save))
-
-(add-hook 'emacs-lisp-mode-hook #'elisp-coding-hook)
+(use-package elisp-mode
+  :defer t
+  :ensure nil
+  :ensure elisp-slime-nav
+  :after lisp-mode
+  :preface
+  (defun recompile-elc-on-save ()
+    "Recompile your elc when saving an elisp file."
+    (when (and
+           (string-prefix-p prelude-dir (file-truename buffer-file-name))
+           (file-exists-p (byte-compile-dest-file buffer-file-name)))
+      (emacs-lisp-byte-compile)))
+  :hook
+  ((after-save . recompile-elc-on-save)
+   (emacs-lisp-mode . lisp-coding-hook)))
 #+end_src
 
 ** English
