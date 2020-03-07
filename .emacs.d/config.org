@@ -86,6 +86,7 @@ Cool Emacs configs from cool people:
   - [[#coq][Coq]]
   - [[#meson][Meson]]
   - [[#bspwmsxhkd][bspwm/sxhkd]]
+    - [[#file][File]]
   - [[#systemd-services][systemd services]]
   - [[#rust][Rust]]
 - [[#personal][Personal]]
@@ -1887,6 +1888,7 @@ automatically maintain an updated table of contents of your =.org= file.
    :keymaps 'org-mode-map
    :prefix hcps/leader-key
    "l t" 'org-set-tags-command
+   "l l" 'org-toggle-link-display
    "l a" 'org-attach)
   (:states 'insert
    :keymaps 'org-mode-map
@@ -2684,6 +2686,20 @@ Derives from =conf-mode[space]=. Got it from
 [[https://notabug.org/arkhan/emacs-bspwm][here]].
 
 #+begin_src emacs-lisp :tangle yes
+(use-package bspwm
+  :ensure nil
+  :mode
+  (("sxhkdrc\\'" . bspwm-config-mode)
+   ("bspwmrc\\'" . bspwm-config-mode))
+  :hook
+  (bspwm-config-mode-hook . page-break-lines-mode))
+#+end_src
+
+*** File
+
+In the flesh! I'll tangle it to the =vendor= directory.
+
+#+begin_src emacs-lisp :tangle vendor/bspwm.el
 (defface i3wm-action-face
   '((t :inherit font-lock-function-name-face))
   "Face for actions or verbs like 'set', 'bindsym', 'move' etc.")
@@ -2957,12 +2973,6 @@ the 'x' in 'for_window [x=y]'.")
      t)))
 
 (provide 'bspwm-config-mode)
-#+end_src
-
-#+begin_src emacs-lisp :tangle yes
-(add-to-list 'auto-mode-alist '("sxhkdrc\\'" . bspwm-config-mode))
-(add-to-list 'auto-mode-alist '("bspwmrc\\'" . bspwm-config-mode))
-(add-hook 'bspwm-config-mode-hook #'page-break-lines-mode)
 #+end_src
 
 ** systemd services
