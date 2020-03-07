@@ -61,12 +61,14 @@ Cool Emacs configs from cool people:
     - [[#command-evaluation][Command evaluation]]
     - [[#utilities][Utilities]]
   - [[#theme][Theme]]
-- [[#languages][Languages]]
+- [[#file-modes][File modes]]
   - [[#org][Org]]
     - [[#export][Export]]
     - [[#babel][Babel]]
     - [[#journal][Journal]]
-  - [[#cc][C/C++]]
+  - [[#cc-mode][CC-Mode]]
+    - [[#cc][C/C++]]
+    - [[#cuda][CUDA]]
   - [[#r][R]]
   - [[#shell][Shell]]
   - [[#makefile][Makefile]]
@@ -82,7 +84,6 @@ Cool Emacs configs from cool people:
   - [[#jupyter][Jupyter]]
   - [[#latex][LaTeX]]
   - [[#coq][Coq]]
-  - [[#cuda][CUDA]]
   - [[#meson][Meson]]
   - [[#bspwmsxhkd][bspwm/sxhkd]]
   - [[#systemd-services][systemd services]]
@@ -148,7 +149,7 @@ You can find the following packages in this configuration file:
 - delight
 - dockerfile-mode
 - dumb-jump
-- elisp-slime-nav
+- elisp-mode
 - elpy
 - engine-mode
 - ess-r-mode
@@ -179,6 +180,7 @@ You can find the following packages in this configuration file:
 - lsp-mode
 - lsp-ui
 - magit
+- make-mode
 - meson-mode
 - midnight
 - modern-cpp-font-lock
@@ -377,18 +379,20 @@ And then there's the title question. I for one like Emacs capitalized, so...
 
 *** Font
 
-I now use the =Inconsolata-g= font! As I couldn't find a GitHub of sorts, here's
-a link to a mirror [[https://www.fontmirror.com/inconsolata-g]]. Also, you may
-end up having some issues with this font, as Emacs only knows the XLFD (which
-splits the important font info by the '-'), so our =Inconsolata-g= will face
-some issues here and there. To fix this, duplicate the font in your font
-directory (probably /usr/share/fonts/TTF) and alter the copy's name as
-[[this][https://emacs.stackexchange.com/questions/16818/cocoa-emacs-24-5-font-issues-inconsolata-dz]].
-link indicates
+I use the =Inconsolata= font!
 
 #+begin_src emacs-lisp :tangle yes
-(setq-default default-frame-alist '((font . "InconsolataG-12")))
+(setq-default default-frame-alist '((font . "Inconsolata-14")))
 #+end_src
+
+Before this, I used to use =Inconsolata-G=, which I couldn't find a GitHub of
+sorts, here's a link to a mirror [[https://www.fontmirror.com/inconsolata-g]].
+Also, you may end up having some issues with this font, as Emacs only knows the
+XLFD (which splits the important font info by the '-'), so our =Inconsolata-g=
+will face some issues here and there. To fix this, duplicate the font in your
+font directory (probably /usr/share/fonts/TTF) and alter the copy's name as
+[[this][https://emacs.stackexchange.com/questions/16818/cocoa-emacs-24-5-font-issues-inconsolata-dz]]
+link indicates.
 
 *** Text
 
@@ -503,7 +507,8 @@ eventually, using =use-package=.
 
 (require 'use-package-ensure)
 (setq use-package-always-ensure t
-      use-package-verbose t)
+      use-package-verbose t
+      use-package-hook-name-suffix nil)
 #+end_src
 
 In order to demand that certain system packages are installed, I use the helper
@@ -677,7 +682,7 @@ And to use better bindings to =smartparens=, =evil-smartparens=!
   :after smartparens
   :delight
   :hook
-  (smartparens-enabled . evil-smartparens-mode))
+  (smartparens-enabled-hook . evil-smartparens-mode))
 #+end_src
 
 *** Completion framework
@@ -963,7 +968,7 @@ Undo and redo and kools with =undo-tree=!
 #+begin_src emacs-lisp :tangle yes
 (use-package undo-tree
   :hook
-  (after-init . global-undo-tree-mode)
+  (after-init-hook . global-undo-tree-mode)
   :preface
   (defun reset-visualizer-diff ()
     "Because undo-tree-visualize sets the value of this variable to nil on quit."
@@ -990,9 +995,9 @@ Let's monitor ourselves with =whitespace=.
 (use-package whitespace
   :demand
   :hook
-  ((after-save . whitespace-cleanup)
-   (text-mode . (lambda () (whitespace-mode 1)))
-   (prog-mode . (lambda () (whitespace-mode 1))))
+  ((after-save-hook . whitespace-cleanup)
+   (text-mode-hook . (lambda () (whitespace-mode 1)))
+   (prog-mode-hook . (lambda () (whitespace-mode 1))))
   :custom
   (whitespace-line-column 80)
   (whitespace-style '(face tabs empty trailing lines-tail)))
@@ -1165,7 +1170,7 @@ best features of other famous editors, such as Visual Studio Code. By using
   :defer t
   :commands lsp
   :hook
-  (prog-mode . lsp)
+  (prog-mode-hook . lsp)
   :custom
   (lsp-log-io t)
   (lsp-auto-guess-root t)
@@ -1182,7 +1187,7 @@ This package does have 2 extra sister packages: =lsp-ui= and =lsp-company=
 (use-package lsp-ui
   :after lsp-mode
   :hook
-  (lsp-mode . lsp-ui-mode)
+  (lsp-mode-hook . lsp-ui-mode)
   :custom
   (lsp-ui-doc-enable t)
   (lsp-ui-doc-use-childframe t)
@@ -1242,15 +1247,15 @@ And this is to highlight escape sequences in some common modes:
 #+begin_src emacs-lisp :tangle yes
 (use-package highlight-escape-sequences
   :hook
-  (after-init . turn-on-hes-mode)
+  (after-init-hook . turn-on-hes-mode)
   :preface
   (defconst hes-shell-escape-sequence-re
     (rx (submatch
          (and ?\\ (submatch (any "\"\'\\bfnrtv")))))
     "Simple regex to match any common escaped character in sh-mode")
-  :config
-  (add-to-list 'hes-mode-alist '(sh-mode . hes-shell-escape-sequence-re))
-  (add-to-list 'hes-mode-alist '(shell-script-mode . hes-shell-escape-sequence-re)))
+  ;; :config
+  ;; (add-to-list 'hes-mode-alist '(sh-mode . (:eval hes-shell-escape-sequence-re)))
+  )
 #+end_src
 
 Of course, =flyspell= corrects your writing!
@@ -1262,16 +1267,15 @@ Of course, =flyspell= corrects your writing!
   (flyspell-mode " flysp")
   (flyspell-prog-mode " flysp")
   :hook
-  (prog-mode . flyspell-prog-mode)
+  ((prog-mode-hook . flyspell-prog-mode)
+   (text-mode-hook . flyspell-mode))
   :custom
   (ispell-program-name "aspell")
   (ispell-extra-args '("--sug-mode=ultra"))
   :general
   (:states '(normal visual)
    :prefix hcps/leader-key
-   "m d" 'ispell-change-dictionary)
-  :config
-  (flyspell-mode 1))
+   "m d" 'ispell-change-dictionary))
 #+end_src
 
 *** Hydra
@@ -1422,8 +1426,8 @@ I use =yasnippet= to handle my snippet needs.
   :demand
   :delight yas-minor-mode
   :hook
-  ((emacs-lisp-mode . yas-minor-mode)
-   (html-mode . yas-minor-mode))
+  ((emacs-lisp-mode-hook . yas-minor-mode)
+   (html-mode-hook . yas-minor-mode))
   :init
   (add-to-list 'hippie-expand-try-functions-list 'yas-hippie-try-expand)
   :general
@@ -1465,7 +1469,7 @@ or searching the whole project and replacing something.
 #+begin_src emacs-lisp :tangle yes
 (use-package projectile
   :hook
-  (after-init . projectile-mode)
+  (after-init-hook . projectile-mode)
   ;; there's already a hint to the project name in the name of the buffer,
   ;; thanks to smart-mode-line
   :delight
@@ -1508,8 +1512,8 @@ universe, nay, in the whole multiverse.
 (use-package magit
   :defer t
   :hook
-  ((after-save . magit-after-save-refresh-status)
-   (git-commit-mode . evil-emacs-state))
+  ((after-save-hook . magit-after-save-refresh-status)
+   (git-commit-mode-hook . evil-emacs-state))
   :preface
   ;; easy on-off for the following function
   (defcustom magit-push-protected-branch nil
@@ -1565,7 +1569,7 @@ Also, =git-timemachine= is a beautiful way to walk through git history:
 (use-package git-timemachine
   :after magit
   :hook
-  (git-timemachine-mode . evil-normalize-keymaps)
+  (git-timemachine-mode-hook . evil-normalize-keymaps)
   :general
   (:states '(normal visual)
    :keymaps 'git-timemachine-mode-map
@@ -1633,10 +1637,6 @@ I use =aggressive-indent= to keep my code indented as I type.
   :preface
   (defun me/aggressive-indent-mode-off ()
     (aggressive-indent-mode 0))
-  :hook
-  ((emacs-lisp-mode . aggressive-indent-mode)
-   (lisp-mode . aggressive-indent-mode)
-   (c-mode-common . aggressive-indent-mode))
   :custom
   (aggressive-indent-comments-too t)
   :config
@@ -1658,7 +1658,7 @@ of the box.
   (highlight-indent-guides-auto-even-face-perc 5)
   (highlight-indent-guides-auto-character-face-perc 10)
   :hook
-  (prog-mode . highlight-indent-guides-mode))
+  (prog-mode-hook . highlight-indent-guides-mode))
 #+end_src
 
 *** Command evaluation
@@ -1780,8 +1780,8 @@ To make pretty page breaks in your Emacs buffers:
 (use-package page-break-lines
   :delight
   :hook
-  ((prog-mode . page-break-lines-mode)
-   (text-mode . page-break-lines-mode))
+  ((prog-mode-hook . page-break-lines-mode)
+   (text-mode-hook . page-break-lines-mode))
   :custom
   (page-break-lines-max-width nil)
   (page-break-lines-char ?-)
@@ -1801,9 +1801,10 @@ support for a lot of packages and is very pleasant for the eyes.
   (load-theme 'gruvbox-dark-medium t))
 #+end_src
 
-* Languages
+* File modes
 
-Here I'll store any package load and configurations related to languages.
+Here I'll store any package load and configurations related to languages and
+file types.
 
 I still need to add packages relating to these languages:
 
@@ -1846,11 +1847,11 @@ automatically maintain an updated table of contents of your =.org= file.
   :delight
   (org-indent-mode nil org-indent)
   :hook
-  ((org-mode . toc-org-mode)
-   (org-mode . turn-on-auto-fill)
-   (org-mode . yas-minor-mode)
-   (org-mode . display-line-numbers-mode)
-   (org-babel-after-execute . org-redisplay-inline-images))
+  ((org-mode-hook . toc-org-mode)
+   (org-mode-hook . turn-on-auto-fill)
+   (org-mode-hook . yas-minor-mode)
+   (org-mode-hook . display-line-numbers-mode)
+   (org-babel-after-execute-hook . org-redisplay-inline-images))
   :custom
   (org-return-follows-link t)
   ;; the following used to be '(latex script entities)
@@ -2097,29 +2098,39 @@ Now, some configurations relating org-babel and its magic source blocks.
    "m j" 'org-journal-new-entry))
 #+end_src
 
-** C/C++
+** CC-Mode
 
-Here I set some defaults I appreciate for cc-mode.
+Here I set some defaults I appreciate for cc-mode (the mode for all c-like
+languages):
 
 #+begin_src emacs-lisp :tangle yes
-(defun c-mode-defaults-hook ()
-  (setq c-default-style "linux"
-        c-basic-offset 4)
-  (c-set-offset 'substatement-open 0)
-  (highlight-numbers-mode 1))
-
-;; this will affect all modes derived from cc-mode, like
-;; java-mode, php-mode, etc
-(add-hook 'c-mode-common-hook #'c-mode-defaults-hook)
+(use-package cc-mode
+  :defer t
+  :ensure nil
+  :ensure highlight-doxygen
+  :hook
+  ((c-mode-common-hook . highligh-numbers-mode)
+   (c-mode-common-hook . highlight-doxygen-mode)
+   (c-mode-common-hook . rainbow-delimiters-mode)
+   (c-mode-common-hook . aggressive-indent-mode))
+  :custom
+  (c-default-style
+   '((java-mode . "java")
+     (awk-mode . "awk")
+     (other . "linux")))
+  (c-basic-offset 4)
+  (c-offsets-alist '((substatement-open . 0))))
 #+end_src
+
+*** C/C++
 
 Better C++ font lock:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package modern-cpp-font-lock
   :defer t
-  :config
-  (modern-c++-font-lock-global-mode t))
+  :hook
+  (c++-mode-hook . modern-c++-font-lock-mode))
 #+end_src
 
 LSP integration:
@@ -2128,7 +2139,7 @@ LSP integration:
 (use-package ccls
   :defer t
   :hook
-  ((c-mode c++-mode objc-mode cuda-mode) . (lambda () (require 'ccls) (lsp))))
+  ((c-mode-hook c++-mode-hook objc-mode-hook cuda-mode-hook) . (lambda () (require 'ccls) (lsp))))
 #+end_src
 
 In the department of code formatting, =clang-format= is a lovely tool that can
@@ -2138,29 +2149,43 @@ really be of great use while editing C and C++ code.
 (use-package clang-format
   :defer t
   :ensure-system-package clang
-  ;; :hook
-  ;; (before-save-hook . cc-format-on-save-hook)
   :preface
   (defun cc-format-on-save-hook ()
     (when c-buffer-is-cc-mode
       (clang-format-buffer)))
   :general
-  (:states '(normal visual)
+  (:states 'normal
    :keymaps 'c-mode-base-map
    :prefix hcps/leader-key
-   "i" 'clang-format)
+   "i" 'clang-format-buffer)
+  (:states 'visual
+   :keymaps 'c-mode-base-map
+   :prefix hcps/leader-key
+   "i" 'clang-format-region)
   :custom
   (clang-format-style "webkit"))
 #+end_src
 
-This little package highlights doxygen-style comments:
+*** CUDA
+
+Suporting CUDA syntax per-se is kinda easy, as it's a subset of C after all. The
+thing is I want proper syntax highlighting for all those special keywords and
+types that CUDA introduces. So, let's install =cuda-mode=:
 
 #+begin_src emacs-lisp :tangle yes
-(use-package highlight-doxygen
+(use-package cuda-mode
   :defer t
+  :mode "\\.cu\\'"
+  :commands cuda
   :hook
-  ((c-mode c++-mode) . highlight-doxygen-mode))
+  ((cuda-mode-hook . (lambda () (run-hooks 'prog-mode-hook)))
+   (cuda-mode-hook . highlight-numbers-mode)
+   (cuda-mode-hook . modern-c++-font-lock-mode))
+  :custom
+  (cuda-font-lock-keywords 'cuda-font-lock-keywords-3))
 #+end_src
+
+It falls back on =c++-mode= by default, so we are safe here.
 
 ** R
 
@@ -2175,9 +2200,9 @@ It provides you with everything you need from R.
   :ensure ess
   :commands R
   :hook
-  ((ess-r-mode . aggressive-indent-mode)
-   (ess-r-mode . highlight-numbers-mode)
-   (ess-r-mode . lsp))
+  ((ess-r-mode-hook . aggressive-indent-mode)
+   (ess-r-mode-hook . highlight-numbers-mode)
+   (ess-r-mode-hook . lsp))
   :preface
   (defcustom existing-remote-session nil
     "Defines the existence of a remote R session."
@@ -2282,9 +2307,10 @@ As for shell-scripting:
   :custom
   (prezto-files '("zlogin" "zlogin" "zlogout" "zpreztorc" "zprofile" "zshenv" "zshrc"))
   :hook
-  ((sh-mode . zsh-prezto-files)
-   (sh-mode . aggressive-indent-mode)
-   (sh-mode . smartparens-mode))
+  ((sh-mode-hook . zsh-prezto-files)
+   (sh-mode-hook . aggressive-indent-mode)
+   (sh-mode-hook . smartparens-mode)
+   (sh-mode-hook . rainbow-delimiters-mode))
   :config
   (font-lock-add-keywords
    'sh-mode `((sh--match-variables-in-quotes
@@ -2307,7 +2333,7 @@ For =shell= completion I use =bash-complete=, which auto completes several
 #+begin_src emacs-lisp :tangle yes
 (use-package bash-completion
   :hook
-  (shell-dynamic-complete-funtions . bash-completion-dynamic-complete))
+  (shell-dynamic-complete-funtions-hook . bash-completion-dynamic-complete))
 #+end_src
 
 ** Makefile
@@ -2320,11 +2346,13 @@ we'll set that up.
   :ensure nil
   :preface
   (defun makefile-mode-defaults ()
+    "Turn on tabs only for make-mode."
     (whitespace-toggle-options '(tabs))
     (setq-local indent-tabs-mode t))
   :hook
-  ((makefile-mode . makefile-mode-defaults)
-   (makefile-mode . smartparens-strict-mode)))
+  ((makefile-mode-hook . makefile-mode-defaults)
+   (makefile-mode-hook . smartparens-strict-mode)
+   (makefile-mode-hook . rainbow-delimiters-mode)))
 #+end_src
 
 ** PlantUML
@@ -2422,6 +2450,7 @@ and the necessary hook:
   (setq-local lisp-indent-function #'fuco1/lisp-indent-function)
   (highlight-numbers-mode 1)
   (smartparens-strict-mode 1)
+  (aggressive-indent-mode 1)
   (rainbow-delimiters-mode 1))
 
 (add-hook 'lisp-mode-hook #'lisp-coding-hook)
@@ -2436,7 +2465,6 @@ Emacs version!
   :defer t
   :ensure nil
   :ensure elisp-slime-nav
-  :after lisp-mode
   :preface
   (defun recompile-elc-on-save ()
     "Recompile your elc when saving an elisp file."
@@ -2445,8 +2473,8 @@ Emacs version!
            (file-exists-p (byte-compile-dest-file buffer-file-name)))
       (emacs-lisp-byte-compile)))
   :hook
-  ((after-save . recompile-elc-on-save)
-   (emacs-lisp-mode . lisp-coding-hook)))
+  ((after-save-hook . recompile-elc-on-save)
+   (emacs-lisp-mode-hook . lisp-coding-hook)))
 #+end_src
 
 ** English
@@ -2476,7 +2504,7 @@ Python.
 (use-package elpy
   :defer t
   :hook
-  (python-mode . highlight-numbers-mode)
+  (python-mode-hook . highlight-numbers-mode)
   :init
   (advice-add 'python-mode :before 'elpy-enable))
 #+end_src
@@ -2536,9 +2564,9 @@ Packages to write Julia source code in Emacs.
   :ensure julia-repl
   :mode "\\.jl\\'"
   :hook
-  ((julia-mode . julia-repl-mode)
-   (julia-mode . (lambda () (require 'lsp-julia) (lsp)))
-   (julia-mode . highlight-numbers-mode))
+  ((julia-mode-hook . julia-repl-mode)
+   (julia-mode-hook . (lambda () (require 'lsp-julia) (lsp)))
+   (julia-mode-hook . highlight-numbers-mode))
   :custom
   (inferior-julia-program-name "/usr/bin/julia"))
 #+end_src
@@ -2575,13 +2603,13 @@ theoretically it should come bundled with Emacs).
   :ensure company-reftex
   :mode (("\\.tex\\'" . latex-mode))
   :hook
-  ((latex-mode . turn-on-reftex)
-   (latex-mode . company-auctex-init)
-   (tex-mode . turn-on-auto-fill)
-   (tex-mode . yas-minor-mode)
-   (latex-mode . turn-on-auto-fill)
-   (latex-mode . rainbow-delimiters-mode-enable)
-   (latex-mode . turn-on-smartparens-mode))
+  ((latex-mode-hook . turn-on-reftex)
+   (latex-mode-hook . company-auctex-init)
+   (tex-mode-hook . turn-on-auto-fill)
+   (tex-mode-hook . yas-minor-mode)
+   (latex-mode-hook . turn-on-auto-fill)
+   (latex-mode-hook . rainbow-delimiters-mode)
+   (latex-mode-hook . turn-on-smartparens-mode))
   :custom
   (TeX-auto-save t)
   (TeX-parse-self t)
@@ -2619,8 +2647,8 @@ So, for my LaTeX config I'll mainly use =latexmk= as it's way simpler to use.
   :init
   (auctex-latexmk-setup)
   :hook
-  ((TeX-mode . hcps/set-latexmk-as-default)
-   (LaTeX-mode . hcps/set-latexmk-as-default))
+  ((tex-mode-hook . hcps/set-latexmk-as-default)
+   (latex-mode-hook . hcps/set-latexmk-as-default))
   :custom
   (auctex-latexmk-inherit-TeX-PDF-mode t))
 #+end_src
@@ -2636,26 +2664,6 @@ Not set up, but when I get to it:
 - company-coq-mode
 - hrs config!
 
-** CUDA
-
-Suporting CUDA syntax per-se is kinda easy, as it's a subset of C after all. The
-thing is I want proper syntax highlighting for all those special keywords and
-types that CUDA introduces. So, let's install =cuda-mode=:
-
-#+begin_src emacs-lisp :tangle yes
-(use-package cuda-mode
-  :defer t
-  :mode "\\.cu\\'"
-  :commands cuda
-  :hook
-  ((cuda-mode . (lambda () (run-hooks 'prog-mode-hook)))
-   (cuda-mode . highlight-numbers-mode))
-  :custom
-  (cuda-font-lock-keywords 'cuda-font-lock-keywords-3))
-#+end_src
-
-It falls back on =c++-mode= by default, so we are safe here.
-
 ** Meson
 
 Syntax support for the Meson build system DSL (which is based from Python).
@@ -2666,8 +2674,8 @@ Syntax support for the Meson build system DSL (which is based from Python).
   :mode "meson.build\\'"
   :commands meson
   :hook
-  ((meson-mode . (lambda () (run-hooks 'prog-mode-hook)))
-   (meson-mode . company-mode)))
+  ((meson-mode-hook . (lambda () (run-hooks 'prog-mode-hook)))
+   (meson-mode-hook . company-mode)))
 #+end_src
 
 ** bspwm/sxhkd
@@ -2975,9 +2983,9 @@ The newest greatest compiled language!
   :demand cargo
   :demand flycheck-rust
   :hook
-  ((rust-mode . lsp)
-   (rust-mode . cargo-minor-mode)
-   (rust-mode . subword-mode))
+  ((rust-mode-hook . lsp)
+   (rust-mode-hook . cargo-minor-mode)
+   (rust-mode-hook . subword-mode))
   :custom
   (rust-format-on-save t)
   (rust-indent-method-chain t))
