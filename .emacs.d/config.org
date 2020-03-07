@@ -93,7 +93,6 @@ Cool Emacs configs from cool people:
     - [[#fetching-text][Fetching text]]
     - [[#date][Date]]
     - [[#opening-things][Opening things]]
-    - [[#crux-facilitators][Crux facilitators]]
   - [[#keybindings-1][Keybindings]]
 
 * Introduction
@@ -1769,7 +1768,10 @@ A Collection of Ridiculously Useful eXtensions for Emacs.
    "f r" 'crux-rename-buffer-and-file
    "f d" 'crux-delete-buffer-and-file
    "f c" 'crux-find-user-custom-file
-   "f i" 'crux-find-user-init-file))
+   "f i" 'crux-find-user-init-file)
+  :config
+  (crux-with-region-or-buffer indent-region)
+  (crux-with-region-or-buffer untabify))
 #+end_src
 
 **** =page-break-lines=
@@ -2154,16 +2156,14 @@ really be of great use while editing C and C++ code.
     (when c-buffer-is-cc-mode
       (clang-format-buffer)))
   :general
-  (:states 'normal
-   :keymaps 'c-mode-base-map
-   :prefix hcps/leader-key
-   "i" 'clang-format-buffer)
-  (:states 'visual
+  (:states '(normal visual)
    :keymaps 'c-mode-base-map
    :prefix hcps/leader-key
    "i" 'clang-format-region)
   :custom
-  (clang-format-style "webkit"))
+  (clang-format-style "webkit")
+  :config
+  (crux-with-region-or-buffer clang-format-region))
 #+end_src
 
 *** CUDA
@@ -3064,17 +3064,6 @@ Like the title says...
   "Switch to the *scratch* buffer whenever you are."
   (interactive)
   (switch-to-buffer "*scratch*" nil t))
-#+end_src
-
-*** Crux facilitators
-
-At the moment, just one.
-
-#+begin_src emacs-lisp :tangle yes
-(defun hcps/indent-region-or-buffer ()
-  "Uses crux to make it work with the whole buffer when there isn't a region enabled"
-  (interactive)
-  (crux-with-region-or-buffer indent-region))
 #+end_src
 
 ** Keybindings
