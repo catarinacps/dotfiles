@@ -996,8 +996,9 @@ Let's monitor ourselves with =whitespace=.
   :demand
   :hook
   ((after-save-hook . whitespace-cleanup)
-   (text-mode-hook . (lambda () (whitespace-mode 1)))
-   (prog-mode-hook . (lambda () (whitespace-mode 1))))
+   (text-mode-hook . whitespace-mode)
+   (conf-mode-hook . whitespace-mode)
+   (prog-mode-hook . whitespace-mode))
   :custom
   (whitespace-line-column 80)
   (whitespace-style '(face tabs empty trailing lines-tail)))
@@ -1861,7 +1862,7 @@ automatically maintain an updated table of contents of your =.org= file.
   (org-highlight-latex-and-related nil)
   (org-hide-leading-stars t)
   (org-support-shift-select nil)
-  (org-link-descriptive nil)
+  (org-link-descriptive t)
   (org-log-done t)
   (org-directory "~/org/")
   (org-cycle-emulate-tab 'exc-hl-bol)
@@ -2113,7 +2114,7 @@ languages):
   :ensure nil
   :ensure highlight-doxygen
   :hook
-  ((c-mode-common-hook . highligh-numbers-mode)
+  ((c-mode-common-hook . highlight-numbers-mode)
    (c-mode-common-hook . highlight-doxygen-mode)
    (c-mode-common-hook . rainbow-delimiters-mode)
    (c-mode-common-hook . aggressive-indent-mode))
@@ -2487,7 +2488,6 @@ which provides a nice interface for the Merriam-Webster thesaurus.
 #+begin_src emacs-lisp :tangle yes
 (use-package mw-thesaurus
   :defer t
-  :after evil
   :general
   (:states '(normal visual)
    :prefix hcps/leader-key
@@ -2521,6 +2521,10 @@ colors them accordingly.
 (use-package cmake-font-lock
   :defer t
   :commands cmake-font-lock-activate
+  :hook
+  ((cmake-mode-hook . smartparens-strict-mode)
+   (cmake-mode-hook . rainbow-delimiters-mode)
+   (cmake-mode-hook . highlight-numbers-mode))
   :init
   (advice-add 'cmake-mode :after 'cmake-font-lock-activate))
 #+end_src
@@ -2567,7 +2571,7 @@ Packages to write Julia source code in Emacs.
   :mode "\\.jl\\'"
   :hook
   ((julia-mode-hook . julia-repl-mode)
-   (julia-mode-hook . (lambda () (require 'lsp-julia) (lsp)))
+   (julia-mode-hook . lsp)
    (julia-mode-hook . highlight-numbers-mode))
   :custom
   (inferior-julia-program-name "/usr/bin/julia"))
@@ -2995,7 +2999,10 @@ The newest greatest compiled language!
   :hook
   ((rust-mode-hook . lsp)
    (rust-mode-hook . cargo-minor-mode)
-   (rust-mode-hook . subword-mode))
+   (rust-mode-hook . subword-mode)
+   (rust-mode-hook . smartparens-strict-mode)
+   (rust-mode-hook . rainbow-delimiters-mode)
+   (rust-mode-hook . highlight-numbers-mode))
   :custom
   (rust-format-on-save t)
   (rust-indent-method-chain t))
