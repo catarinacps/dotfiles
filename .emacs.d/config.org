@@ -1171,12 +1171,17 @@ best features of other famous editors, such as Visual Studio Code. By using
   :defer t
   :commands lsp
   :hook
-  (prog-mode-hook . lsp)
+  ((prog-mode-hook . lsp)
+   (lsp-mode-hook . lsp-enable-which-key-integration))
   :custom
   (lsp-log-io t)
   (lsp-auto-guess-root t)
   (lsp-prefer-flymake nil)
   (lsp-enable-completion-at-point t)
+  :general
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   "L" '(:keymap lsp-command-map :package lsp-mode))
   :config
   (add-to-list 'lsp-language-id-configuration '(cuda-mode . "cuda"))
   (add-to-list 'lsp-language-id-configuration '(".*\\.cu$" . "cuda")))
@@ -1908,6 +1913,7 @@ Configurations relating all the numerous org exporters.
   :ensure htmlize
   :preface
   (defun org-export-output-file-name-modified (orig-fun extension &optional subtreep pub-dir)
+    "Collect all generated files from an export in a neat folder."
     (unless pub-dir
       (setq pub-dir "org-exports")
       (unless (file-directory-p pub-dir)
@@ -1935,21 +1941,31 @@ Configurations relating all the numerous org exporters.
                      backend))
            ((not (memq backend new-list)) (push backend new-list))))
         (set-default 'org-export-backends new-list))))
+  :init
+  (advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified)
   :custom
   (org-export-backends '(latex html ascii))
   (org-export-allow-bind-keywords t)
   (org-export-with-latex t)
   (org-export-babel-evaluate t)
-  (org-export-in-background t)
+  (org-export-in-background nil)
   :general
   (:states '(normal visual)
    :keymaps 'org-mode-map
    :prefix hcps/leader-key
-   "l e" 'org-export-dispatch)
-  :config
-  (require 'ox-extra)
-  (ox-extras-activate '(ignore-headlines))
-  (advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified))
+   "l e" 'org-export-dispatch))
+#+end_src
+
+**** Extras
+
+=ox-extra= defines a couple of cool extras, like =ignore-headlines=!
+
+#+begin_src emacs-lisp :tangle yes
+(use-package ox-extra
+  :ensure nil
+  :after ox
+  :hook
+  (org-export-filter-parse-tree-functions . org-export-ignore-headlines))
 #+end_src
 
 **** LaTeX
