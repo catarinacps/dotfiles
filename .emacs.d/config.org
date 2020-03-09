@@ -2692,6 +2692,7 @@ Derives from =conf-mode[space]=. Got it from
 #+begin_src emacs-lisp :tangle yes
 (use-package bspwm
   :ensure nil
+  :load-path "vendor/"
   :mode
   (("sxhkdrc\\'" . bspwm-config-mode)
    ("bspwmrc\\'" . bspwm-config-mode))
