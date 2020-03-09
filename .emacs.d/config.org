@@ -1170,6 +1170,8 @@ best features of other famous editors, such as Visual Studio Code. By using
 (use-package lsp-mode
   :defer t
   :commands lsp
+  :delight
+  (lsp-mode " lsp")
   :hook
   ((prog-mode-hook . lsp)
    (lsp-mode-hook . lsp-enable-which-key-integration))
@@ -1192,6 +1194,8 @@ This package does have 2 extra sister packages: =lsp-ui= and =lsp-company=
 #+begin_src emacs-lisp :tangle yes
 (use-package lsp-ui
   :after lsp-mode
+  :delight
+  (flycheck-mode)
   :hook
   (lsp-mode-hook . lsp-ui-mode)
   :custom
@@ -1223,7 +1227,8 @@ This package does have 2 extra sister packages: =lsp-ui= and =lsp-company=
 (use-package flycheck
   :disabled
   :demand
-  :delight flycheck-mode
+  :delight
+  (flycheck-mode)
   :init
   (global-flycheck-mode)
   :custom
@@ -1245,7 +1250,10 @@ This package does have 2 extra sister packages: =lsp-ui= and =lsp-company=
 This highlights numbers in =prog-mode=:
 
 #+begin_src emacs-lisp :tangle yes
-(use-package highlight-numbers)
+(use-package highlight-numbers
+  :defer t
+  :hook
+  (prog-mode-hook . highlight-numbers-mode))
 #+end_src
 
 And this is to highlight escape sequences in some common modes:
@@ -1919,28 +1927,6 @@ Configurations relating all the numerous org exporters.
       (unless (file-directory-p pub-dir)
         (make-directory pub-dir)))
     (apply orig-fun extension subtreep pub-dir nil))
-  (defun org-export-add-backends (new-backends)
-    "Adds a new backend to the backends list."
-    (progn
-      (setq org-export-registered-backends
-            (cl-remove-if-not
-             (lambda (backend)
-               (let ((name (org-export-backend-name backend)))
-                 (or (memq name new-backends)
-                     (catch 'parentp
-                       (dolist (b new-backends)
-                         (and (org-export-derived-backend-p b name)
-                              (throw 'parentp t)))))))
-             org-export-registered-backends))
-      (let ((new-list (mapcar #'org-export-backend-name
-                              org-export-registered-backends)))
-        (dolist (backend new-backends)
-          (cond
-           ((not (load (format "ox-%s" backend) t t))
-            (message "Problems while trying to load export back-end \\=`%s\\='"
-                     backend))
-           ((not (memq backend new-list)) (push backend new-list))))
-        (set-default 'org-export-backends new-list))))
   :init
   (advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified)
   :custom
@@ -2130,8 +2116,7 @@ languages):
   :ensure nil
   :ensure highlight-doxygen
   :hook
-  ((c-mode-common-hook . highlight-numbers-mode)
-   (c-mode-common-hook . highlight-doxygen-mode)
+  ((c-mode-common-hook . highlight-doxygen-mode)
    (c-mode-common-hook . rainbow-delimiters-mode)
    (c-mode-common-hook . aggressive-indent-mode))
   :custom
@@ -2150,6 +2135,8 @@ Better C++ font lock:
 #+begin_src emacs-lisp :tangle yes
 (use-package modern-cpp-font-lock
   :defer t
+  :delight
+  (modern-c++-font-lock-mode)
   :hook
   (c++-mode-hook . modern-c++-font-lock-mode))
 #+end_src
@@ -2198,7 +2185,6 @@ types that CUDA introduces. So, let's install =cuda-mode=:
   :commands cuda
   :hook
   ((cuda-mode-hook . (lambda () (run-hooks 'prog-mode-hook)))
-   (cuda-mode-hook . highlight-numbers-mode)
    (cuda-mode-hook . modern-c++-font-lock-mode))
   :custom
   (cuda-font-lock-keywords 'cuda-font-lock-keywords-3))
@@ -2220,7 +2206,6 @@ It provides you with everything you need from R.
   :commands R
   :hook
   ((ess-r-mode-hook . aggressive-indent-mode)
-   (ess-r-mode-hook . highlight-numbers-mode)
    (ess-r-mode-hook . lsp))
   :preface
   (defcustom existing-remote-session nil
@@ -2521,10 +2506,9 @@ Python.
 #+begin_src emacs-lisp :tangle yes
 (use-package elpy
   :defer t
-  :hook
-  (python-mode-hook . highlight-numbers-mode)
+  :commands elpy-enable
   :init
-  (advice-add 'python-mode :before 'elpy-enable))
+  (advice-add 'python-mode :after 'elpy-enable))
 #+end_src
 
 ** CMake
