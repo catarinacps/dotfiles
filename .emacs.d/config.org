@@ -1000,7 +1000,7 @@ Let's monitor ourselves with =whitespace=.
    (conf-mode-hook . whitespace-mode)
    (prog-mode-hook . whitespace-mode))
   :custom
-  (whitespace-line-column 80)
+  (whitespace-line-column nil)
   (whitespace-style '(face tabs empty trailing lines-tail)))
 #+end_src
 
