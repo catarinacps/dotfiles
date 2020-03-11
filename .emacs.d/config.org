@@ -2112,13 +2112,17 @@ languages):
 
 #+begin_src emacs-lisp :tangle yes
 (use-package cc-mode
-  :defer t
   :ensure nil
-  :ensure highlight-doxygen
+  :defer t
+  :commands (c-mode awk-mode java-mode c++-mode)
+  :mode
+  (("\\.c\\'" . c-mode)
+   ("\\.h\\'" . c-mode)
+   ("\\.awk\\'" . awk-mode)
+   ("\\.java\\'" . java-mode))
   :hook
   ((c-mode-common-hook . highlight-doxygen-mode)
-   (c-mode-common-hook . rainbow-delimiters-mode)
-   (c-mode-common-hook . aggressive-indent-mode))
+   (c-mode-common-hook . rainbow-delimiters-mode))
   :custom
   (c-default-style
    '((java-mode . "java")
@@ -2126,6 +2130,16 @@ languages):
      (other . "linux")))
   (c-basic-offset 4)
   (c-offsets-alist '((substatement-open . 0))))
+#+end_src
+
+As languages that are part of =cc-mode= are known to using a lot of doxygen,
+here's a package that highlights it!
+
+#+begin_src emacs-lisp :tangle yes
+(use-package highlight-doxygen
+  :defer t
+  :hook
+  (c-mode-common-hook . highlight-doxygen-mode))
 #+end_src
 
 *** C/C++
