@@ -788,6 +788,7 @@ cool extension that provides such functionality.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package dashboard
+  :ensure t
   :ensure all-the-icons
   :custom
   (initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
@@ -2598,6 +2599,7 @@ An interface to communicate with Jupyter kernels in Emacs.
 #+begin_src emacs-lisp :tangle yes
 (use-package jupyter
   :defer t
+  :ensure t
   :ensure zmq
   :ensure websocket
   :custom
