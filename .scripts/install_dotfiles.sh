@@ -12,15 +12,15 @@ GIT_DIR="$HOME/.cfg/"
 GIT_REPO="git@github.com:hcpsilva/dotfiles.git"
 GIT_ALIAS="GIT_DIR=$GIT_DIR GIT_WORK_TREE=$HOME git"
 
-# set-up
-echo "alias dotgit='$GIT_ALIAS'" >> $HOME/.$(basename $SHELL)rc
-echo $GIT_DIR >> $HOME/.gitignore
-
 # cloning
 git clone --bare $GIT_REPO $GIT_DIR
 
+# set our home work tree for the next commands
+export GIT_DIR=$GIT_DIR
+export GIT_WORK_TREE=$HOME
+
 # make sure we checkout (if before where any duplicates)
-$GIT_ALIAS checkout -f
+git checkout -f
 
 # set so that this repo can't see untracked files (otherwise madness)
-$GIT_ALIAS config --local status.showUntrackedFiles no
+git config --local status.showUntrackedFiles no
