@@ -6,7 +6,7 @@
 DEFAULT_DIR=$HOME/Pictures
 
 usage() {
-cat <<EOF
+    cat <<EOF
 USAGE:
   $0 [OPTIONS] [directory]
 
@@ -24,9 +24,7 @@ EOF
 
 scrot_dir=${2:-$DEFAULT_DIR}
 
-if ! [ -d $scrot_dir ]; then
-    mkdir -p $scrot_dir
-fi
+[ ! -d $scrot_dir ] && mkdir -p $scrot_dir
 
 for i in "$@"; do
     case $i in
