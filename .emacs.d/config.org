@@ -382,7 +382,7 @@ And then there's the title question. I for one like Emacs capitalized, so...
 I use the =Inconsolata= font!
 
 #+begin_src emacs-lisp :tangle yes
-(setq-default default-frame-alist '((font . "Inconsolata-14")))
+(setq-default default-frame-alist '((font . "InconsolataG-12")))
 #+end_src
 
 Before this, I used to use =Inconsolata-G=, which I couldn't find a GitHub of
@@ -996,7 +996,8 @@ Let's monitor ourselves with =whitespace=.
 (use-package whitespace
   :demand
   :hook
-  ((after-save-hook . whitespace-cleanup)
+  ((before-save-hook . whitespace-cleanup)
+   (before-save-hook . delete-trailing-whitespace)
    (text-mode-hook . whitespace-mode)
    (conf-mode-hook . whitespace-mode)
    (prog-mode-hook . whitespace-mode))
@@ -1869,6 +1870,7 @@ automatically maintain an updated table of contents of your =.org= file.
    (org-mode-hook . turn-on-auto-fill)
    (org-mode-hook . yas-minor-mode)
    (org-mode-hook . display-line-numbers-mode)
+   (org-mode-hook . (lambda () (whitespace-toggle-options 'lines-tail)))
    (org-babel-after-execute-hook . org-redisplay-inline-images))
   :custom
   (org-return-follows-link t)
