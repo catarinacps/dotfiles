@@ -1,11 +1,11 @@
 # __________________________________________________________
 #
-#     __              __    _           ___                 
+#     __              __    _           ___
 #    / /_____  __  __/ /_  (_)___  ____/ (_)___  ____ ______
 #   / //_/ _ \/ / / / __ \/ / __ \/ __  / / __ \/ __ `/ ___/
-#  / ,< /  __/ /_/ / /_/ / / / / / /_/ / / / / / /_/ (__  ) 
-# /_/|_|\___/\__, /_.___/_/_/ /_/\__,_/_/_/ /_/\__, /____/  
-#           /____/                            /____/        
+#  / ,< /  __/ /_/ / /_/ / / / / / /_/ / / / / / /_/ (__  )
+# /_/|_|\___/\__, /_.___/_/_/ /_/\__,_/_/_/ /_/\__, /____/
+#           /____/                            /____/
 #
 # __________________________________________________________
 #
@@ -144,8 +144,8 @@ super + F5
     terminal -e 'mocp'
 
 # opens pcmanfm, sometimes you need x graphics
-super + shift + F3
-    pcmanfm
+super + {shift,ctrl} + F3
+    {_,gksu} pcmanfm
 
 # opens alsamixer
 super + ctrl + m
@@ -183,7 +183,7 @@ XF86Audio{Play,Stop,Next,Prev}
 #
 # stuff that really is only here because some stuff is kinda broken sometimes
 #
- 
+
 # to start and stop compton
 super + {_,ctrl,shift} + t
     CMD='{stop,start,restart} picom.service'; systemctl --user $CMD; notify-send $CMD
