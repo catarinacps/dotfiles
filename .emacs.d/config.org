@@ -2056,6 +2056,20 @@ It's very pretty oh-kay?
   :after ox)
 #+end_src
 
+**** D&D
+
+Yeah. That's right.
+
+I mean, it's basically a tool to interface with the D&D LaTeX class. Not that
+nerdy, is it?
+
+#+begin_src emacs-lisp :tangle yes
+(use-package ox-dnd
+  :ensure nil
+  :after ox
+  :load-path "vendor/emacs-org-dnd/")
+#+end_src
+
 *** Babel
 
 Now, some configurations relating org-babel and its magic source blocks.
