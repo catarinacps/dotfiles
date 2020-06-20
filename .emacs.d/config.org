@@ -2177,8 +2177,10 @@ languages):
    ("\\.awk$" . awk-mode)
    ("\\.java$" . java-mode))
   :hook
-  ((c-mode-common-hook . highlight-doxygen-mode)
-   (c-mode-common-hook . rainbow-delimiters-mode))
+  ((c-mode-common-hook . lsp)
+   (c-mode-common-hook . highlight-doxygen-mode)
+   (c-mode-common-hook . rainbow-delimiters-mode)
+   (c-mode-common-hook . smartparens-strict-mode))
   :custom
   (c-default-style
    '((java-mode . "java")
@@ -2258,14 +2260,13 @@ For R you pretty much /need/ the =ess= package, i.e. /Emacs Speaks Statistics/.
 It provides you with everything you need from R.
 
 #+begin_src emacs-lisp :tangle yes
-(use-package ess-r-mode
+(use-package ess
   :defer t
-  ;; as we gotta add the extra lsp client
-  :after lsp-mode
-  :ensure ess
-  :commands R
+  :commands (R ess-r-mode ess-r-transcript-mode ess-bugs-mode ess-jags-mode)
   :hook
   ((ess-r-mode-hook . aggressive-indent-mode)
+   (ess-r-mode-hook . smartparens-strict-mode)
+   (ess-r-mode-hook . rainbow-delimiters-mode)
    (ess-r-mode-hook . lsp))
   :preface
   (defcustom existing-remote-session nil
@@ -2299,12 +2300,7 @@ It provides you with everything you need from R.
    "M-RET" 'hcps/insert-r-pipe)
   :custom
   (ess-auto-width 'frame)
-  (ess-style 'RStudio)
-  (lsp-register-client
-   (make-lsp-client :new-connection
-     (lsp-stdio-connection '("R" "--slave" "-e" "languageserver::run()"))
-     :major-modes '(ess-r-mode inferior-ess-r-mode)
-     :server-id 'lsp-R)))
+  (ess-style 'RStudio))
 #+end_src
 
 ** Shell
