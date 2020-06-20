@@ -2065,7 +2065,6 @@ Now, some configurations relating org-babel and its magic source blocks.
 (use-package ob
   :ensure nil
   :after org
-  :ensure ob-async
   :delight
   (org-src-mode)
   :preface
@@ -2081,16 +2080,13 @@ Now, some configurations relating org-babel and its magic source blocks.
   (org-src-tab-acts-natively t)
   (org-src-window-setup 'current-window)
   (org-babel-default-header-args
-   '((:async . "yes")
-     (:session . "none")
+   '((:session . "none")
      (:results . "value replace")
      (:exports . "code")
      (:cache . "none")
      (:noweb . "no")
      (:hlines . "no")
      (:tangle . "no")))
-  (ob-async-no-async-languages-alist
-   '("ipython" "jupyter-julia" "jupyter-python"))
   (org-babel-load-languages
    '((shell . t)
      (python . t)
@@ -2116,9 +2112,7 @@ Now, some configurations relating org-babel and its magic source blocks.
    :prefix hcps/leader-key
    "l x" 'org-babel-execute-buffer
    "l z" 'org-babel-tangle-block
-   "l Z" 'org-babel-tangle)
-  :config
-  (require 'ob-async))
+   "l Z" 'org-babel-tangle))
 #+end_src
 
 *** Journal
