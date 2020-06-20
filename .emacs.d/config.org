@@ -1477,8 +1477,7 @@ I use =yasnippet= to handle my snippet needs.
   :demand
   :delight (yas-minor-mode " yas")
   :hook
-  ((emacs-lisp-mode-hook . yas-minor-mode)
-   (html-mode-hook . yas-minor-mode))
+  ((html-mode-hook . yas-minor-mode))
   :init
   (add-to-list 'hippie-expand-try-functions-list 'yas-hippie-try-expand)
   :general
@@ -1896,9 +1895,10 @@ automatically maintain an updated table of contents of your =.org= file.
 #+begin_src emacs-lisp :tangle yes
 (use-package org
   :defer t
-  :mode (("\\.org\\'" . org-mode))
+  :ensure nil
   :ensure org-plus-contrib
   :ensure toc-org
+  :mode (("\\.org\\'" . org-mode))
   :delight
   (org-indent-mode nil org-indent)
   :hook
@@ -2170,8 +2170,8 @@ languages):
 
 #+begin_src emacs-lisp :tangle yes
 (use-package cc-mode
-  :ensure nil
   :defer t
+  :ensure nil
   :commands (c-mode awk-mode java-mode c++-mode)
   :mode
   (("\\.c$" . c-mode)
@@ -2266,10 +2266,11 @@ It provides you with everything you need from R.
   :defer t
   :commands (R ess-r-mode ess-r-transcript-mode ess-bugs-mode ess-jags-mode)
   :hook
-  ((ess-r-mode-hook . aggressive-indent-mode)
+  ((ess-r-mode-hook . yas-minor-mode)
+   (ess-r-mode-hook . aggressive-indent-mode)
    (ess-r-mode-hook . smartparens-strict-mode)
-   (ess-r-mode-hook . rainbow-delimiters-mode)
-   (ess-r-mode-hook . lsp))
+   ;; (ess-r-mode-hook . lsp)
+   (ess-r-mode-hook . rainbow-delimiters-mode))
   :preface
   (defcustom existing-remote-session nil
     "Defines the existence of a remote R session."
@@ -2445,8 +2446,11 @@ mainly focusing on /UML/, of course.
 Fix for the annoying keyword default indentation:
 
 #+begin_src emacs-lisp :tangle yes
-(defun fuco1/lisp-indent-function (indent-point state)
-  "This function is the normal value of the variable `lisp-indent-function'.
+(use-package lisp-mode
+  :ensure nil
+  :preface
+  (defun fuco1/lisp-indent-function (indent-point state)
+    "This function is the normal value of the variable `lisp-indent-function'.
 The function `calculate-lisp-indent' calls this to determine
 if the arguments of a Lisp function call should be indented specially.
 INDENT-POINT is the position at which the line being indented begins.
@@ -2466,67 +2470,61 @@ it specifies how to indent.  The property value can be:
   that it itself received.
 This function returns either the indentation to use, or nil if the
 Lisp function does not specify a special indentation."
-  (let ((normal-indent (current-column))
-        (orig-point (point)))
-    (goto-char (1+ (elt state 1)))
-    (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t)
-    (cond
-     ;; car of form doesn't seem to be a symbol, or is a keyword
-     ((and (elt state 2)
-           (or (not (looking-at "\\sw\\|\\s_"))
+    (let ((normal-indent (current-column))
+          (orig-point (point)))
+      (goto-char (1+ (elt state 1)))
+      (parse-partial-sexp (point) calculate-lisp-indent-last-sexp 0 t)
+      (cond
+       ;; car of form doesn't seem to be a symbol, or is a keyword
+       ((and (elt state 2)
+             (or (not (looking-at "\\sw\\|\\s_"))
+                 (looking-at ":")))
+        (if (not (> (save-excursion (forward-line 1) (point))
+                    calculate-lisp-indent-last-sexp))
+            (progn (goto-char calculate-lisp-indent-last-sexp)
+                   (beginning-of-line)
+                   (parse-partial-sexp (point)
+                                       calculate-lisp-indent-last-sexp 0 t)))
+        ;; Indent under the list or under the first sexp on the same
+        ;; line as calculate-lisp-indent-last-sexp.  Note that first
+        ;; thing on that line has to be complete sexp since we are
+        ;; inside the innermost containing sexp.
+        (backward-prefix-chars)
+        (current-column))
+       ((and (save-excursion
+               (goto-char indent-point)
+               (skip-syntax-forward " ")
+               (not (looking-at ":")))
+             (save-excursion
+               (goto-char orig-point)
                (looking-at ":")))
-      (if (not (> (save-excursion (forward-line 1) (point))
-                  calculate-lisp-indent-last-sexp))
-          (progn (goto-char calculate-lisp-indent-last-sexp)
-                 (beginning-of-line)
-                 (parse-partial-sexp (point)
-                                     calculate-lisp-indent-last-sexp 0 t)))
-      ;; Indent under the list or under the first sexp on the same
-      ;; line as calculate-lisp-indent-last-sexp.  Note that first
-      ;; thing on that line has to be complete sexp since we are
-      ;; inside the innermost containing sexp.
-      (backward-prefix-chars)
-      (current-column))
-     ((and (save-excursion
-             (goto-char indent-point)
-             (skip-syntax-forward " ")
-             (not (looking-at ":")))
-           (save-excursion
-             (goto-char orig-point)
-             (looking-at ":")))
-      (save-excursion
-        (goto-char (+ 2 (elt state 1)))
-        (current-column)))
-     (t
-      (let ((function (buffer-substring (point)
-                                        (progn (forward-sexp 1) (point))))
-            method)
-        (setq method (or (function-get (intern-soft function)
-                                       'lisp-indent-function)
-                         (get (intern-soft function) 'lisp-indent-hook)))
-        (cond ((or (eq method 'defun)
-                   (and (null method)
-                        (> (length function) 3)
-                        (string-match "\\`def" function)))
-               (lisp-indent-defform state indent-point))
-              ((integerp method)
-               (lisp-indent-specform method state
-                                     indent-point normal-indent))
-              (method
-               (funcall method indent-point state))))))))
-#+end_src
-
-and the necessary hook:
-
-#+begin_src emacs-lisp :tangle yes
-(defun lisp-coding-hook ()
-  (setq-local lisp-indent-function #'fuco1/lisp-indent-function)
-  (highlight-numbers-mode 1)
-  (smartparens-strict-mode 1)
-  (aggressive-indent-mode 1)
-  (rainbow-delimiters-mode 1))
-
-(add-hook 'lisp-mode-hook #'lisp-coding-hook)
+        (save-excursion
+          (goto-char (+ 2 (elt state 1)))
+          (current-column)))
+       (t
+        (let ((function (buffer-substring (point)
+                                          (progn (forward-sexp 1) (point))))
+              method)
+          (setq method (or (function-get (intern-soft function)
+                                         'lisp-indent-function)
+                           (get (intern-soft function) 'lisp-indent-hook)))
+          (cond ((or (eq method 'defun)
+                     (and (null method)
+                          (> (length function) 3)
+                          (string-match "\\`def" function)))
+                 (lisp-indent-defform state indent-point))
+                ((integerp method)
+                 (lisp-indent-specform method state
+                                       indent-point normal-indent))
+                (method
+                 (funcall method indent-point state))))))))
+  :hook
+  ((lisp-mode-hook . highlight-numbers-mode)
+   (lisp-mode-hook . smartparens-strict-mode)
+   (lisp-mode-hook . aggressive-indent-mode)
+   (lisp-mode-hook . rainbow-delimiters-mode))
+  :custom
+  (lisp-indent-function #'fuco1/lisp-indent-function))
 #+end_src
 
 ** Elisp
@@ -2547,7 +2545,8 @@ Emacs version!
       (emacs-lisp-byte-compile)))
   :hook
   ((after-save-hook . recompile-elc-on-save)
-   (emacs-lisp-mode-hook . lisp-coding-hook)))
+   (emacs-lisp-mode-hook . (lambda () (run-hooks 'lisp-mode-hooks)))
+   (emacs-lisp-mode-hook . yas-minor-mode)))
 #+end_src
 
 ** English
@@ -2587,9 +2586,10 @@ simple, each word carries a load of meaning and importance. This little mode
 colors them accordingly.
 
 #+begin_src emacs-lisp :tangle yes
-(use-package cmake-font-lock
+(use-package cmake-mode
   :defer t
-  :commands cmake-font-lock-activate
+  :ensure nil
+  :ensure cmake-font-lock
   :hook
   ((cmake-mode-hook . smartparens-strict-mode)
    (cmake-mode-hook . rainbow-delimiters-mode)
@@ -2607,7 +2607,7 @@ directly from the buffer using =C-c C-b=.
 (use-package dockerfile-mode
   :defer t
   :ensure docker-compose-mode
-  :mode "Dockerfile\\'")
+  :mode "Dockerfile$")
 #+end_src
 
 ** GMPL
@@ -2617,7 +2617,7 @@ So I have syntax highlighting while editing GLPK files.
 #+begin_src emacs-lisp :tangle yes
 (use-package gmpl-mode
   :defer t
-  :mode "\\.mod\\'")
+  :mode "\\.mod$")
 #+end_src
 
 ** Julia
@@ -2625,19 +2625,10 @@ So I have syntax highlighting while editing GLPK files.
 Packages to write Julia source code in Emacs.
 
 #+begin_src emacs-lisp :tangle yes
-(use-package lsp-julia
-  :defer t
-  :custom
-  (lsp-julia-default-environment "~/.julia/environments/v1.2")
-  (lsp-julia-package-dir nil))
-#+end_src
-
-#+begin_src emacs-lisp :tangle yes
 (use-package julia-mode
   :defer t
-  :after lsp-julia
   :ensure julia-repl
-  :mode "\\.jl\\'"
+  :mode "\\.jl$"
   :hook
   ((julia-mode-hook . julia-repl-mode)
    (julia-mode-hook . lsp)
@@ -2645,6 +2636,13 @@ Packages to write Julia source code in Emacs.
   :custom
   (inferior-julia-program-name "/usr/bin/julia"))
 #+end_src
+
+#+begin_src emacs-lisp :tangle yes
+(use-package lsp-julia
+  :after (lsp julia-mode)
+  :custom
+  (lsp-julia-default-environment "~/.julia/environments/v1.2")
+  (lsp-julia-package-dir nil))
 
 ** Jupyter
 
@@ -2674,7 +2672,7 @@ theoretically it should come bundled with Emacs).
 #+begin_src emacs-lisp :tangle yes
 (use-package auctex
   :defer t
-  :mode (("\\.tex\\'" . latex-mode))
+  :mode (("\\.tex$" . latex-mode))
   :hook
   ((latex-mode-hook . turn-on-reftex)
    (latex-mode-hook . turn-on-auto-fill)
@@ -2714,13 +2712,13 @@ So, for my LaTeX config I'll mainly use =latexmk= as it's way simpler to use.
        TeX-run-TeX nil t
        :help "Run Latexmk on file to build everything."))
     (setq TeX-command-default "Latexmk"))
-  :init
-  (auctex-latexmk-setup)
   :hook
   ((tex-mode-hook . hcps/set-latexmk-as-default)
    (latex-mode-hook . hcps/set-latexmk-as-default))
   :custom
-  (auctex-latexmk-inherit-TeX-PDF-mode t))
+  (auctex-latexmk-inherit-TeX-PDF-mode t)
+  :config
+  (auctex-latexmk-setup))
 #+end_src
 
 The hook stuff is because all =TeX= get defined when the mode starts, so we need
@@ -2741,7 +2739,7 @@ Syntax support for the Meson build system DSL (which is based from Python).
 #+begin_src emacs-lisp :tangle yes
 (use-package meson-mode
   :defer t
-  :mode "meson.build\\'"
+  :mode "meson\\.build$"
   :commands meson
   :hook
   ((meson-mode-hook . (lambda () (run-hooks 'prog-mode-hook)))
@@ -2757,8 +2755,8 @@ Derives from =conf-mode[space]=. Got it from [[https://notabug.org/arkhan/emacs-
   :ensure nil
   :load-path "vendor/bspwm-mode/"
   :mode
-  (("sxhkdrc\\'" . bspwm-config-mode)
-   ("bspwmrc\\'" . bspwm-config-mode))
+  (("sxhkdrc$" . bspwm-config-mode)
+   ("bspwmrc$" . bspwm-config-mode))
   :hook
   (bspwm-config-mode-hook . page-break-lines-mode))
 #+end_src
@@ -3048,7 +3046,7 @@ the 'x' in 'for_window [x=y]'.")
 Just a little hook to start the desired =conf-mode= when we open these files.
 
 #+begin_src emacs-lisp :tangle yes
-(add-to-list 'auto-mode-alist '("\\.service\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.service$" . conf-mode))
 #+end_src
 
 ** Rust
