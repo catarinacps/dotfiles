@@ -115,29 +115,32 @@ That way you can understand what's happening beneath all sugar syntax.
 
 You can find the following packages in this configuration file:
 
-#+begin_src emacs-lisp :exports results :results value org list
-(shell-command-to-string
- "grep '^(use-package .*' < config.el |
-  tr -d '()' |
-  cut -d' ' -f2 |
-  sort")
+#+begin_src shell :exports results :results value org list
+grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
+    tr -d '()' |
+    awk '!/\<nil\>/ {print $2}' |
+    sort
 #+end_src
 
 #+RESULTS:
 #+begin_src org
 - ace-window
-- aggressive-indent
+- all-the-icons
 - anzu
 - auctex
 - auctex-latexmk
 - auto-compile
 - bash-completion
 - beacon
+- bspwm
 - ccls
+- cc-mode
 - clang-format
 - cmake-font-lock
 - company
+- company-auctex
 - company-lsp
+- company-reftex
 - compile
 - counsel
 - counsel-projectile
@@ -147,19 +150,27 @@ You can find the following packages in this configuration file:
 - dashboard
 - deadgrep
 - delight
+- docker-compose-mode
 - dockerfile-mode
+- docker-tramp
 - dumb-jump
 - elisp-mode
+- elisp-slime-nav
 - elpy
 - engine-mode
+- ess
 - ess-r-mode
 - eval-expr
 - evil
+- evil-collection
 - evil-matchit
 - evil-mc
+- evil-numbers
 - evil-smartparens
+- evil-surround
+- evil-visualstar
 - exec-path-from-shell
-- expand-region
+- flx
 - flycheck
 - flyspell
 - general
@@ -171,10 +182,12 @@ You can find the following packages in this configuration file:
 - highlight-escape-sequences
 - highlight-indent-guides
 - highlight-numbers
+- htmlize
 - hydra
 - ivy
 - ivy-rich
 - julia-mode
+- julia-repl
 - jupyter
 - lsp-julia
 - lsp-mode
@@ -182,7 +195,6 @@ You can find the following packages in this configuration file:
 - magit
 - make-mode
 - meson-mode
-- midnight
 - modern-cpp-font-lock
 - mw-thesaurus
 - no-littering
@@ -190,11 +202,15 @@ You can find the following packages in this configuration file:
 - openwith
 - org
 - org-journal
+- org-plus-contrib
 - ox
+- ox-dnd
+- ox-extra
 - ox-hugo
 - ox-latex
 - ox-twbs
 - page-break-lines
+- pcre2el
 - plantuml-mode
 - projectile
 - rainbow-delimiters
@@ -203,19 +219,24 @@ You can find the following packages in this configuration file:
 - sh-script
 - smart-mode-line
 - smartparens
+- smex
 - ssh
 - super-save
+- toc-org
 - tramp
 - treemacs
+- treemacs-evil
+- treemacs-projectile
 - undo-tree
 - uniquify
 - use-package-ensure-system-package
-- vimish-fold
 - visual-regexp
+- visual-regexp-steroids
+- websocket
 - which-key
 - whitespace
-- windmove
 - yasnippet
+- zmq
 #+end_src
 
 ** =use-package=
