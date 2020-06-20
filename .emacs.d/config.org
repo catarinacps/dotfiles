@@ -403,7 +403,7 @@ And then there's the title question. I for one like Emacs capitalized, so...
 I use the =Inconsolata= font!
 
 #+begin_src emacs-lisp :tangle yes
-(setq-default default-frame-alist '((font . "InconsolataG-12")))
+(setq-default default-frame-alist '((font . "Source Code Pro-12")))
 #+end_src
 
 Before this, I used to use =Inconsolata-G=, which I couldn't find a GitHub of
