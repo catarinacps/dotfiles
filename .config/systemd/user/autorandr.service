@@ -12,6 +12,7 @@ ExecStart=/usr/bin/autorandr --change --force --default common
 Type=oneshot
 RemainAfterExit=false
 KillMode=process
+RestartSec=3s
 
 [Install]
 WantedBy=default.target

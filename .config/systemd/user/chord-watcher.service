@@ -1,12 +1,14 @@
 [Unit]
 Description=A watcher script for sxhkd chords and i3
-Wants=sxhkd.service
+PartOf=sxhkd.service
 After=sxhkd.service
 
 [Service]
+Environment=FIFO=%T/sxhkd.fifo
+ExecStart=%h/.scripts/sxhkd_watcher.sh $FIFO
+RestartSec=2s
+Restart=always
 Type=simple
-ExecStart=%h/.scripts/sxhkd_watcher.sh %h
-Restart=on-failure
 
 [Install]
 WantedBy=default.target

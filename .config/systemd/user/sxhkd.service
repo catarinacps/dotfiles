@@ -2,14 +2,17 @@
 Description=Simple X Hotkey Daemon
 Documentation=man:sxhkd(1)
 PartOf=graphical-session.target
-Wants=graphical-session.target sxhkd-fifo.service 
-After=graphical-session.target sxhkd-fifo.service
+Wants=graphical-session.target
+After=graphical-session.target
 
 [Service]
-Environment=DISPLAY=:0 SHELL=/usr/bin/bash
-ExecStart=/usr/bin/sxhkd -s /tmp/sxhkd.fifo -m 1
+Environment=FIFO=%T/sxhkd.fifo
+ExecStartPre=/usr/bin/rm -f $FIFO
+ExecStartPre=/usr/bin/mkfifo $FIFO
+ExecStart=/usr/bin/sxhkd -s $FIFO -m 1
 ExecReload=/usr/bin/kill -SIGUSR1 $MAINPID
-Restart=on-failure
+Restart=always
+RestartSec=2s
 
 [Install]
 WantedBy=default.target
