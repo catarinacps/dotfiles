@@ -89,6 +89,7 @@ Cool Emacs configs from cool people:
     - [[#file][File]]
   - [[#systemd-services][systemd services]]
   - [[#rust][Rust]]
+  - [[#perl][Perl]]
 - [[#personal][Personal]]
   - [[#functions][Functions]]
     - [[#fetching-text][Fetching text]]
@@ -1884,6 +1885,7 @@ I still need to add packages relating to these languages:
 - [X] bspwm/sxhkd
 - [X] systemd services/units
 - [X] Rust
+- [ ] Perl
 
 ** Org
 
@@ -3069,6 +3071,51 @@ The newest greatest compiled language!
   :custom
   (rust-format-on-save t)
   (rust-indent-method-chain t))
+#+end_src
+
+** Perl
+
+Old language, still great for doing admin stuff in few lines.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package cperl-mode
+  :ensure nil
+  :mode "\\.p[lm]$"
+  :interpreter "perl"
+  :preface
+  :hook
+  ((cperl-mode-hook . rainbow-delimiters-mode)
+   (cperl-mode-hook . aggressive-indent-mode)
+   (cperl-mode-hook . smartparens-mode)
+   (cperl-mode-hook . lsp))
+  :custom
+  (cperl-auto-newline nil)
+  (cperl-electric-parens-mark nil)
+  (cperl-electric-parens nil)
+  (cperl-electric-parens-string "")
+  (cperl-electric-keywords nil)
+  (cperl-electric-linefeed nil)
+  (cperl-electric-lbrace-space nil)
+  (cperl-message-electric-keyword nil)
+  (cperl-indent-region-fix-constructs 1)
+  (cperl-extra-newline-before-brace nil)
+  (cperl-indent-level 4)
+  (cperl-brace-offset 0)
+  (cperl-continued-brace-offset -4)
+  (cperl-label-offset -4)
+  (cperl-continued-statement-offset 4)
+  :general
+  (:states '(normal visual)
+   :keymaps 'cperl-mode-map
+   :prefix hcps/leader-key
+   "SPC i" 'cperl-indent-region)
+  (:keymaps 'cperl-mode-map
+   "{" nil)
+  :config
+  (crux-with-region-or-buffer cperl-indent-region)
+  (font-lock-add-keywords
+   'cperl-mode `(("^#!\\/\\(?:\\w+\\/\\)*\\(\\w+\\)"
+               (1 'font-lock-keyword-face prepend)))))
 #+end_src
 
 * Personal
