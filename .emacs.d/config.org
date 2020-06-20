@@ -1210,8 +1210,8 @@ best features of other famous editors, such as Visual Studio Code. By using
   :delight
   (lsp-mode " lsp")
   :hook
-  ((prog-mode-hook . lsp)
-   (lsp-mode-hook . lsp-enable-which-key-integration))
+  ((lsp-mode-hook . lsp-enable-which-key-integration)
+   (lsp-mode-hook . company-mode))
   :custom
   (lsp-log-io t)
   (lsp-auto-guess-root t)
