@@ -1175,15 +1175,13 @@ completion candidates.
    "TAB" 'company-complete-selection
    "<right>" 'company-complete-common)
   :custom
-  (company-idle-delay .2)
+  (company-idle-delay .5)
   (company-minimum-prefix-length 1)
   (company-show-numbers t)
   (company-tooltip-limit 10)
   (company-tooltip-flip-when-above t)
   (company-require-match nil)
-  (company-tooltip-align-annotations t)
-  :config
-  (global-company-mode 1))
+  (company-tooltip-align-annotations t))
 #+end_src
 
 **** Help
