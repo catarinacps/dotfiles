@@ -1904,8 +1904,7 @@ automatically maintain an updated table of contents of your =.org= file.
    (org-mode-hook . turn-on-auto-fill)
    (org-mode-hook . yas-minor-mode)
    (org-mode-hook . display-line-numbers-mode)
-   (org-mode-hook . (lambda () (whitespace-toggle-options 'lines-tail)))
-   (org-babel-after-execute-hook . org-redisplay-inline-images))
+   (org-mode-hook . (lambda () (whitespace-toggle-options 'lines-tail))))
   :custom
   (org-return-follows-link t)
   ;; the following used to be '(latex script entities)
@@ -2072,6 +2071,8 @@ Now, some configurations relating org-babel and its magic source blocks.
     (interactive)
     (let ((current-prefix-arg '(4)))
       (call-interactively 'org-babel-tangle)))
+  ;; :hook
+  ;; (org-babel-after-execute-hook . org-redisplay-inline-images)
   :custom
   (org-edit-src-content-indentation 0)
   (org-edit-src-persistent-message nil)
