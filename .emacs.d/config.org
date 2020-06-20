@@ -2672,14 +2672,9 @@ theoretically it should come bundled with Emacs).
 #+begin_src emacs-lisp :tangle yes
 (use-package auctex
   :defer t
-  :ensure company-auctex
-  :ensure company-reftex
   :mode (("\\.tex\\'" . latex-mode))
   :hook
   ((latex-mode-hook . turn-on-reftex)
-   (latex-mode-hook . company-auctex-init)
-   (tex-mode-hook . turn-on-auto-fill)
-   (tex-mode-hook . yas-minor-mode)
    (latex-mode-hook . turn-on-auto-fill)
    (latex-mode-hook . rainbow-delimiters-mode)
    (latex-mode-hook . turn-on-smartparens-mode))
