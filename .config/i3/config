@@ -21,9 +21,9 @@ font xft:Terminus 12
 # Use Mouse+$mod to drag floating windows
 floating_modifier $mod
 
-################################################################################################
+################################################################################
 
-focus_follows_mouse yes
+focus_follows_mouse false
 
 # workspace back and forth (with/without active container)
 workspace_auto_back_and_forth yes
@@ -99,7 +99,7 @@ mode "resize" {
 # Change the variable name at the place you want to match the color
 # of your terminal like this:
 # [example]
-# If you want your bar to have the same background color as your 
+# If you want your bar to have the same background color as your
 # terminal background change the line 362 from:
 # background #14191D
 # to:
