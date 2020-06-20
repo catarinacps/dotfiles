@@ -27,73 +27,76 @@
 
 # change the window in focus or move it
 super + {_,shift} {h,j,k,l}
-    i3-msg {focus,move} {left,down,up,right}
+    i3-msg -q {focus,move} {left,down,up,right}
 
 # move either focus or window to desired workspace
 super + {_,ctrl} + {1-8}
-    i3-msg {_,move container to} workspace {1-8}
+    i3-msg -q {_,move container to} workspace {1-8}
 
 # move window and move to selected workspace
 super + shift + {1-8}
-    WSP='{1-8}'; i3-msg "move container to workspace $WSP; workspace $WSP"
+    WSP='{1-8}'; i3-msg -q "move container to workspace $WSP; workspace $WSP"
 
 # window resizing --------------------------------------------------------------
 
 #+chord: resize
 super + r : {h,j,k,l}
-    i3-msg resize {shrink width,grow height,shrink height,grow width} 5 px or 5 ppt
+    i3-msg -q resize {shrink width,grow height,shrink height,grow width} 5 px or 5 ppt
 
 # make the window in focus fullscreen
 super + f
-    i3-msg fullscreen toggle
+    i3-msg -q fullscreen toggle
+
+super + shift + f
+    i3-msg -q 'focus parent; fullscreen; focus child'
 
 # cycling ----------------------------------------------------------------------
 
 # cycle between all workspaces
 super + ctrl + bracket{left,right}
-    i3-msg workspace {prev,next}
+    i3-msg -q workspace {prev,next}
 
 # cycle between non-empty workspaces
 super + b
-    i3-msg workspace back_and_forth
+    i3-msg -q workspace back_and_forth
 
 # same as before but take the window in focus with you
 super + shift + b
-    WSP='back_and_forth'; i3-msg "move container to workspace $WSP; workspace $WSP"
+    WSP='back_and_forth'; i3-msg -q "move container to workspace $WSP; workspace $WSP"
 
 # floats -----------------------------------------------------------------------
 
 # make the window in focus floating
 super + shift + space
-    i3-msg floating toggle
+    i3-msg -q floating toggle
 
 # change the focus between floating and tiling windows
 super + space
-    i3-msg focus mode_toggle
+    i3-msg -q focus mode_toggle
 
 # show windows in scratchpad (cycle through them)
 super + minus
-    i3-msg scratchpad show
+    i3-msg -q scratchpad show
 
 # move window in focus to scratchpad
 super + shift + minus
-    i3-msg move scratchpad
+    i3-msg -q move scratchpad
 
 # layout -----------------------------------------------------------------------
 
 # change new window tiling
 super + ctrl + {h,v,q}
-    i3-msg split {h,v,toggle}
+    i3-msg -q split {h,v,toggle}
 
 # change the window layout
 super + {s,w,e}
-    i3-msg layout {stacking,tabbed,toggle split}
+    i3-msg -q layout {stacking,tabbed,toggle split}
 
 # others -----------------------------------------------------------------------
 
 # either reload the config or restart i3
 super + shift + {c,r}
-    i3-msg {reload,restart}
+    i3-msg -q {reload,restart}
 
 
 
@@ -107,11 +110,11 @@ super + {d,x,y,c}
 
 # opens a simple terminal window running zsh
 super + Return
-    SHELL=/usr/bin/zsh terminal
+    SHELL=/usr/bin/zsh termite
 
 # kill the window in focus
 super + shift + q
-    i3-msg kill window
+    i3-msg -q kill window
 
 # kills the window you point to
 super + ctrl + x
@@ -133,15 +136,15 @@ super + F2
 
 # opens ranger, the file browser
 super + F3
-    terminal -e 'ranger'
+    termite -e 'ranger'
 
 # opens emacs
 super + F4
     emacsclient -c
 
-# opens mocp
+# opens ncmpcpp
 super + F5
-    terminal -e 'mocp'
+    termite -e 'ncmpcpp'
 
 # opens pcmanfm, sometimes you need x graphics
 super + {shift,ctrl} + F3
@@ -149,7 +152,11 @@ super + {shift,ctrl} + F3
 
 # opens alsamixer
 super + ctrl + m
-    terminal -e 'alsamixer'
+    termite -e 'alsamixer'
+
+# hide / unhide polybar
+super + shift + p
+    polybar-msg cmd toggle
 
 # opens the video linked in the clipboard in mpv
 super + shift + v
@@ -175,8 +182,13 @@ super + {_,shift,ctrl} + @Print
 XF86TouchpadToggle
     touch_toggle.sh
 
+# media keys
 XF86Audio{Play,Stop,Next,Prev}
     playerctl {play-pause,stop,next,previous}
+
+# volume keys
+XF86Audio{Raise,Lower}Volume
+    pactl set-sink-volume 1 {+,-}5%
 
 
 
