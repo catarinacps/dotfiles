@@ -614,6 +614,21 @@ have the best of both worlds!
     (evil-shift-right (region-beginning) (region-end))
     (evil-normal-state)
     (evil-visual-restore))
+  (defun dzop/evil-org-insert-state-in-edit-buffer (fun &rest args)
+    "Bind `evil-default-state' to `insert' before calling FUN with ARGS."
+    (let ((evil-default-state 'insert)
+          ;; Force insert state
+          evil-emacs-state-modes
+          evil-normal-state-modes
+          evil-motion-state-modes
+          evil-visual-state-modes
+          evil-operator-state-modes
+          evil-replace-state-modes)
+      (apply fun args)
+      (evil-refresh-cursor)))
+  :init
+  (advice-add 'org-babel-do-key-sequence-in-edit-buffer
+              :around #'dzop/evil-org-insert-state-in-edit-buffer)
   :general
   (:states '(normal visual)
    "C-u" 'evil-scroll-up
@@ -625,7 +640,8 @@ have the best of both worlds!
    "<down>" 'next-line
    "<left>" 'left-char
    "<right>" 'right-char
-   "<tab>" 'indent-for-tab-command)
+   "<tab>" 'indent-for-tab-command
+   "<return>" 'evil-ret-and-indent)
   (:states 'normal
    "Y" 'hcps/yank-to-eol)
   (:states 'visual
