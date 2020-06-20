@@ -51,6 +51,7 @@ set $ws8 8
 for_window [title="alsamixer"] floating enable
 for_window [title="pcmanfm"] floating enable
 for_window [class="calamares"] floating enable
+for_window [class="Git-gui"] floating enable
 for_window [class="Clipgrab"] floating enable
 for_window [title="File Transfer*"] floating enable
 for_window [class="Galculator"] floating enable
