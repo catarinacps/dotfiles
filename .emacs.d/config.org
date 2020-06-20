@@ -509,7 +509,7 @@ Random configs and definitions that don't have a clear category.
 ** Extensions
 
 These are Emacs-behaviour related! In other words, these extend the capabilities
-of Emacs as an editor, and do NOT add support to other languages or etc.
+of Emacs as a text editor, and do NOT add support to other languages or etc.
 
 *TO-DO list*:
 
