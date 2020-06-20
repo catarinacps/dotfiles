@@ -1912,9 +1912,12 @@ automatically maintain an updated table of contents of your =.org= file.
   (org-hide-leading-stars t)
   (org-support-shift-select nil)
   (org-link-descriptive t)
-  (org-log-done t)
+  (org-log-done 'time)
   (org-directory "~/org/")
   (org-cycle-emulate-tab 'exc-hl-bol)
+  (org-use-property-inheritance t)
+  (org-attach-use-inheritance t)
+  (org-attach-dir-relative t)
   (org-startup-indented t)
   (org-modules
    (append org-modules '(org-tempo org-inlinetask)))
@@ -1933,10 +1936,18 @@ automatically maintain an updated table of contents of your =.org= file.
    "C-S-k" 'outline-up-heading
    "<tab>" 'outline-toggle-children
    "<backtab>" 'org-global-cycle
-   "<return>" 'org-open-at-point)
+   "<return>" 'org-open-at-point
+   "<S-left>" nil
+   "<S-right>" nil
+   "<S-up>" nil
+   "<S-down>" nil)
   (:states '(normal visual)
    :keymaps 'org-mode-map
    :prefix hcps/leader-key
+   "l n s" 'org-narrow-to-subtree
+   "l n p" 'narrow-to-page
+   "l n b" 'org-narrow-to-block
+   "l w" 'widen
    "l t" 'org-set-tags-command
    "l l" 'org-toggle-link-display
    "l a" 'org-attach)
@@ -2090,10 +2101,10 @@ Now, some configurations relating org-babel and its magic source blocks.
   :custom
   (org-edit-src-content-indentation 0)
   (org-edit-src-persistent-message nil)
-  (org-src-preserve-identation t)
+  (org-src-preserve-indentation t)
   (org-src-fontify-natively t)
   (org-src-tab-acts-natively t)
-  (org-src-window-setup 'current-window)
+  (org-src-window-setup 'split-window-below)
   (org-babel-default-header-args
    '((:session . "none")
      (:results . "value replace")
@@ -2140,7 +2151,8 @@ Now, some configurations relating org-babel and its magic source blocks.
   :after org
   :custom
   (org-journal-dir (format-time-string "~/OneDrive/Documentos/Journal/%Y/"))
-  (org-journal-file-format "%Y%m%d")
+  (org-journal-file-type 'monthly)
+  (org-journal-file-format "%Y%m")
   (org-journal-date-format "%e %b %Y (%A)")
   (org-journal-time-format "")
   :general
