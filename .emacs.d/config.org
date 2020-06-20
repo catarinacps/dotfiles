@@ -2750,8 +2750,7 @@ Syntax support for the Meson build system DSL (which is based from Python).
 
 ** bspwm/sxhkd
 
-Derives from =conf-mode[space]=. Got it from
-[[https://notabug.org/arkhan/emacs-bspwm][here]].
+Derives from =conf-mode[space]=. Got it from [[https://notabug.org/arkhan/emacs-bspwm][here]].
 
 #+begin_src emacs-lisp :tangle yes
 (use-package bspwm
