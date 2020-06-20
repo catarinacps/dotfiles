@@ -1,0 +1,6 @@
+audio.sources=pulse
+colors.scheme=redish
+visualizer.spectrum.bar.width=1
+visualizer.spectrum.character=|
+visualizer.spectrum.bar.spacing=0
+#colors.override.terminal=false

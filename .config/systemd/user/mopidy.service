@@ -1,0 +1,11 @@
+[Unit]
+Description=Mopidy music server
+After=pulseaudio.service
+After=polybar.service
+Documentation=man:mopidy(1)
+
+[Service]
+ExecStart=/usr/bin/mopidy --config %h/.config/mopidy/mopidy.conf
+
+[Install]
+WantedBy=default.target

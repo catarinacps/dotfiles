@@ -1,0 +1,22 @@
+visualizer_fifo_path = "/tmp/pulse.fifo"
+
+playlist_shorten_total_times = "yes"
+playlist_display_mode = "columns"
+browser_display_mode = "columns"
+search_engine_display_mode = "columns"
+playlist_editor_display_mode = "columns"
+autocenter_mode = "yes"
+centered_cursor = "yes"
+user_interface = "alternative"
+external_editor = "vim"
+display_bitrate = "yes"
+progressbar_look = "─╼"
+show_duplicate_tags = "no"
+
+browser_sort_mode = "noop"
+#
+browser_sort_format = "{%y}|{%a - }{%t}|{%f} {(%l)}"
+
+song_columns_list_format = "(7f)[green]{l} (20)[magenta]{a} (50)[white]{t|f:Title} (20)[cyan]{b}"
+
+execute_on_song_change = notify-send -i /tmp/track.icon "Now Playing" "$(mpc --format '%title% \n%artist% - %album%' current)"

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="2.0">
+  <body>
+    <outline text="Revolushow" type="rss" xmlUrl='https://halfdeaf.com.br/show/3216821/episodes/feed' />
+    <outline text="Xadrez Verbal" type="rss" xmlUrl='https://xadrezverbal.com/feed' />
+    <outline text="Hello Internet" type="rss" xmlUrl='http://www.hellointernet.fm/podcast?format=rss' />
+    <outline text="Cortex" type="rss" xmlUrl='https://www.relay.fm/cortex/feed' />
+    <outline text="Revolutionary Left Radio" type="rss" xmlUrl='http://revolutionaryleftradio.libsyn.com/rss' />
+    <outline text="On Mass" type="rss" xmlUrl='http://onmasspodcast.buzzsprout.com/143128.rss' />
+    <outline text="Invent the Future" type="rss" xmlUrl='http://inventthefuture.libsyn.com/rss' />
+    <outline text="Fogo no Parquim" type="rss" xmlUrl='https://pinecast.com/feed/fogonoparquim' />
+    <outline text="Anticast" type="rss" xmlUrl='https://halfdeaf.com.br/show/3221921/episodes/feed' />
+    <outline text="Guilhotina" type="rss" xmlUrl='http://central3.com.br/category/podcasts/guilhotina/feed/podcast' />
+    <outline text="Teologia de Buteco" type="rss" xmlUrl='http://teologiadeboteco.com.br/feed/podcast' />
+    <outline text="Command Line Heroes" type="rss" xmlUrl='https://feeds.pacific-content.com/commandlineheroes' />
+    <outline text="Darknet Diaries" type="rss" xmlUrl='https://feeds.megaphone.fm/darknetdiaries' />
+    <outline text="Linux Unplugged" type="rss" xmlUrl='https://feeds.fireside.fm/linuxunplugged/rss' />
+    <outline text="Self-Hosted" type="rss" xmlUrl='https://feeds.fireside.fm/selfhosted/rss' />
+  </body>
+</opml>
