@@ -1,9 +1,11 @@
+/* -*- css -*- */
+
 configuration {
     modi: "window,run,drun,calc";
     width: 30;
     lines: 12;
 /*  columns: 1;*/
-    font: "Terminus 16";
+    font: "Inconsolata 16";
     bw: 4;
 /*  location: 0;*/
     padding: 2;
@@ -37,7 +39,7 @@ configuration {
 /*  combi-modi: "window,run";*/
     matching: "normal";
 /*  tokenize: true;*/
-    // m: "-4";
+    /* m: "-4"; */
     line-margin: 2;
     line-padding: 4;
 /*  filter: ;*/
@@ -52,8 +54,8 @@ configuration {
 /*  fake-background: "screenshot";*/
 /*  window-format: "{w}    {c}   {t}";*/
 /*  click-to-exit: true;*/
-/*  show-match: true;*/
-    // theme: "gruvbox-dark-hard";
+    /* show-match: true; */
+    /* theme: "gruvbox-dark-hard"; */
     color-normal: "#272727, #CACACA, #2C2C2C, #BE302F, #FFFFFF";
     color-urgent: "argb:00000000, #f43753, argb:00000000, argb:00000000, #BE302F";
     color-active: "argb:00000000, #49bbfb, argb:00000000, argb:00000000, #BE302F";

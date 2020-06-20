@@ -14,42 +14,61 @@ XTerm*faceSize:          11
 XTerm*reverseVideo:      on
 XTerm*selectToClipboard: true
 
-! special
-*.foreground:   #ffffff
-*.background:   #1e1e1e
-*.cursorColor:  #ffffff
+! ! special
+! *.foreground:   #ffffff
+! *.background:   #1e1e1e
+! *.cursorColor:  #ffffff
 
-! black
-*.color0:       #5a7260
-*.color8:       #8da691
+! ! black
+! *.color0:       #5a7260
+! *.color8:       #8da691
 
-! red
-*.color1:       #8f423c
-*.color9:       #eeaa88
+! ! red
+! *.color1:       #8f423c
+! *.color9:       #eeaa88
 
-! green
-*.color2:       #bbbb88
-*.color10:      #ccc68d
+! ! green
+! *.color2:       #bbbb88
+! *.color10:      #ccc68d
 
-! yellow
-*.color3:       #f9d25b
-*.color11:      #eedd99
+! ! yellow
+! *.color3:       #f9d25b
+! *.color11:      #eedd99
 
-! blue
-*.color4:       #e0ba69
-*.color12:      #c9b957
+! ! blue
+! *.color4:       #e0ba69
+! *.color12:      #c9b957
 
-! magenta
-*.color5:       #709289
-*.color13:      #ffcbab
+! ! magenta
+! *.color5:       #709289
+! *.color13:      #ffcbab
 
-! cyan
-*.color6:       #d13516
-*.color14:      #c25431
+! ! cyan
+! *.color6:       #d13516
+! *.color14:      #c25431
 
-! white
-*.color7:       #efe2e0
-*.color15:      #f9f1ed
+! ! white
+! *.color7:       #efe2e0
+! *.color15:      #f9f1ed
+
+*background:  #303030
+*foreground:  #eeeeee
+*color0:  #313236
+*color1:  #ff9800
+*color2:  #96c348
+*color3:  #ffc105
+*color4:  #0ea9f2
+*color5:  #f41e61
+*color6:  #0b9686
+*color7:  #dad8da
+*color8:  #42474d
+*color9:  #ffa74b
+*color10:  #a7cc63
+*color11:  #ffa000
+*color12:  #8cd4f8
+*color13:  #b81455
+*color14:  #31a698
+*color15:  #f7efef
 
 *fading:                          8
 *fadeColor:                       black
@@ -58,11 +77,13 @@ XTerm*selectToClipboard: true
 
 Xcursor.theme:                    xcursor-breeze
 Xcursor.size:                     0
-!xft:Hack:style=Regular:size=10, xft:Input Mono Compressed Light:pixelsize=18 
-URxvt*font:                       xft:xos4 Terminus:size=14:minspace=False,\
-                                  xft:TerminessTTFNerdFontMono:size=14:minspace=False,\
+!xft:Hack:style=Regular:size=10, xft:Input Mono Compressed Light:pixelsize=18
+URxvt*font:                       xft:Inconsolata:size=12,\
+                                  xft:FontAwesome:size=16,\
+                                  xft:TerminessTTFNerdFontMono:size=16:minspace=False,\
                                   xft:DejaVu Sans Mono:size=16:minspace=False
-terminal*font:                    xft:TerminessTTFNerdFontMono:size=14:minspace=False
+terminal*font:                    xft:TerminessTTFNerdFontMono:size=16:minspace=False,\
+                                  xft:FontAwesome:size=16:minspace=False
 URxvt.letterSpace:                0
 
 URxvt.depth:                      32
