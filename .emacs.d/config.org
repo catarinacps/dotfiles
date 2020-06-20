@@ -579,7 +579,7 @@ And we'll use =delight= to hide minor-modes names and such.
   (auto-fill-function " af")
   (eldoc-mode " eldoc")
   (editorconfig-mode)
-  (flymake-mode " flymk")
+  (flymake-mode " flymk" flymake)
   (prelude-mode)
   (abbrev-mode))
 #+end_src
@@ -825,7 +825,6 @@ cool extension that provides such functionality.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package dashboard
-  :ensure t
   :ensure all-the-icons
   :custom
   (initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
@@ -1475,7 +1474,7 @@ I use =yasnippet= to handle my snippet needs.
 #+begin_src emacs-lisp :tangle yes
 (use-package yasnippet
   :demand
-  :delight yas-minor-mode
+  :delight (yas-minor-mode " yas")
   :hook
   ((emacs-lisp-mode-hook . yas-minor-mode)
    (html-mode-hook . yas-minor-mode))
@@ -1954,7 +1953,6 @@ Configurations relating all the numerous org exporters.
 #+begin_src emacs-lisp :tangle yes
 (use-package ox
   :ensure nil
-  :defer t
   :after org
   :ensure htmlize
   :preface
@@ -2066,7 +2064,6 @@ Now, some configurations relating org-babel and its magic source blocks.
 #+begin_src emacs-lisp :tangle yes
 (use-package ob
   :ensure nil
-  :defer t
   :after org
   :ensure ob-async
   :delight
@@ -2154,10 +2151,10 @@ languages):
   :defer t
   :commands (c-mode awk-mode java-mode c++-mode)
   :mode
-  (("\\.c\\'" . c-mode)
-   ("\\.h\\'" . c-mode)
-   ("\\.awk\\'" . awk-mode)
-   ("\\.java\\'" . java-mode))
+  (("\\.c$" . c-mode)
+   ("\\.h$" . c-mode)
+   ("\\.awk$" . awk-mode)
+   ("\\.java$" . java-mode))
   :hook
   ((c-mode-common-hook . highlight-doxygen-mode)
    (c-mode-common-hook . rainbow-delimiters-mode))
@@ -2187,19 +2184,9 @@ Better C++ font lock:
 #+begin_src emacs-lisp :tangle yes
 (use-package modern-cpp-font-lock
   :defer t
-  :delight
-  (modern-c++-font-lock-mode)
+  :delight modern-c++-font-lock-mode
   :hook
   (c++-mode-hook . modern-c++-font-lock-mode))
-#+end_src
-
-LSP integration:
-
-#+begin_src emacs-lisp :tangle yes
-(use-package ccls
-  :defer t
-  :hook
-  ((c-mode-hook c++-mode-hook objc-mode-hook cuda-mode-hook) . (lambda () (require 'ccls) (lsp))))
 #+end_src
 
 In the department of code formatting, =clang-format= is a lovely tool that can
@@ -2306,6 +2293,7 @@ As for shell-scripting:
 #+begin_src emacs-lisp :tangle yes
 (use-package sh-script
   :defer t
+  :ensure nil
   :preface
   (defvar more-sh-utilities
     '("addbib" "apropos" "ar" "at" "awk" "banner" "basename" "batch" "biff"
@@ -2361,7 +2349,7 @@ As for shell-scripting:
                 (not (eq (nth 3 (syntax-ppss)) ?\"))))
         res)))
   :custom
-  (prezto-files '("zlogin" "zlogin" "zlogout" "zpreztorc" "zprofile" "zshenv" "zshrc"))
+  (prezto-files '(".zlogin" ".zlogin" ".zlogout" ".zpreztorc" ".zprofile" ".zshenv" ".zshrc"))
   :hook
   ((sh-mode-hook . zsh-prezto-files)
    (sh-mode-hook . aggressive-indent-mode)
@@ -2388,8 +2376,11 @@ For =shell= completion I use =bash-complete=, which auto completes several
 
 #+begin_src emacs-lisp :tangle yes
 (use-package bash-completion
+  :ensure-system-package bash-completion
   :hook
-  (shell-dynamic-complete-funtions-hook . bash-completion-dynamic-complete))
+  (shell-dynamic-complete-functions . bash-completion-dynamic-complete)
+  :custom
+  (bash-completion-use-separate-processes nil))
 #+end_src
 
 ** Makefile
@@ -2636,7 +2627,6 @@ An interface to communicate with Jupyter kernels in Emacs.
 #+begin_src emacs-lisp :tangle yes
 (use-package jupyter
   :defer t
-  :ensure t
   :ensure zmq
   :ensure websocket
   :custom
@@ -2745,7 +2735,7 @@ Derives from =conf-mode[space]=. Got it from
 #+begin_src emacs-lisp :tangle yes
 (use-package bspwm
   :ensure nil
-  :load-path "vendor/"
+  :load-path "vendor/bspwm-mode/"
   :mode
   (("sxhkdrc\\'" . bspwm-config-mode)
    ("bspwmrc\\'" . bspwm-config-mode))
