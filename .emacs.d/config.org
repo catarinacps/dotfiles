@@ -2447,6 +2447,7 @@ Fix for the annoying keyword default indentation:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package lisp-mode
+  :demand
   :ensure nil
   :preface
   (defun fuco1/lisp-indent-function (indent-point state)
@@ -2533,9 +2534,10 @@ Emacs version!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package elisp-mode
-  :defer t
+  :after lisp-mode
   :ensure nil
   :ensure elisp-slime-nav
+  :commands emacs-lisp-mode
   :preface
   (defun recompile-elc-on-save ()
     "Recompile your elc when saving an elisp file."
@@ -2545,7 +2547,7 @@ Emacs version!
       (emacs-lisp-byte-compile)))
   :hook
   ((after-save-hook . recompile-elc-on-save)
-   (emacs-lisp-mode-hook . (lambda () (run-hooks 'lisp-mode-hooks)))
+   (emacs-lisp-mode-hook . (lambda () (run-hooks 'lisp-mode-hook)))
    (emacs-lisp-mode-hook . yas-minor-mode)))
 #+end_src
 
