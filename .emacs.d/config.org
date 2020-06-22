@@ -1113,25 +1113,25 @@ Here's a small package that allows remotely opening sessions.
     :type 'string
     :safe #'stringp
     :group 'ssh)
-  (defun ssh-connect-remote (SERVER)
-    "Open a SSH session buffer to the desired target."
-    (interactive (list (read-from-minibuffer
-                        (format "What server to connect to (default: %s): "
-                                ssh-default-server))))
-    (let* ((server-to-connect (if (equal SERVER "") ssh-default-server SERVER)))
-      (setq ssh-current-server (buffer-name (ssh server-to-connect))))
-    (get-buffer-create ssh-current-server))
-  (defun hcps/ssh-user-connect ()
-    "Calls interactively the ssh-connect-remote function."
-    (interactive)
-    (call-interactively 'ssh-connect-remote))
+  ;; (defun ssh-connect-remote (SERVER)
+  ;;   "Open a SSH session buffer to the desired target."
+  ;;   (interactive (list (read-from-minibuffer
+  ;;                       (format "What server to connect to (default: %s): "
+  ;;                               ssh-default-server))))
+  ;;   (let* ((server-to-connect (if (equal SERVER "") ssh-default-server SERVER)))
+  ;;     (setq ssh-current-server (buffer-name (ssh server-to-connect))))
+  ;;   (get-buffer-create ssh-current-server))
+  ;; (defun hcps/ssh-user-connect ()
+  ;;   "Calls interactively the ssh-connect-remote function."
+  ;;   (interactive)
+  ;;   (call-interactively 'ssh-connect-remote))
   (defun hcps/get-user-server ()
     "Call to set and print the user server."
     (interactive)
     (if (equal ssh-remote-user-server nil)
         (setq ssh-remote-user-server
               (read-from-minibuffer "What server to store: ")))
-    (concat "/scp:" ssh-remote-user-server ":"))
+    (concat "/ssh:" ssh-remote-user-server ":"))
   (defun hcps/store-user-remote ()
     "Store a server name to the desired target."
     (interactive)
