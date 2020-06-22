@@ -1089,7 +1089,8 @@ editing remote files and to editing as super-user.
 (use-package tramp
   :demand
   :custom
-  (tramp-default-method "ssh"))
+  (tramp-default-method "ssh")
+  (tramp-terminal-type "tramp"))
 #+end_src
 
 Here's a small package that allows remotely opening sessions.

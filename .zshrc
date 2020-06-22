@@ -1,6 +1,20 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
+if [[ "$TERM" == 'tramp' ]]; then
+    PS1='$ '
+    unset RPROMPT
+    unset RPS1
+    whence -w precmd >/dev/null && unfunction precmd
+    whence -w preexec >/dev/null && unfunction preexec
+    unsetopt zle
+    unsetopt zle_bracketed_paste
+    unsetopt prompt_cr
+    unsetopt prompt_subst
+    unsetopt rcs
+    return
+fi
+
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
