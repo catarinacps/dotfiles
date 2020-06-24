@@ -5,8 +5,9 @@ PartOf=graphical-session.target
 After=graphical-session.target
 
 [Service]
-ExecStart=/usr/bin/xautolock -time 10 -locker blurlock.sh
+ExecStart=/usr/bin/xautolock -time 10 -locker %h/.scripts/blurlock.sh
 Restart=on-failure
+RestartSec=3s
 
 [Install]
 WantedBy=default.target
