@@ -64,7 +64,7 @@ get_session() {
 }
 
 # start picom only after xorg
-picom &
+# picom &
 
 exec $(get_session)
-xset r rate 660 25
+# xset r rate 660 25
