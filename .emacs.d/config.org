@@ -1048,6 +1048,7 @@ extra configuration about it:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package compile
+  :ensure nil
   :custom
   (compilation-ask-about-save nil)
   (compilation-always-kill t)
@@ -1086,6 +1087,7 @@ editing remote files and to editing as super-user.
 #+begin_src emacs-lisp :tangle yes
 (use-package tramp
   :demand
+  :ensure nil
   :custom
   (tramp-default-method "ssh")
   (tramp-terminal-type "xterm-mono"))
@@ -1096,6 +1098,7 @@ Here's a small package that allows remotely opening sessions.
 #+begin_src emacs-lisp :tangle yes
 (use-package ssh
   :after shell
+  :ensure nil
   :preface
   (defcustom ssh-current-server nil
     "Last remote server created by SSH."
@@ -1432,6 +1435,7 @@ that kills old buffers.
 
 #+begin_src emacs-lisp
 (use-package midnight
+  :ensure nil
   :custom
   (clean-buffer-list-delay-general 0.5)
   (clean-buffer-list-delay-special (* 1 3600))
