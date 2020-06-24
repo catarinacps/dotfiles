@@ -1,4 +1,4 @@
-# -*- mode: org -*-
+# -*- org -*-
 #+title: My Emacs configuration file
 #+author: Henrique Silva
 #+email: hcpsilva@inf.ufrgs.br
@@ -1909,12 +1909,11 @@ anyone should try Emacs. With it I also use =toc-org=, which is an useful way to
 automatically maintain an updated table of contents of your =.org= file.
 
 #+begin_src emacs-lisp :tangle yes
-(use-package org
+(use-package org-plus-contrib
   :defer t
-  :ensure nil
-  :ensure org-plus-contrib
   :ensure toc-org
   :mode (("\\.org\\'" . org-mode))
+  :commands org-mode
   :delight
   (org-indent-mode nil org-indent)
   :hook

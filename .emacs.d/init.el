@@ -89,6 +89,9 @@ This is DEPRECATED, use %s instead." prelude-modules-file))
        (add-to-list 'load-path name)
        (prelude-add-subfolders-to-load-path name)))))
 
+;; This is here so we load the cutting-edge org-mode
+(setq load-path (delete (car (file-expand-wildcards "/usr/share/emacs/*/lisp/org")) load-path))
+
 ;; add Prelude's directories to Emacs's `load-path'
 (add-to-list 'load-path prelude-core-dir)
 (add-to-list 'load-path prelude-modules-dir)
@@ -103,9 +106,9 @@ This is DEPRECATED, use %s instead." prelude-modules-file))
 (setq large-file-warning-threshold 100000000)
 
 ;; preload the personal settings from `prelude-personal-preload-dir'
-(when (file-exists-p prelude-personal-preload-dir)
-  (message "Loading personal configuration files in %s..." prelude-personal-preload-dir)
-  (mapc 'load (directory-files prelude-personal-preload-dir 't "^[^#\.].*el$")))
+;; (when (file-exists-p prelude-personal-preload-dir)
+;;   (message "Loading personal configuration files in %s..." prelude-personal-preload-dir)
+;;   (mapc 'load (directory-files prelude-personal-preload-dir 't "^[^#\.].*el$")))
 
 (message "Loading Prelude's core...")
 
