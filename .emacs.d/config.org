@@ -1140,7 +1140,7 @@ Here's a small package that allows remotely opening sessions.
       (setq ssh-remote-user-server server-to-connect)))
   :custom
   (shell-command-dont-erase-buffer t)
-  (ssh-default-server "bolsa.inf")
+  (ssh-default-server "aeon.inf")
   (ssh-directory-tracking-mode t)
   :general
   (:states '(normal visual)
