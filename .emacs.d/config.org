@@ -924,11 +924,9 @@ certainly work on Emacs!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package exec-path-from-shell
-  :if
-  (memq window-system '(mac ns))
   :demand
   :init
-  (setenv "SHELL" "/usr/bin/bash")
+  (setenv "SHELL" "/bin/sh")
   :custom
   (exec-path-from-shell-arguments '("-l"))
   (exec-path-from-shell-variables '("PATH" "MANPATH"))
@@ -1090,7 +1088,7 @@ editing remote files and to editing as super-user.
   :demand
   :custom
   (tramp-default-method "ssh")
-  (tramp-terminal-type "tramp"))
+  (tramp-terminal-type "xterm-mono"))
 #+end_src
 
 Here's a small package that allows remotely opening sessions.
@@ -1328,6 +1326,19 @@ Of course, =flyspell= corrects your writing!
   (:states '(normal visual)
    :prefix hcps/leader-key
    "m d" 'ispell-change-dictionary))
+#+end_src
+
+Last minute addition: =ansi-color=!
+
+#+begin_src emacs-lisp :tangle yes
+(use-package ansi-color
+  :demand
+  :ensure nil
+  :hook
+  ((shell-mode-hook . ansi-color-for-comint-mode-on)
+   (eshell-preoutput-filter-functions . ansi-color-filter-apply))
+  :config
+  (add-to-list 'comint-output-filter-functions 'ansi-color-process-output))
 #+end_src
 
 *** Hydra
@@ -2104,8 +2115,23 @@ Now, some configurations relating org-babel and its magic source blocks.
     (interactive)
     (let ((current-prefix-arg '(4)))
       (call-interactively 'org-babel-tangle)))
+  (defun org-babel-evaluate-session-remove-ansi-codes (fun &rest args)
+    (let ((result (apply fun args))
+          (type (nth 2 args)))
+      (if (eq type 'output)
+          (replace-regexp-in-string ansi-color-control-seq-regexp "" result)
+        result)))
+  (defun org-babel-evaluate-remove-ansi-codes (fun &rest args)
+    (let ((result (apply fun args))
+          (type (cdr (assq :result-params (nth 2 args)))))
+      (if (member "output" type)
+          (replace-regexp-in-string ansi-color-control-seq-regexp "" result)
+        result)))
   ;; :hook
   ;; (org-babel-after-execute-hook . org-redisplay-inline-images)
+  :init
+  (advice-add 'org-babel-R-evaluate-session :around #'org-babel-evaluate-session-remove-ansi-codes)
+  (advice-add 'org-babel-sh-evaluate :around #'org-babel-evaluate-remove-ansi-codes)
   :custom
   (org-edit-src-content-indentation 0)
   (org-edit-src-persistent-message nil)
