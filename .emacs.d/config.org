@@ -4,9 +4,9 @@
 #+email: hcpsilva@inf.ufrgs.br
 #+infojs_opt:
 
-These configurations represent my preferred version of Emacs, one that uses
-=evil= everywhere it can and one that tries to be as minimalist as +I want+
-possible.
+These configurations represent my preferred version of Emacs, one that
+uses =evil= everywhere it can and one that tries to be as minimalist as
++I want+ possible.
 
 Cool Emacs configs from cool people:
 
@@ -98,18 +98,20 @@ Cool Emacs configs from cool people:
 
 * Introduction
 
-First of all, welcome to my configuration file for Emacs. I built it from almost
-the ground up, picking up configs from several sources, some of which I've cited
-in the beginning of this file.
+First of all, welcome to my configuration file for Emacs. I built it
+from almost the ground up, picking up configs from several sources, some
+of which I've cited in the beginning of this file.
 
-As I'd like that this file be used as a source of inspiration for others, I
-wrote it in an =.org= file, using all of =org-mode='s black magic powers of
-tangling source blocks to intertwine both source =.el= and prose.
+As I'd like that this file be used as a source of inspiration for
+others, I wrote it in an =.org= file, using all of =org-mode='s black
+magic powers of tangling source blocks to intertwine both source =.el=
+and prose.
 
 Also, I've used in almost all sections of this document a package called
-=use-package= in order to organize all the additional packages that I use to get
-a better Emacs experience. So, I'll teach you to read a =use-package= statement!
-That way you can understand what's happening beneath all sugar syntax.
+=use-package= in order to organize all the additional packages that I
+use to get a better Emacs experience. So, I'll teach you to read a
+=use-package= statement! That way you can understand what's happening
+beneath all sugar syntax.
 
 ** What packages you can find here
 
@@ -242,21 +244,21 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 
 ** =use-package=
 
-Briefly, this package wraps your configuration for a given package in a neat
-little statement, which can include several useful categorizations and
-sub-tools.
+Briefly, this package wraps your configuration for a given package in a
+neat little statement, which can include several useful categorizations
+and sub-tools.
 
 Here are all little keywords you can use to organize your configs:
 
 *** :ensure
 
 The =:ensure= keyword tells to =use-package= that this package should be
-installed in the system. Without it, =use-package= will tell you that the given
-package isn't installed and won't proceed.
+installed in the system. Without it, =use-package= will tell you that
+the given package isn't installed and won't proceed.
 
-I define a flag to tell =use-package= to activate this keyword by default,
-because I want all packages that I use installed in the system! Still, I can
-turn off this behaviour if I set the keyword to =false=.
+I define a flag to tell =use-package= to activate this keyword by
+default, because I want all packages that I use installed in the system!
+Still, I can turn off this behaviour if I set the keyword to =false=.
 
 #+begin_src emacs-lisp
 (use-package foo
@@ -266,8 +268,8 @@ turn off this behaviour if I set the keyword to =false=.
   :ensure f)      ; I don't NEED the package installed
 #+end_src
 
-You can also use this keyword to tell that your package need another installed
-before it loads!
+You can also use this keyword to tell that your package need another
+installed before it loads!
 
 #+begin_src emacs-lisp
   (use-package foo
@@ -276,9 +278,9 @@ before it loads!
 
 *** :after
 
-The =:after= keyword sets a relation of dependency between the loading of two
-packages. In other words, you can tell =use-package= that a given package should
-only be loaded if that other package is already loaded.
+The =:after= keyword sets a relation of dependency between the loading
+of two packages. In other words, you can tell =use-package= that a given
+package should only be loaded if that other package is already loaded.
 
 #+begin_src emacs-lisp
 (use-package foo)
@@ -292,9 +294,9 @@ only be loaded if that other package is already loaded.
 
 *** :defer
 
-The =:defer= keyword tells =use-package= that it can defer the loading of your
-package until its absolutely needed. Its behaviour is the opposite of the
-keyword =:demand=.
+The =:defer= keyword tells =use-package= that it can defer the loading
+of your package until its absolutely needed. Its behaviour is the
+opposite of the keyword =:demand=.
 
 #+begin_src emacs-lisp
 (use-package foo
@@ -303,8 +305,8 @@ keyword =:demand=.
 
 *** :demand
 
-The =:demand= keyword says to =use-package= that this package must not be
-lazy-loaded, and should be loaded right away as Emacs loads.
+The =:demand= keyword says to =use-package= that this package must not
+be lazy-loaded, and should be loaded right away as Emacs loads.
 
 #+begin_src emacs-lisp
 (use-package foo
@@ -313,9 +315,10 @@ lazy-loaded, and should be loaded right away as Emacs loads.
 
 *** :init
 
-The =:init= keyword can tell =use-package= to execute said commands *BEFORE* the
-package is loaded. In reality, said execution will happen as soon as the
-=use-package= statement is processed on the Emacs loading process.
+The =:init= keyword can tell =use-package= to execute said commands
+*BEFORE* the package is loaded. In reality, said execution will happen
+as soon as the =use-package= statement is processed on the Emacs loading
+process.
 
 #+begin_src emacs-lisp
 (use-package foo
@@ -325,11 +328,12 @@ package is loaded. In reality, said execution will happen as soon as the
 
 *** :config
 
-The =:config= keyword, much like the =:init= keyword, tells =use-package= to
-execute commands. The difference is that commands defined with this keyword will
-only execute *AFTER* the package is loaded. There is an important difference
-here, as =use-package= uses what's called /lazy loading/, i.e. only load the
-package when you actually need it.
+The =:config= keyword, much like the =:init= keyword, tells
+=use-package= to execute commands. The difference is that commands
+defined with this keyword will only execute *AFTER* the package is
+loaded. There is an important difference here, as =use-package= uses
+what's called /lazy loading/, i.e. only load the package when you
+actually need it.
 
 #+begin_src emacs-lisp
 (use-package foo
@@ -372,7 +376,8 @@ As in "where we are", as there isn't a direct way of getting such info.
 
 *** GUI elements
 
-Almost every GUI element of Emacs is useless and a waste of screen space.
+Almost every GUI element of Emacs is useless and a waste of screen
+space.
 
 #+begin_src emacs-lisp :tangle yes
 (customize-set-variable 'scroll-bar-mode nil)
@@ -389,7 +394,8 @@ To be fair, some stuff is really personal preference of mine.
               initial-major-mode 'text-mode)
 #+end_src
 
-And then there's the title question. I for one like Emacs capitalized, so...
+And then there's the title question. I for one like Emacs capitalized,
+so...
 
 #+begin_src emacs-lisp :tangle yes
 (setq-default frame-title-format
@@ -407,22 +413,21 @@ I use the =Inconsolata= font!
 (setq-default default-frame-alist '((font . "Source Code Pro-12")))
 #+end_src
 
-Before this, I used to use =Inconsolata-G=, which I couldn't find a GitHub of
-sorts, here's a link to a mirror [[https://www.fontmirror.com/inconsolata-g]].
-Also, you may end up having some issues with this font, as Emacs only knows the
-XLFD (which splits the important font info by the '-'), so our =Inconsolata-g=
-will face some issues here and there. To fix this, duplicate the font in your
-font directory (probably /usr/share/fonts/TTF) and alter the copy's name as
-[[this][https://emacs.stackexchange.com/questions/16818/cocoa-emacs-24-5-font-issues-inconsolata-dz]]
-link indicates.
+Before this, I used to use =Inconsolata-G=, which I couldn't find a
+GitHub of sorts, here's a link to a mirror [[https://www.fontmirror.com/inconsolata-g][mirror]]. Also, you may end up
+having some issues with this font, as Emacs only knows the XLFD (which
+splits the important font info by the '-'), so our =Inconsolata-g= will
+face some issues here and there. To fix this, duplicate the font in your
+font directory (probably /usr/share/fonts/TTF) and alter the copy's name
+as [[https://emacs.stackexchange.com/questions/16818/cocoa-emacs-24-5-font-issues-inconsolata-dz][this]] link indicates.
 
 *** Text
 
-Here's every other setting relating to text editing I can't categorize any
-further.
+Here's every other setting relating to text editing I can't categorize
+any further.
 
 #+begin_src emacs-lisp :tangle yes
-(setq-default fill-column 80
+(setq-default fill-column 72
               ;; posssible values: (left right center full nil)
               default-justification 'left
               indent-tabs-mode nil
@@ -436,8 +441,8 @@ further.
 (blink-cursor-mode 0)
 #+end_src
 
-Also, =auto-fill-mode= is very useful to justify paragraphs automatically while
-writing.
+Also, =auto-fill-mode= is very useful to justify paragraphs
+automatically while writing.
 
 #+begin_src emacs-lisp :tangle yes
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
@@ -509,8 +514,9 @@ Random configs and definitions that don't have a clear category.
 
 ** Extensions
 
-These are Emacs-behaviour related! In other words, these extend the capabilities
-of Emacs as a text editor, and do NOT add support to other languages or etc.
+These are Emacs-behaviour related! In other words, these extend the
+capabilities of Emacs as a text editor, and do NOT add support to other
+languages or etc.
 
 *TO-DO list*:
 
@@ -518,9 +524,9 @@ of Emacs as a text editor, and do NOT add support to other languages or etc.
 
 *** Package loading setup
 
-I use =use-package= to load my packages and to organize them neatly in this org
-file. I plan to gradually rip everything I want from =prelude= and put it here
-eventually, using =use-package=.
+I use =use-package= to load my packages and to organize them neatly in
+this org file. I plan to gradually rip everything I want from =prelude=
+and put it here eventually, using =use-package=.
 
 #+begin_src emacs-lisp :tangle yes
 (unless (package-installed-p 'use-package)
@@ -533,17 +539,18 @@ eventually, using =use-package=.
       use-package-hook-name-suffix nil)
 #+end_src
 
-In order to demand that certain system packages are installed, I use the helper
-package called =use-package-ensure-system-package=. Installing it I can use the
-=:ensure-system-package= keywords and demand that certain packages are installed
-in the system before proceeding (useful to LaTeX, for example)!
+In order to demand that certain system packages are installed, I use the
+helper package called =use-package-ensure-system-package=. Installing it
+I can use the =:ensure-system-package= keywords and demand that certain
+packages are installed in the system before proceeding (useful to LaTeX,
+for example)!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package use-package-ensure-system-package)
 #+end_src
 
-Having that said, I too use =auto-compile= to always compile packages and to
-have their newest version.
+Having that said, I too use =auto-compile= to always compile packages
+and to have their newest version.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package auto-compile
@@ -554,9 +561,9 @@ have their newest version.
   (auto-compile-on-load-mode))
 #+end_src
 
-To add facilitate my keybinding issues, I also use =general.el=. It adds some
-very welcome keywords to =use-package=, in which I'll use extensively throughout
-this file.
+To add facilitate my keybinding issues, I also use =general.el=. It adds
+some very welcome keywords to =use-package=, in which I'll use
+extensively throughout this file.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package general
@@ -587,9 +594,9 @@ And we'll use =delight= to hide minor-modes names and such.
 
 *** Keybindings
 
-=evil=, or /Extensible vi Layer/, is a minor mode that changes Emacs text
-editing keybindings to match the modal edit modes of vi and vim. Yes, you can
-have the best of both worlds!
+=evil=, or /Extensible vi Layer/, is a minor mode that changes Emacs
+text editing keybindings to match the modal edit modes of vi and vim.
+Yes, you can have the best of both worlds!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package evil
@@ -677,16 +684,18 @@ have the best of both worlds!
   (evil-collection-init))
 #+end_src
 
-Also I use =evil-surround=, which is a port of =surround= from vim and allow you
-to quickly delete or change surrounding ="= and ='= from words or paragraphs or
-whatever, as it integrates with vim's verb way of expressing actions.
+Also I use =evil-surround=, which is a port of =surround= from vim and
+allow you to quickly delete or change surrounding ="= and ='= from words
+or paragraphs or whatever, as it integrates with vim's verb way of
+expressing actions.
 
 =evil-visualstar= enables searching visual selections with the =*= key.
 
-The package =evil-collection= adds a bunch of cool =evil= keybindings to other
-popular packages.
+The package =evil-collection= adds a bunch of cool =evil= keybindings to
+other popular packages.
 
-=evil-mc= implements the =multiple-cursors= functionality to =evil-mode=.
+=evil-mc= implements the =multiple-cursors= functionality to
+=evil-mode=.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package evil-mc
@@ -725,9 +734,9 @@ And to use better bindings to =smartparens=, =evil-smartparens=!
 
 *** Completion framework
 
-=ivy= is like =ido= but better, I guess. It does fuzzy matching of searches to
-open files and such. =flx= is required here in order to have fuzzy matching and
-whatnot.
+=ivy= is like =ido= but better, I guess. It does fuzzy matching of
+searches to open files and such. =flx= is required here in order to have
+fuzzy matching and whatnot.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ivy
@@ -764,8 +773,8 @@ whatnot.
   (ivy-mode 1))
 #+end_src
 
-=counsel= uses =ivy= to find files and commands. =smex= is required here to
-make sure that =counsel-M-x= has decent candidate sorting.
+=counsel= uses =ivy= to find files and commands. =smex= is required here
+to make sure that =counsel-M-x= has decent candidate sorting.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package counsel
@@ -791,13 +800,15 @@ make sure that =counsel-M-x= has decent candidate sorting.
   ("M-x" 'counsel-M-x))
 #+end_src
 
-As you may know, in Emacs we use =tramp= to edit files remotely using =ssh= and
-to edit local files as =root=. With the package =counsel-tramp= we have an
-=counsel=-powered interface to use that mechanism!
+As you may know, in Emacs we use =tramp= to edit files remotely using
+=ssh= and to edit local files as =root=. With the package
+=counsel-tramp= we have an =counsel=-powered interface to use that
+mechanism!
 
-This package looks up your hosts defined in =~/.ssh/config= to generate a list
-with possible =ssh= connections AND docker containers (thanks to
-=docker-tramp=), along with =sudo= possibilities (including =localhost=!).
+This package looks up your hosts defined in =~/.ssh/config= to generate
+a list with possible =ssh= connections AND docker containers (thanks to
+=docker-tramp=), along with =sudo= possibilities (including
+=localhost=!).
 
 #+begin_src emacs-lisp :tangle yes
 (use-package counsel-tramp
@@ -809,8 +820,8 @@ with possible =ssh= connections AND docker containers (thanks to
    "m t" 'counsel-tramp))
 #+end_src
 
-And, as a bonus, I've added the package =ivy-rich= to make the =ivy= minibuffer
-the prettiest on all the land.
+And, as a bonus, I've added the package =ivy-rich= to make the =ivy=
+minibuffer the prettiest on all the land.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ivy-rich
@@ -821,8 +832,8 @@ the prettiest on all the land.
 
 *** Splash screen
 
-There's some utility in having a cool initial screen actually. And there's a
-cool extension that provides such functionality.
+There's some utility in having a cool initial screen actually. And
+there's a cool extension that provides such functionality.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package dashboard
@@ -847,8 +858,8 @@ cool extension that provides such functionality.
 
 *** File management
 
-I use =ranger.el= to use a file explorer like =ranger= inside Emacs instead of
-the default =dired=.
+I use =ranger.el= to use a file explorer like =ranger= inside Emacs
+instead of the default =dired=.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ranger
@@ -865,9 +876,9 @@ the default =dired=.
    "d" 'ranger))
 #+end_src
 
-While I've somewhat used =neotree.el=, I believe that =treemacs= is turning out
-to be a better option, as it offers a bunch of extra integrating packages and is
-overall more popular than the former.
+While I've somewhat used =neotree.el=, I believe that =treemacs= is
+turning out to be a better option, as it offers a bunch of extra
+integrating packages and is overall more popular than the former.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package treemacs
@@ -918,9 +929,9 @@ overall more popular than the former.
 
 *** Environment variables
 
-To ensure that Emacs uses the same path and environment as =shell= uses, I use
-=exec-path-from-shell=. That way commands that work on the =shell= will
-certainly work on Emacs!
+To ensure that Emacs uses the same path and environment as =shell= uses,
+I use =exec-path-from-shell=. That way commands that work on the =shell=
+will certainly work on Emacs!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package exec-path-from-shell
@@ -936,8 +947,8 @@ certainly work on Emacs!
 
 *** Find and replace
 
-Besides the =ISearch= from Emacs itself or the search function from =evil=, I
-also like to use =anzu=.
+Besides the =ISearch= from Emacs itself or the search function from
+=evil=, I also like to use =anzu=.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package anzu
@@ -961,11 +972,11 @@ also like to use =anzu=.
   (global-anzu-mode 1))
 #+end_src
 
-I use only the =anzu-replace-at-cursor-thing=, which is a very useful to replace
-multiple occurrences of a word fast.
+I use only the =anzu-replace-at-cursor-thing=, which is a very useful to
+replace multiple occurrences of a word fast.
 
-I enjoy using =ripgrep= to search for stuff using =grep= syntax without the
-slowness of it. So, I use =deadgrep=!
+I enjoy using =ripgrep= to search for stuff using =grep= syntax without
+the slowness of it. So, I use =deadgrep=!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package deadgrep
@@ -1037,7 +1048,7 @@ Let's monitor ourselves with =whitespace=.
    (conf-mode-hook . whitespace-mode)
    (prog-mode-hook . whitespace-mode))
   :custom
-  (whitespace-line-column nil)
+  (whitespace-line-column 85)
   (whitespace-style '(face tabs empty trailing lines-tail)))
 #+end_src
 
@@ -1081,8 +1092,8 @@ very pretty on =gruvbox=).
 
 *** Remote editing
 
-=tramp=, which is included by default in Emacs, is very useful when it comes to
-editing remote files and to editing as super-user.
+=tramp=, which is included by default in Emacs, is very useful when it
+comes to editing remote files and to editing as super-user.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package tramp
@@ -1160,12 +1171,13 @@ This section comprises of text and command completion.
 
 **** Text
 
-I use =company= as my completion framework. In the words of Dmitry Gutov:
+I use =company= as my completion framework. In the words of Dmitry
+Gutov:
 
 #+begin_quote
-Company is a text completion framework for Emacs. The name stands for "complete
-anything". It uses pluggable back-ends and front-ends to retrieve and display
-completion candidates.
+Company is a text completion framework for Emacs. The name stands for
+"complete anything". It uses pluggable back-ends and front-ends to
+retrieve and display completion candidates.
 
 [[http://company-mode.github.io/][Dmitry Gutov]]
 #+end_quote
@@ -1188,8 +1200,8 @@ completion candidates.
 
 **** Help
 
-The package called =which-key= shows you possible completions to the command
-you're typing in the mode-line.
+The package called =which-key= shows you possible completions to the
+command you're typing in the mode-line.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package which-key
@@ -1201,9 +1213,9 @@ you're typing in the mode-line.
 
 *** Language Server Protocol
 
-I imagine anyone knows what is LSP, but oh well. Basically, it is one of the
-best features of other famous editors, such as Visual Studio Code. By using
-=lsp-mode=, we'll be able to have it too!
+I imagine anyone knows what is LSP, but oh well. Basically, it is one of
+the best features of other famous editors, such as Visual Studio Code.
+By using =lsp-mode=, we'll be able to have it too!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package lsp-mode
@@ -1228,7 +1240,8 @@ best features of other famous editors, such as Visual Studio Code. By using
   (add-to-list 'lsp-language-id-configuration '(".*\\.cu$" . "cuda")))
 #+end_src
 
-This package does have 2 extra sister packages: =lsp-ui= and =lsp-company=
+This package does have 2 extra sister packages: =lsp-ui= and
+=lsp-company=.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package lsp-ui
@@ -1346,10 +1359,11 @@ Last minute addition: =ansi-color=!
 
 *** Hydra
 
-=hydra= is a package that allows keybindings to be activated under the pressing
-of a specific combination of keys. These will then be active as long as only
-them are being pressed, as on the moment a key which isn't part of the hydra is
-pressed the hydra is killed and the keybindings deactivated.
+=hydra= is a package that allows keybindings to be activated under the
+pressing of a specific combination of keys. These will then be active as
+long as only them are being pressed, as on the moment a key which isn't
+part of the hydra is pressed the hydra is killed and the keybindings
+deactivated.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package hydra
@@ -1430,8 +1444,8 @@ pressed the hydra is killed and the keybindings deactivated.
   ("C-M-j" 'windmove-down))
 #+end_src
 
-Originally, =midnight= is used to /run something at midnight/. I use its feature
-that kills old buffers.
+Originally, =midnight= is used to /run something at midnight/. I use its
+feature that kills old buffers.
 
 #+begin_src emacs-lisp
 (use-package midnight
@@ -1444,7 +1458,8 @@ that kills old buffers.
      "*vc-diff*" "*diff*" "*IBuffer*" "*Finder*")))
 #+end_src
 
-=uniquify= creates automatic meaningful names for buffers with the same name:
+=uniquify= creates automatic meaningful names for buffers with the same
+name:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package uniquify
@@ -1469,8 +1484,8 @@ that kills old buffers.
    "w o" 'ace-window))
 #+end_src
 
-=super-save= auto-saves buffers when you switch or close buffers or when Emacs
-loses focus, etc.
+=super-save= auto-saves buffers when you switch or close buffers or when
+Emacs loses focus, etc.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package super-save
@@ -1526,11 +1541,11 @@ Enables vim-like folding of regions.
 
 *** Project management
 
-For project management in Emacs, there's no better choice than =projectile=,
-which is widely loved by the community.
+For project management in Emacs, there's no better choice than
+=projectile=, which is widely loved by the community.
 
-It supports project-wide commands and actions, like killing all project buffers
-or searching the whole project and replacing something.
+It supports project-wide commands and actions, like killing all project
+buffers or searching the whole project and replacing something.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package projectile
@@ -1557,9 +1572,9 @@ or searching the whole project and replacing something.
   (run-with-idle-timer 10 nil #'projectile-cleanup-known-projects))
 #+end_src
 
-And, as a further integration of =ivy= and =projectile=, there is a package that
-makes actions such as =switch-project= to use =counsel='s completion and
-ordering of results.
+And, as a further integration of =ivy= and =projectile=, there is a
+package that makes actions such as =switch-project= to use =counsel='s
+completion and ordering of results.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package counsel-projectile
@@ -1570,16 +1585,17 @@ ordering of results.
 
 *** Versioning
 
-Obviously, any configuration file that says it deserves *any* respect should
-feature =magit=, as it is, hands down, the best =git= front-end in the visible
-universe, nay, in the whole multiverse.
+Obviously, any configuration file that says it deserves *any* respect
+should feature =magit=, as it is, hands down, the best =git= front-end
+in the visible universe, nay, in the whole multiverse.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package magit
   :defer t
   :hook
   ((after-save-hook . magit-after-save-refresh-status)
-   (git-commit-mode-hook . evil-emacs-state))
+   (git-commit-mode-hook . evil-emacs-state)
+   (magit-mode-hook . hide-mode-line-mode))
   :preface
   ;; easy on-off for the following function
   (defcustom magit-push-protected-branch nil
@@ -1654,8 +1670,8 @@ Also, =git-timemachine= is a beautiful way to walk through git history:
 
 *** Regions, pointers and pairs
 
-Increase region by semantic units. It tries to be smart about it and adapt to
-the structure of the current major mode.
+Increase region by semantic units. It tries to be smart about it and
+adapt to the structure of the current major mode.
 
 #+begin_src emacs-lisp
 (use-package expand-region
@@ -1709,8 +1725,8 @@ I use =aggressive-indent= to keep my code indented as I type.
   (add-to-list 'aggressive-indent-protected-commands 'comment-dwim))
 #+end_src
 
-Also =highligh-indent-guides= is very useful, as Emacs doesn't come with it out
-of the box.
+Also =highligh-indent-guides= is very useful, as Emacs doesn't come with
+it out of the box.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package highlight-indent-guides
@@ -1744,8 +1760,8 @@ Random utilities that don't fit anywhere else.
 
 **** =helpful=
 
-=helpful= is a package that is overall an improvement over the default =help=
-windows.
+=helpful= is a package that is overall an improvement over the default
+=help= windows.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package helpful
@@ -1757,8 +1773,8 @@ windows.
 
 **** =dumb-jump=
 
-=dumb-jump= is a package that allows you to jump to definition with minimal
-setup (i.e. no TAG or RTAGS or etc.).
+=dumb-jump= is a package that allows you to jump to definition with
+minimal setup (i.e. no TAG or RTAGS or etc.).
 
 #+begin_src emacs-lisp :tangle yes
 (use-package dumb-jump
@@ -1769,8 +1785,8 @@ setup (i.e. no TAG or RTAGS or etc.).
 
 **** =engine-mode=
 
-=engine-mode= is a minor mode that allow you to easily make queries to the web
-without leaving Emacs.
+=engine-mode= is a minor mode that allow you to easily make queries to
+the web without leaving Emacs.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package engine-mode
@@ -1783,7 +1799,8 @@ without leaving Emacs.
 
 **** =no-littering=
 
-=no-littering= is a package that helps to maintain your =.emacs.d/= clean.
+=no-littering= is a package that helps to maintain your =.emacs.d/=
+clean.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package no-littering
@@ -1792,9 +1809,9 @@ without leaving Emacs.
 
 **** =openwith=
 
-=openwith= is a small and useful tool to set how you want to open your files
-with Emacs. I use it to set the opener of pdfs in my Emacs, as well to other
-diverse media files.
+=openwith= is a small and useful tool to set how you want to open your
+files with Emacs. I use it to set the opener of pdfs in my Emacs, as
+well to other diverse media files.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package openwith
@@ -1860,8 +1877,8 @@ To make pretty page breaks in your Emacs buffers:
 
 ** Theme
 
-Here I define the theme that I use, which is =gruvbox=, as it provides nice
-support for a lot of packages and is very pleasant for the eyes.
+Here I define the theme that I use, which is =gruvbox=, as it provides
+nice support for a lot of packages and is very pleasant for the eyes.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package gruvbox-theme
@@ -1872,8 +1889,8 @@ support for a lot of packages and is very pleasant for the eyes.
 
 * File modes
 
-Here I'll store any package load and configurations related to languages and
-file types.
+Here I'll store any package load and configurations related to languages
+and file types.
 
 I still need to add packages relating to these languages:
 
@@ -1904,9 +1921,10 @@ I still need to add packages relating to these languages:
 
 ** Org
 
-=org-mode= is probably *the* killer mode and one of the main reasons as to why
-anyone should try Emacs. With it I also use =toc-org=, which is an useful way to
-automatically maintain an updated table of contents of your =.org= file.
+=org-mode= is probably *the* killer mode and one of the main reasons as
+to why anyone should try Emacs. With it I also use =toc-org=, which is
+an useful way to automatically maintain an updated table of contents of
+your =.org= file.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package org-plus-contrib
@@ -2093,8 +2111,8 @@ It's very pretty oh-kay?
 
 Yeah. That's right.
 
-I mean, it's basically a tool to interface with the D&D LaTeX class. Not that
-nerdy, is it?
+I mean, it's basically a tool to interface with the D&D LaTeX class. Not
+that nerdy, is it?
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ox-dnd
@@ -2200,8 +2218,8 @@ Now, some configurations relating org-babel and its magic source blocks.
 
 ** CC-Mode
 
-Here I set some defaults I appreciate for cc-mode (the mode for all c-like
-languages):
+Here I set some defaults I appreciate for cc-mode (the mode for all
+c-like languages):
 
 #+begin_src emacs-lisp :tangle yes
 (use-package cc-mode
@@ -2227,8 +2245,8 @@ languages):
   (c-offsets-alist '((substatement-open . 0))))
 #+end_src
 
-As languages that are part of =cc-mode= are known to using a lot of doxygen,
-here's a package that highlights it!
+As languages that are part of =cc-mode= are known to using a lot of
+doxygen, here's a package that highlights it!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package highlight-doxygen
@@ -2249,8 +2267,8 @@ Better C++ font lock:
   (c++-mode-hook . modern-c++-font-lock-mode))
 #+end_src
 
-In the department of code formatting, =clang-format= is a lovely tool that can
-really be of great use while editing C and C++ code.
+In the department of code formatting, =clang-format= is a lovely tool
+that can really be of great use while editing C and C++ code.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package clang-format
@@ -2273,9 +2291,10 @@ really be of great use while editing C and C++ code.
 
 *** CUDA
 
-Suporting CUDA syntax per-se is kinda easy, as it's a subset of C after all. The
-thing is I want proper syntax highlighting for all those special keywords and
-types that CUDA introduces. So, let's install =cuda-mode=:
+Suporting CUDA syntax per-se is kinda easy, as it's a subset of C after
+all. The thing is I want proper syntax highlighting for all those
+special keywords and types that CUDA introduces. So, let's install
+=cuda-mode=:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package cuda-mode
@@ -2293,8 +2312,8 @@ It falls back on =c++-mode= by default, so we are safe here.
 
 ** R
 
-For R you pretty much /need/ the =ess= package, i.e. /Emacs Speaks Statistics/.
-It provides you with everything you need from R.
+For R you pretty much /need/ the =ess= package, i.e. /Emacs Speaks
+Statistics/. It provides you with everything you need from R.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ess
@@ -2447,8 +2466,8 @@ For =shell= completion I use =bash-complete=, which auto completes several
 
 ** Makefile
 
-In Makefile files we have a special case: it /needs/ tabulators to work. So,
-we'll set that up.
+In Makefile files we have a special case: it /needs/ tabulators to work.
+So, we'll set that up.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package make-mode
@@ -2466,8 +2485,8 @@ we'll set that up.
 
 ** PlantUML
 
-/PlantUML/ is a graph language that describes loads of different diagram types,
-mainly focusing on /UML/, of course.
+/PlantUML/ is a graph language that describes loads of different diagram
+types, mainly focusing on /UML/, of course.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package plantuml-mode
@@ -2588,8 +2607,9 @@ Emacs version!
 
 ** English
 
-Something I found out while scrolling /Github/ is the =mw-thesaurus= package,
-which provides a nice interface for the Merriam-Webster thesaurus.
+Something I found out while scrolling /Github/ is the =mw-thesaurus=
+package, which provides a nice interface for the Merriam-Webster
+thesaurus.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package mw-thesaurus
@@ -2603,9 +2623,9 @@ which provides a nice interface for the Merriam-Webster thesaurus.
 ** Python
 
 #+begin_quote
-Elpy is an Emacs package to bring powerful Python editing to Emacs. It combines
-and configures a number of other packages, both written in Emacs Lisp as well as
-Python.
+Elpy is an Emacs package to bring powerful Python editing to Emacs. It
+combines and configures a number of other packages, both written in
+Emacs Lisp as well as Python.
 #+end_quote
 
 #+begin_src emacs-lisp :tangle yes
@@ -2618,9 +2638,9 @@ Python.
 
 ** CMake
 
-Just as a bonus, this package helps me to read CMake code. As CMake is very
-simple, each word carries a load of meaning and importance. This little mode
-colors them accordingly.
+Just as a bonus, this package helps me to read CMake code. As CMake is
+very simple, each word carries a load of meaning and importance. This
+little mode colors them accordingly.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package cmake-mode
@@ -2637,8 +2657,8 @@ colors them accordingly.
 
 ** Dockerfile
 
-=dockerfile-mode= adds support to syntax highlighting and to build the image
-directly from the buffer using =C-c C-b=.
+=dockerfile-mode= adds support to syntax highlighting and to build the
+image directly from the buffer using =C-c C-b=.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package dockerfile-mode
@@ -2703,8 +2723,8 @@ An interface to communicate with Jupyter kernels in Emacs.
 
 ** LaTeX
 
-Let's start with some basic =auctex= editing so it starts the way I want (as
-theoretically it should come bundled with Emacs).
+Let's start with some basic =auctex= editing so it starts the way I want
+(as theoretically it should come bundled with Emacs).
 
 #+begin_src emacs-lisp :tangle yes
 (use-package auctex
@@ -2728,7 +2748,8 @@ theoretically it should come bundled with Emacs).
   (add-to-list 'company-backends 'company-latex-commands))
 #+end_src
 
-So, for my LaTeX config I'll mainly use =latexmk= as it's way simpler to use.
+So, for my LaTeX config I'll mainly use =latexmk= as it's way simpler to
+use.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package auctex-latexmk
@@ -2758,8 +2779,8 @@ So, for my LaTeX config I'll mainly use =latexmk= as it's way simpler to use.
   (auctex-latexmk-setup))
 #+end_src
 
-The hook stuff is because all =TeX= get defined when the mode starts, so we need
-to redefine them then.
+The hook stuff is because all =TeX= get defined when the mode starts, so
+we need to redefine them then.
 
 ** Coq
 
@@ -2771,7 +2792,8 @@ Not set up, but when I get to it:
 
 ** Meson
 
-Syntax support for the Meson build system DSL (which is based from Python).
+Syntax support for the Meson build system DSL (which is based from
+Python).
 
 #+begin_src emacs-lisp :tangle yes
 (use-package meson-mode
@@ -2800,7 +2822,8 @@ Derives from =conf-mode[space]=. Got it from [[https://notabug.org/arkhan/emacs-
 
 ** systemd services
 
-Just a little hook to start the desired =conf-mode= when we open these files.
+Just a little hook to start the desired =conf-mode= when we open these
+files.
 
 #+begin_src emacs-lisp :tangle yes
 (add-to-list 'auto-mode-alist '("\\.service$" . conf-mode))
@@ -2874,8 +2897,8 @@ Old language, still great for doing admin stuff in few lines.
 
 * Personal
 
-Stuff that isn't either a package nor a language nor downloadable: stuff you
-coded yourself.
+Stuff that isn't either a package nor a language nor downloadable: stuff
+you coded yourself.
 
 To-do:
 
@@ -2884,7 +2907,8 @@ To-do:
 
 ** Functions
 
-Some very useful functions I got from other people or that I coded myself.
+Some very useful functions I got from other people or that I coded
+myself.
 
 *** Fetching text
 
@@ -2949,8 +2973,9 @@ Like the title says...
 
 ** Keybindings
 
-Here I'll define some of my personal keybindings, which means "keybindings not
-related to some package configured in the sections above"!
+Here I'll define some of my personal keybindings, which means
+"keybindings not related to some package configured in the sections
+above"!
 
 #+begin_src emacs-lisp :tangle yes
 (general-def
