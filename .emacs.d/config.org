@@ -37,6 +37,7 @@ Cool Emacs configs from cool people:
   - [[#extensions][Extensions]]
     - [[#package-loading-setup][Package loading setup]]
     - [[#keybindings][Keybindings]]
+    - [[#mode-line-1][Mode line]]
     - [[#completion-framework][Completion framework]]
     - [[#splash-screen][Splash screen]]
     - [[#file-management][File management]]
@@ -45,7 +46,6 @@ Cool Emacs configs from cool people:
     - [[#history][History]]
     - [[#lines-and-characters][Lines and characters]]
     - [[#compilation][Compilation]]
-    - [[#mode-line-1][Mode line]]
     - [[#remote-editing][Remote editing]]
     - [[#helpful-completion][Helpful completion]]
     - [[#language-server-protocol][Language Server Protocol]]
@@ -732,6 +732,39 @@ And to use better bindings to =smartparens=, =evil-smartparens=!
   (smartparens-enabled-hook . evil-smartparens-mode))
 #+end_src
 
+*** Mode line
+
+I use =smart-mode-line= as it is very minimalist and informative (and it
+looks very pretty on =gruvbox=).
+
+#+begin_src emacs-lisp :tangle yes
+(use-package smart-mode-line
+  :demand
+  :init
+  (setq sml/no-confirm-load-theme t)
+  :custom
+  (sml/projectile-replacement-format "[%s] ")
+  (sml/size-indication-format " %I ")
+  (sml/line-number-format "%4l")
+  (sml/use-projectile-p 'after-prefixes)
+  (sml/shorten-directory nil)
+  (sml/shorten-modes t)
+  (sml/mode-width 'right)
+  (sml/name-width 40)
+  (sml/theme 'respectful)
+  :config
+  (sml/setup))
+#+end_src
+
+Made by the doom-emacs guy. Yeah i know i could just write a function
+for this, but eh.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package hide-mode-line
+  :defer t
+  :commands hide-mode-line-mode)
+#+end_src
+
 *** Completion framework
 
 =ivy= is like =ido= but better, I guess. It does fuzzy matching of
@@ -868,6 +901,8 @@ instead of the default =dired=.
   (ranger-preview-file t)
   (ranger-dont-show-binary t)
   (ranger-max-preview-size 10)
+  :hook
+  (ranger-mode-hook . hide-mode-line-mode)
   :config
   (ranger-override-dired-mode t)
   :general
@@ -888,6 +923,8 @@ integrating packages and is overall more popular than the former.
   :general
   ("M-0" 'treemacs-select-window
    "M-t" 'treemacs)
+  :hook
+  (treemacs-mode-hook . hide-mode-line-mode)
   :custom
   (treemacs-deferred-git-apply-delay 0.5)
   (treemacs-display-in-side-window t)
@@ -1014,13 +1051,22 @@ Undo and redo and kools with =undo-tree=!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package undo-tree
-  :hook
-  (after-init-hook . global-undo-tree-mode)
   :preface
-  (defun reset-visualizer-diff ()
+  (defun reset-visualizer-diff (&rest args)
     "Because undo-tree-visualize sets the value of this variable to nil on quit."
     (setq undo-tree-visualizer-diff
           (eval (car (get 'undo-tree-visualizer-diff 'customized-value)))))
+  (defun undo-tree-diff-hide-mode-line (&rest args)
+    "`add-advice' requires the `args' of the original function."
+    (hide-mode-line-mode))
+  (defun undo-tree-clean-mode-line ()
+    (setq-local mode-line-format ""))
+  :hook
+  ((after-init-hook . global-undo-tree-mode)
+   (undo-tree-visualizer-mode-hook . undo-tree-clean-mode-line)
+   (diff-mode-hook . hide-mode-line-mode))
+  :init
+  (advice-add 'undo-tree-visualize :before #'reset-visualizer-diff)
   :custom
   (undo-tree-visualizer-timestamps t)
   (undo-tree-enable-undo-in-region nil)
@@ -1029,9 +1075,7 @@ Undo and redo and kools with =undo-tree=!
   :general
   (:states '(normal visual)
    :prefix hcps/leader-key
-   "u" 'undo-tree-visualize)
-  :config
-  (advice-add 'undo-tree-visualize :before #'reset-visualizer-diff))
+   "u" 'undo-tree-visualize))
 #+end_src
 
 *** Lines and characters
@@ -1064,30 +1108,6 @@ extra configuration about it:
   (compilation-ask-about-save nil)
   (compilation-always-kill t)
   (compilation-scroll-output 'first-error))
-#+end_src
-
-*** Mode line
-
-I use =smart-mode-line= as it is very minimalist and informative (and it looks
-very pretty on =gruvbox=).
-
-#+begin_src emacs-lisp :tangle yes
-(use-package smart-mode-line
-  :demand
-  :init
-  (setq sml/no-confirm-load-theme t)
-  :custom
-  (sml/projectile-replacement-format "[%s] ")
-  (sml/size-indication-format " %I ")
-  (sml/line-number-format "%4l")
-  (sml/use-projectile-p 'after-prefixes)
-  (sml/shorten-directory nil)
-  (sml/shorten-modes t)
-  (sml/mode-width 'right)
-  (sml/name-width 40)
-  (sml/theme 'respectful)
-  :config
-  (sml/setup))
 #+end_src
 
 *** Remote editing
@@ -1869,10 +1889,29 @@ To make pretty page breaks in your Emacs buffers:
   ((prog-mode-hook . page-break-lines-mode)
    (text-mode-hook . page-break-lines-mode))
   :custom
-  (page-break-lines-max-width nil)
+  (page-break-lines-max-width (+ fill-column 10))
   (page-break-lines-char ?-)
   :custom-face
   (page-break-lines ((t :inherit font-lock-comment-face :bold t :italic nil))))
+#+end_src
+
+**** =olivetti=
+
+A nice writing environment for Emacs in a minor-mode.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package olivetti
+  :defer t
+  :delight
+  (olivetti-mode)
+  :hook
+  (olivetti-mode-on-hook . hide-mode-line-mode)
+  :custom
+  (olivetti-body-width (+ 3 fill-column))
+  :general
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   "m o" 'olivetti-mode))
 #+end_src
 
 ** Theme
