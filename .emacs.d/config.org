@@ -1969,16 +1969,15 @@ your =.org= file.
 (use-package org-plus-contrib
   :defer t
   :ensure toc-org
-  :mode (("\\.org\\'" . org-mode))
-  :commands org-mode
-  :delight
-  (org-indent-mode nil org-indent)
+  :mode ("\\.org$" . org-mode)
   :hook
   ((org-mode-hook . toc-org-mode)
    (org-mode-hook . turn-on-auto-fill)
    (org-mode-hook . yas-minor-mode)
-   (org-mode-hook . display-line-numbers-mode)
    (org-mode-hook . (lambda () (whitespace-toggle-options 'lines-tail))))
+  :init
+  ;; this only works here, don't ask me why
+  (delight 'org-indent-mode nil 'org-indent)
   :custom
   (org-return-follows-link t)
   ;; the following used to be '(latex script entities)
@@ -2338,7 +2337,7 @@ special keywords and types that CUDA introduces. So, let's install
 #+begin_src emacs-lisp :tangle yes
 (use-package cuda-mode
   :defer t
-  :mode "\\.cu\\'"
+  :mode "\\.cu$"
   :commands cuda
   :hook
   ((cuda-mode-hook . (lambda () (run-hooks 'prog-mode-hook)))
@@ -2530,7 +2529,7 @@ types, mainly focusing on /UML/, of course.
 #+begin_src emacs-lisp :tangle yes
 (use-package plantuml-mode
   :defer t
-  :mode "\\.plantuml\\'"
+  :mode "\\.plantuml$"
   :interpreter "plantuml")
 #+end_src
 
@@ -2739,6 +2738,7 @@ Packages to write Julia source code in Emacs.
   :custom
   (lsp-julia-default-environment "~/.julia/environments/v1.2")
   (lsp-julia-package-dir nil))
+#+end_src
 
 ** Jupyter
 
@@ -2768,7 +2768,7 @@ Let's start with some basic =auctex= editing so it starts the way I want
 #+begin_src emacs-lisp :tangle yes
 (use-package auctex
   :defer t
-  :mode (("\\.tex$" . latex-mode))
+  :mode ("\\.tex$" . latex-mode)
   :hook
   ((latex-mode-hook . turn-on-reftex)
    (latex-mode-hook . turn-on-auto-fill)
@@ -2875,8 +2875,8 @@ The newest greatest compiled language!
 #+begin_src emacs-lisp :tangle yes
 (use-package rust-mode
   :defer t
-  :demand cargo
-  :demand flycheck-rust
+  :ensure cargo
+  :ensure flycheck-rust
   :hook
   ((rust-mode-hook . lsp)
    (rust-mode-hook . cargo-minor-mode)

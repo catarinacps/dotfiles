@@ -37,11 +37,10 @@
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
-;(package-initialize)
+;; (package-initialize)
 
 (defvar current-user
-  (getenv
-   (if (equal system-type 'windows-nt) "USERNAME" "USER")))
+  (getenv (if (equal system-type 'windows-nt) "USERNAME" "USER")))
 
 (message "Prelude is powering up... Be patient, Master %s!" current-user)
 
@@ -146,11 +145,6 @@ This is DEPRECATED, use %s instead." prelude-modules-file))
     (message "Missing modules file %s" prelude-modules-file)
     (message "You can get started by copying the bundled example file from sample/prelude-modules.el")))
 
-;; config changes made through the customize UI will be stored here
-(setq custom-file (expand-file-name "custom.el" prelude-personal-dir))
-
-(load custom-file)
-
 ;; load the personal settings (this includes `custom-file')
 ;; (when (file-exists-p prelude-personal-dir)
 ;;   (message "Loading personal configuration files in %s..." prelude-personal-dir)
@@ -159,6 +153,12 @@ This is DEPRECATED, use %s instead." prelude-modules-file))
 ;;                (directory-files prelude-personal-dir 't "^[^#\.].*\\.el$"))))
 
 (org-babel-load-file "~/.emacs.d/config.org")
+
+;; config changes made through the customize UI and use-package will be stored
+;; here.
+(setq custom-file (expand-file-name "custom.el" prelude-personal-dir))
+
+(load custom-file)
 
 (message "Prelude is ready to do thy bidding, Master %s!" current-user)
 
