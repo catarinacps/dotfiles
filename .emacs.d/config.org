@@ -464,10 +464,11 @@ Here's everything related to the mode-line.
 
 *** Line numbering and scrolling
 
-I like the vim style of relative numbering of lines.
++I like the vim style of relative numbering of lines.+ Never mind, I
+grew tired of it.
 
 #+begin_src emacs-lisp :tangle yes
-(setq-default display-line-numbers-type 'relative
+(setq-default display-line-numbers-type t
               display-line-numbers-width-start 4)
 
 ;; I used to do this globally, but now let's only do selectively
