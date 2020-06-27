@@ -1057,15 +1057,12 @@ Undo and redo and kools with =undo-tree=!
     "Because undo-tree-visualize sets the value of this variable to nil on quit."
     (setq undo-tree-visualizer-diff
           (eval (car (get 'undo-tree-visualizer-diff 'customized-value)))))
-  (defun undo-tree-diff-hide-mode-line (&rest args)
-    "`add-advice' requires the `args' of the original function."
-    (hide-mode-line-mode))
   (defun undo-tree-clean-mode-line ()
     (setq-local mode-line-format ""))
   :hook
   ((after-init-hook . global-undo-tree-mode)
    (undo-tree-visualizer-mode-hook . undo-tree-clean-mode-line)
-   (diff-mode-hook . hide-mode-line-mode))
+   (diff-mode-hook . undo-tree-clean-mode-line))
   :init
   (advice-add 'undo-tree-visualize :before #'reset-visualizer-diff)
   :custom
