@@ -1895,23 +1895,21 @@ To make pretty page breaks in your Emacs buffers:
   (page-break-lines ((t :inherit font-lock-comment-face :bold t :italic nil))))
 #+end_src
 
-**** =olivetti=
+**** =writeroom-mode=
 
 A nice writing environment for Emacs in a minor-mode.
 
 #+begin_src emacs-lisp :tangle yes
-(use-package olivetti
+(use-package writeroom-mode
   :defer t
-  :delight
-  (olivetti-mode)
-  :hook
-  (olivetti-mode-on-hook . hide-mode-line-mode)
+  :ensure visual-fill-column
   :custom
-  (olivetti-body-width (+ 3 fill-column))
+  (writeroom-fullscreen-effect 'maximized)
+  (writeroom-width (+ 3 fill-column))
   :general
   (:states '(normal visual)
    :prefix hcps/leader-key
-   "m o" 'olivetti-mode))
+   "m w" 'writeroom-mode))
 #+end_src
 
 ** Theme
