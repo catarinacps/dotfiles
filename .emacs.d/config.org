@@ -137,6 +137,7 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - bash-completion
 - beacon
 - bspwm
+- cargo
 - cc-mode
 - clang-format
 - cmake-font-lock
@@ -175,12 +176,14 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - expand-region
 - flx
 - flycheck
+- flycheck-rust
 - flyspell
 - general
 - git-timemachine
 - gmpl-mode
 - gruvbox-theme
 - helpful
+- hide-mode-line
 - highlight-doxygen
 - highlight-escape-sequences
 - highlight-indent-guides
@@ -191,7 +194,9 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - ivy-rich
 - julia-mode
 - julia-repl
+- jupyter
 - lisp-mode
+- lsp-julia
 - lsp-mode
 - lsp-ui
 - magit
@@ -203,7 +208,6 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - no-littering
 - ob
 - openwith
-- org
 - org-journal
 - org-plus-contrib
 - ox
@@ -234,12 +238,16 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - uniquify
 - use-package-ensure-system-package
 - vimish-fold
+- visual-fill-column
 - visual-regexp
 - visual-regexp-steroids
+- websocket
 - which-key
 - whitespace
 - windmove
+- writeroom-mode
 - yasnippet
+- zmq
 #+end_src
 
 ** =use-package=
@@ -2535,7 +2543,6 @@ Fix for the annoying keyword default indentation:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package lisp-mode
-  :demand
   :ensure nil
   :preface
   (defun fuco1/lisp-indent-function (indent-point state)
@@ -2629,9 +2636,8 @@ Emacs version!
   :preface
   (defun recompile-elc-on-save ()
     "Recompile your elc when saving an elisp file."
-    (when (and
-           (string-prefix-p prelude-dir (file-truename buffer-file-name))
-           (file-exists-p (byte-compile-dest-file buffer-file-name)))
+    (when (and (string-prefix-p prelude-dir (file-truename buffer-file-name))
+               (file-exists-p (byte-compile-dest-file buffer-file-name)))
       (emacs-lisp-byte-compile)))
   :hook
   ((after-save-hook . recompile-elc-on-save)
