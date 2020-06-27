@@ -63,8 +63,4 @@ get_session() {
     echo "dbus-launch ${dbus_args[*]}"
 }
 
-# start picom only after xorg
-# picom &
-
 exec $(get_session)
-# xset r rate 660 25

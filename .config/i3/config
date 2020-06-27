@@ -84,14 +84,12 @@ for_window [urgent=latest] focus
 set $mode_system (l)ock, (e)xit, switch_(u)ser, (s)uspend, (h)ibernate, (r)eboot, (Shift+s)hutdown
 mode "$mode_system" {
      bindsym Return mode "default"
-     bindsym Escape mode "default"
 }
 
 # Resize window (you can also use the mouse for that)
 # bindsym $mod+r mode "resize"
 mode "resize" {
      bindsym Return mode "default"
-     bindsym Escape mode "default"
 }
 
 # Color palette used for the terminal ( ~/.Xresources file )
