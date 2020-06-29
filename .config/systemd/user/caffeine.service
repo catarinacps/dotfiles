@@ -7,7 +7,7 @@ After=graphical-session.target
 [Service]
 ExecStart=/usr/bin/caffeine
 Restart=on-failure
-RestartSec=2
+RestartSec=2s
 
 [Install]
 WantedBy=default.target

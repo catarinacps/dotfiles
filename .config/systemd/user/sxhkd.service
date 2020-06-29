@@ -3,13 +3,13 @@ Description=Simple X Hotkey Daemon
 Documentation=man:sxhkd(1)
 PartOf=graphical-session.target
 Wants=graphical-session.target
-After=graphical-session.target
+After=graphical-session.target setxkbmap.service
 
 [Service]
 Environment=FIFO=%T/sxhkd.fifo
 ExecStartPre=/usr/bin/rm -f $FIFO
 ExecStartPre=/usr/bin/mkfifo $FIFO
-ExecStart=/usr/bin/sxhkd -s $FIFO -m 1
+ExecStart=/usr/bin/sxhkd -s $FIFO -m -1
 ExecReload=/usr/bin/kill -SIGUSR1 $MAINPID
 Restart=always
 RestartSec=2s
