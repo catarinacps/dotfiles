@@ -5,6 +5,9 @@ Description=autorandr execution hook
 # compatibility.
 StartLimitInterval=5
 StartLimitBurst=1
+PartOf=graphical-session.target
+Wants=graphical-session.target
+After=graphical-session.target
 
 [Service]
 Environment=DISPLAY=:0
@@ -12,7 +15,7 @@ ExecStart=/usr/bin/autorandr --change --force --default common
 Type=oneshot
 RemainAfterExit=false
 KillMode=process
-RestartSec=3s
+RestartSec=1s
 
 [Install]
 WantedBy=default.target
