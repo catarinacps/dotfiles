@@ -123,25 +123,25 @@
       savehist-file (expand-file-name "savehist" prelude-savefile-dir))
 (savehist-mode +1)
 
-;; save recent files
-(require 'recentf)
-(setq recentf-save-file (expand-file-name "recentf" prelude-savefile-dir)
-      recentf-max-saved-items 500
-      recentf-max-menu-items 15
-      ;; disable recentf-cleanup on Emacs start, because it can cause
-      ;; problems with remote files
-      recentf-auto-cleanup 'never)
+;; ;; save recent files
+;; (require 'recentf)
+;; (setq recentf-save-file (expand-file-name "recentf" prelude-savefile-dir)
+;;       recentf-max-saved-items 500
+;;       recentf-max-menu-items 15
+;;       ;; disable recentf-cleanup on Emacs start, because it can cause
+;;       ;; problems with remote files
+;;       recentf-auto-cleanup 'never)
 
-(defun prelude-recentf-exclude-p (file)
-  "A predicate to decide whether to exclude FILE from recentf."
-  (let ((file-dir (file-truename (file-name-directory file))))
-    (cl-some (lambda (dir)
-               (string-prefix-p dir file-dir))
-             (mapcar 'file-truename (list prelude-savefile-dir package-user-dir)))))
+;; (defun prelude-recentf-exclude-p (file)
+;;   "A predicate to decide whether to exclude FILE from recentf."
+;;   (let ((file-dir (file-truename (file-name-directory file))))
+;;     (cl-some (lambda (dir)
+;;                (string-prefix-p dir file-dir))
+;;              (mapcar 'file-truename (list prelude-savefile-dir package-user-dir)))))
 
-(add-to-list 'recentf-exclude 'prelude-recentf-exclude-p)
+;; (add-to-list 'recentf-exclude 'prelude-recentf-exclude-p)
 
-(recentf-mode +1)
+;; (recentf-mode +1)
 
 ;; use shift + arrow keys to switch between visible buffers
 (require 'windmove)

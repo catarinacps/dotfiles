@@ -39,11 +39,11 @@ Cool Emacs configs from cool people:
     - [[#keybindings][Keybindings]]
     - [[#mode-line-1][Mode line]]
     - [[#completion-framework][Completion framework]]
+    - [[#history][History]]
     - [[#splash-screen][Splash screen]]
     - [[#file-management][File management]]
     - [[#environment-variables][Environment variables]]
     - [[#find-and-replace][Find and replace]]
-    - [[#history][History]]
     - [[#lines-and-characters][Lines and characters]]
     - [[#compilation][Compilation]]
     - [[#remote-editing][Remote editing]]
@@ -527,10 +527,6 @@ These are Emacs-behaviour related! In other words, these extend the
 capabilities of Emacs as a text editor, and do NOT add support to other
 languages or etc.
 
-*TO-DO list*:
-
-- [ ] recentf
-
 *** Package loading setup
 
 I use =use-package= to load my packages and to organize them neatly in
@@ -872,6 +868,57 @@ minibuffer the prettiest on all the land.
   (ivy-rich-mode 1))
 #+end_src
 
+*** History
+
+Undo and redo and kools with =undo-tree=!
+
+#+begin_src emacs-lisp :tangle yes
+(use-package undo-tree
+  :preface
+  (defun reset-visualizer-diff (&rest args)
+    "Because undo-tree-visualize sets the value of this variable to nil on quit."
+    (setq undo-tree-visualizer-diff
+          (eval (car (get 'undo-tree-visualizer-diff 'customized-value)))))
+  (defun undo-tree-clean-mode-line ()
+    (setq-local mode-line-format ""))
+  :hook
+  ((after-init-hook . global-undo-tree-mode)
+   (undo-tree-visualizer-mode-hook . undo-tree-clean-mode-line)
+   (diff-mode-hook . undo-tree-clean-mode-line))
+  :init
+  (advice-add 'undo-tree-visualize :before #'reset-visualizer-diff)
+  :custom
+  (undo-tree-visualizer-timestamps t)
+  (undo-tree-enable-undo-in-region nil)
+  (undo-tree-auto-save-history nil)
+  (undo-tree-visualizer-diff t)
+  :general
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   "u" 'undo-tree-visualize))
+#+end_src
+
+Keep a list of recent files with =recentf=
+
+#+begin_src emacs-lisp :tangle yes
+(use-package recentf
+  :commands recentf-open-files
+  :hook
+  (kill-emacs-hook . recentf-cleanup)
+  :custom
+  (recentf-save-file "~/.emacs.d/var/recentf-save.el")
+  (recentf-max-menu-items 0)
+  (recentf-max-saved-items 300)
+  (recentf-exclude
+   (list #'file-remote-p "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
+         "^/tmp/" "^/ssh:" "\\.?ido\\.last$" "\\.revive$" "/TAGS$"
+         (expand-file-name "var" root-dir)
+         (expand-file-name "savefile" root-dir)))
+  (recentf-auto-cleanup 'never)
+  :config
+  (recentf-mode +1))
+#+end_src
+
 *** Splash screen
 
 There's some utility in having a cool initial screen actually. And
@@ -1052,36 +1099,6 @@ And, to upgrade Emacs to the 21st century, I use =visual-regexp=!
   (:states '(normal visual)
    :prefix hcps/leader-key
    "R" 'vr/query-replace))
-#+end_src
-
-*** History
-
-Undo and redo and kools with =undo-tree=!
-
-#+begin_src emacs-lisp :tangle yes
-(use-package undo-tree
-  :preface
-  (defun reset-visualizer-diff (&rest args)
-    "Because undo-tree-visualize sets the value of this variable to nil on quit."
-    (setq undo-tree-visualizer-diff
-          (eval (car (get 'undo-tree-visualizer-diff 'customized-value)))))
-  (defun undo-tree-clean-mode-line ()
-    (setq-local mode-line-format ""))
-  :hook
-  ((after-init-hook . global-undo-tree-mode)
-   (undo-tree-visualizer-mode-hook . undo-tree-clean-mode-line)
-   (diff-mode-hook . undo-tree-clean-mode-line))
-  :init
-  (advice-add 'undo-tree-visualize :before #'reset-visualizer-diff)
-  :custom
-  (undo-tree-visualizer-timestamps t)
-  (undo-tree-enable-undo-in-region nil)
-  (undo-tree-auto-save-history nil)
-  (undo-tree-visualizer-diff t)
-  :general
-  (:states '(normal visual)
-   :prefix hcps/leader-key
-   "u" 'undo-tree-visualize))
 #+end_src
 
 *** Lines and characters
