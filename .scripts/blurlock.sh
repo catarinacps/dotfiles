@@ -7,7 +7,7 @@ set -euo pipefail
 TMP_IMG="/tmp/screenshot.png"
 
 # big line, I know, but this gets all the xresources colors in a nice array
-COLORS=($(xrdb -q | grep '\*.color[0-9]*:' | cut -c8- | sort -g | awk '{print $2}' | cut -c2- | xargs))
+COLORS=($(xrdb -q | grep 'color' | sort -V | cut -d# -f2 | xargs))
 
 # set the parameters for i3lock-colors
 PARAMS=(--insidecolor=${COLORS[0]}66 \
