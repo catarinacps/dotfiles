@@ -1,3 +1,7 @@
-/elpa
-/savefile
-/.cask
+-*~
+-/.cask
+-/elpa
+-/elpy
+-/var
+-/savefile
+-/.cache
