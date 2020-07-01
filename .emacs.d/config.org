@@ -13,6 +13,7 @@ Cool Emacs configs from cool people:
 - [[https://github.com/caisah/emacs.dz][Lots of cool people]]
 - [[https://github.com/hrs/dotfiles][hrs]] (he likes org-mode and evil)
 - [[https://app-learninglab.inria.fr/gitlab/learning-lab/mooc-rr-ressources/blob/master/module2/ressources/rr_org/init.org][Konrad's and Arnaud's]]
+- [[https://github.com/hlissner][The doom-emacs guy]]
 
 * Table of contents                                                   :TOC_3:
 - [[#introduction][Introduction]]
@@ -352,6 +353,9 @@ actually need it.
 * The editor
 
 Everything related to Emacs as the editor and platform.
+
+*TODO*:
+- Use [[https://gitlab.com/jjzmajic/ewal][this]].
 
 ** Definitions and preferences
 
@@ -821,7 +825,7 @@ to make sure that =counsel-M-x= has decent candidate sorting.
   :after ivy
   :demand
   :preface
-  (defun hcps/override-yank-pop (&optional arg)
+  (defun hcps/override-yank-pop (&rest args)
     "Delete the region before inserting popped string."
     (when (and evil-mode (eq 'visual evil-state))
       (kill-region (region-beginning) (region-end))))
@@ -834,6 +838,7 @@ to make sure that =counsel-M-x= has decent candidate sorting.
    "b" 'counsel-switch-buffer
    "r" 'counsel-recentf
    "y" 'counsel-yank-pop
+   "o" 'counsel-outline
    "m p" 'counsel-package
    "m b" 'counsel-bookmark)
   ("M-x" 'counsel-M-x))

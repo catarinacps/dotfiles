@@ -151,14 +151,11 @@ This is DEPRECATED, use %s instead." prelude-modules-file))
 ;;   (mapc 'load (delete
 ;;                prelude-modules-file
 ;;                (directory-files prelude-personal-dir 't "^[^#\.].*\\.el$"))))
-
-(org-babel-load-file "~/.emacs.d/config.org")
-
 ;; config changes made through the customize UI and use-package will be stored
 ;; here.
 (setq custom-file (expand-file-name "custom.el" prelude-personal-dir))
 
-(load custom-file)
+(org-babel-load-file "~/.emacs.d/config.org")
 
 (message "Prelude is ready to do thy bidding, Master %s!" current-user)
 
