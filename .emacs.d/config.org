@@ -961,19 +961,32 @@ instead of the default =dired=.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ranger
-  :custom
-  (ranger-cleanup-on-disable t)
-  (ranger-preview-file t)
-  (ranger-dont-show-binary t)
-  (ranger-max-preview-size 10)
   :hook
-  (ranger-mode-hook . hide-mode-line-mode)
-  :config
-  (ranger-override-dired-mode t)
+  ((ranger-mode-hook . hide-mode-line-mode)
+   (ranger-parent-dir-hook . hide-mode-line-mode)
+   (ranger-parent-dir-hook . ranger-hide-details)
+   (ranger-parent-dir-hook . ranger-sort)
+   (ranger-parent-dir-hook . ranger-filter-files)
+   (ranger-parent-dir-hook . ranger-sub-window-setup)
+   (ranger-preview-dir-hook . hide-mode-line-mode)
+   (ranger-preview-dir-hook . ranger-sort)
+   (ranger-preview-dir-hook . ranger-filter-files)
+   (ranger-preview-dir-hook . ranger-truncate)
+   (ranger-preview-dir-hook . ranger-show-details))
   :general
   (:states '(normal visual)
    :prefix hcps/leader-key
-   "d" 'ranger))
+   "d" 'ranger)
+  :custom
+  (ranger-excluded-extensions '("mkv" "iso" "mp4" "bin" "exe" "msi" "pdf"))
+  (ranger-cleanup-on-disable t)
+  (ranger-modify-header nil)
+  (ranger-preview-file t)
+  (ranger-show-literal nil)
+  (ranger-dont-show-binary t)
+  (ranger-max-preview-size 10)
+  :config
+  (ranger-override-dired-mode t))
 #+end_src
 
 While I've somewhat used =neotree.el=, I believe that =treemacs= is
