@@ -881,11 +881,13 @@ Undo and redo and kools with =undo-tree=!
 #+begin_src emacs-lisp :tangle yes
 (use-package undo-tree
   :preface
+  (defvar hcps/undo-tree-visualizer-diff t
+    "My value for the `undo-tree-visualizer-diff' variable.")
   (defun reset-visualizer-diff (&rest args)
     "Because undo-tree-visualize sets the value of this variable to nil on quit."
-    (setq undo-tree-visualizer-diff
-          (eval (car (get 'undo-tree-visualizer-diff 'customized-value)))))
+    (setq undo-tree-visualizer-diff hcps/undo-tree-visualizer-diff))
   (defun undo-tree-clean-mode-line ()
+    "Clean mode-line format."
     (setq-local mode-line-format ""))
   :hook
   ((after-init-hook . global-undo-tree-mode)
@@ -897,7 +899,7 @@ Undo and redo and kools with =undo-tree=!
   (undo-tree-visualizer-timestamps t)
   (undo-tree-enable-undo-in-region nil)
   (undo-tree-auto-save-history nil)
-  (undo-tree-visualizer-diff t)
+  (undo-tree-visualizer-diff hcps/undo-tree-visualizer-diff)
   :general
   (:states '(normal visual)
    :prefix hcps/leader-key
