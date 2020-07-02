@@ -40,3 +40,9 @@ location), you should use [[./.scripts/install_dotfiles.sh][this script]].
 
 It ensures that the repo is cloned the right way and puts an useful alias
 in your =$SHELL= configuration file.
+
+** Future considerations
+
+- Look into NixOS
+- Look into [[https://www.lukeshu.com/blog/x11-systemd.html][this]]
+- linux boot, get [[https://opensource.com/sites/default/files/styles/image-full-size/public/lead-images/linux_boot.png?itok=FUesnJQp][it]]?
