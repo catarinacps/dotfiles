@@ -781,8 +781,9 @@ fuzzy matching and whatnot.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ivy
-  :ensure flx
   :demand
+  :ensure flx
+  :ensure ivy-rich
   :delight
   :preface
   (defun hcps/ivy-open-current-typed-path ()
@@ -811,7 +812,8 @@ fuzzy matching and whatnot.
    "C-l" 'ivy-next-line
    "C-h" 'ivy-previous-line)
   :config
-  (ivy-mode 1))
+  (ivy-mode +1)
+  (ivy-rich-mode +1))
 #+end_src
 
 =counsel= uses =ivy= to find files and commands. =smex= is required here
@@ -860,16 +862,6 @@ a list with possible =ssh= connections AND docker containers (thanks to
   (:states '(normal visual)
    :prefix hcps/leader-key
    "m t" 'counsel-tramp))
-#+end_src
-
-And, as a bonus, I've added the package =ivy-rich= to make the =ivy=
-minibuffer the prettiest on all the land.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package ivy-rich
-  :after ivy
-  :config
-  (ivy-rich-mode 1))
 #+end_src
 
 *** History
