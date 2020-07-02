@@ -384,6 +384,7 @@ As in "where we are", as there isn't a direct way of getting such info.
 (defvar root-dir (file-name-directory load-file-name) "The root dir of Emacs.")
 
 (setq package-user-dir (expand-file-name "elpa" root-dir))
+(setq var-user-dir (expand-file-name "var" root-dir))
 #+end_src
 
 *** GUI elements
@@ -613,7 +614,6 @@ Yes, you can have the best of both worlds!
   :demand
   :ensure evil-numbers
   :ensure evil-surround
-  :ensure evil-visualstar
   :ensure evil-collection
   :preface
   (defun hcps/yank-to-eol ()
@@ -689,8 +689,8 @@ Yes, you can have the best of both worlds!
   (evil-visual-state-tag   (propertize "   VISUAL   " 'face '((:background "gray"           :foreground "black"))))
   (evil-operator-state-tag (propertize "  OPERATOR  " 'face '((:background "sandy brown"    :foreground "black"))))
   :config
-  (evil-mode 1)
-  (global-evil-surround-mode 1)
+  (evil-mode +1)
+  (global-evil-surround-mode +1)
   (evil-collection-init))
 #+end_src
 
@@ -736,7 +736,7 @@ And to use better bindings to =smartparens=, =evil-smartparens=!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package evil-smartparens
-  :after smartparens
+  :after (evil smartparens)
   :delight
   :hook
   (smartparens-enabled-hook . evil-smartparens-mode))
@@ -835,8 +835,8 @@ to make sure that =counsel-M-x= has decent candidate sorting.
   (:states '(normal visual)
    :prefix hcps/leader-key
    "f f" 'counsel-find-file
+   "f r" 'counsel-recentf
    "b" 'counsel-switch-buffer
-   "r" 'counsel-recentf
    "y" 'counsel-yank-pop
    "o" 'counsel-outline
    "m p" 'counsel-package
@@ -898,7 +898,8 @@ Undo and redo and kools with =undo-tree=!
   :custom
   (undo-tree-visualizer-timestamps t)
   (undo-tree-enable-undo-in-region nil)
-  (undo-tree-auto-save-history nil)
+  (undo-tree-auto-save-history t)
+  (undo-tree-history-directory-alist `((".*" . ,temporary-file-directory)))
   (undo-tree-visualizer-diff hcps/undo-tree-visualizer-diff)
   :general
   (:states '(normal visual)
@@ -920,7 +921,7 @@ Keep a list of recent files with =recentf=
   (recentf-exclude
    (list #'file-remote-p "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
          "^/tmp/" "^/ssh:" "\\.?ido\\.last$" "\\.revive$" "/TAGS$"
-         (expand-file-name "var" root-dir)
+         var-user-dir package-user-dir
          (expand-file-name "savefile" root-dir)))
   (recentf-auto-cleanup 'never)
   :config
@@ -1014,6 +1015,9 @@ integrating packages and is overall more popular than the former.
   :general
   ("M-0" 'treemacs-select-window
    "M-t" 'treemacs)
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   "t" 'treemacs)
   :config
   (treemacs-follow-mode +1)
   (treemacs-filewatch-mode +1)
@@ -1045,7 +1049,9 @@ Besides the =ISearch= from Emacs itself or the search function from
 
 #+begin_src emacs-lisp :tangle yes
 (use-package anzu
-  :delight isearch-mode
+  :delight
+  (isearch-mode)
+  (anzu-mode)
   :preface
   (defun hcps/anzu-update-func (here total)
     (when anzu--state
@@ -1058,9 +1064,10 @@ Besides the =ISearch= from Emacs itself or the search function from
   (anzu-cons-mode-line-p t)
   (anzu-mode-line-update-function #'hcps/anzu-update-func)
   :general
-  (:states '(normal visual)
+  (:states 'normal
    :prefix hcps/leader-key
-   "m r" 'anzu-replace-at-cursor-thing)
+   "r SPC" 'anzu-replace-at-cursor-thing
+   "r q" 'anzu-query-replace-regexp)
   :config
   (global-anzu-mode 1))
 #+end_src
@@ -1742,7 +1749,8 @@ When in need of smart pairing, look no further than =smartparens=!
   (sp-hybrid-kill-entire-symbol nil)
   :config
   (require 'smartparens-config)
-  (sp-use-paredit-bindings))
+  (sp-use-paredit-bindings)
+  (show-smartparens-global-mode +1))
 #+end_src
 
 With that, =rainbow-delimiters= is a great match:
@@ -1869,15 +1877,17 @@ well to other diverse media files.
   :demand
   :custom
   (openwith-associations
-   '(("\\.pdf\\'" "zathura" (file))
-     ("\\.jpg\\'" "sxiv" (file))
-     ("\\.svg\\'" "sxiv" (file))
-     ("\\.jpeg\\'" "sxiv" (file))
-     ("\\.bmp\\'" "sxiv" (file))
-     ("\\.flac\\'" "mpv" (file))
-     ("\\.mkv\\'" "mpv" (file))
-     ("\\.mp3\\'" "mpv" (file))
-     ("\\.mp4\\'" "mpv" (file))))
+   '(("\\.pdf$" "zathura" (file))
+     ("\\.jpe?g$" "sxiv" (file))
+     ("\\.png$" "sxiv" (file))
+     ("\\.svg$" "sxiv" (file))
+     ("\\.jpeg$" "sxiv" (file))
+     ("\\.bmp$" "sxiv" (file))
+     ("\\.flac$" "mpv" (file))
+     ("\\.mkv$" "mpv" (file))
+     ("\\.mp3$" "mpv" (file))
+     ("\\.mp4$" "mpv" (file))))
+  (openwith-confirm-invocation t)
   :config
   (openwith-mode t))
 #+end_src
@@ -1900,7 +1910,7 @@ A Collection of Ridiculously Useful eXtensions for Emacs.
    :prefix hcps/leader-key
    ;; file stuff
    "f s" 'crux-sudo-edit
-   "f r" 'crux-rename-buffer-and-file
+   "f m" 'crux-rename-buffer-and-file ;; for `move'
    "f d" 'crux-delete-buffer-and-file
    "f c" 'crux-find-user-custom-file
    "f i" 'crux-find-user-init-file)

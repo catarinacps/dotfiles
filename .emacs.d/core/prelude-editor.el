@@ -42,11 +42,11 @@
 ;; indentation width -- eg. c-basic-offset: use that to adjust your
 ;; personal indentation width, while maintaining the style (and
 ;; meaning) of any files you load.
-(setq-default indent-tabs-mode nil)   ;; don't use tabs to indent
-(setq-default tab-width 8)            ;; but maintain correct appearance
+;; (setq-default indent-tabs-mode nil)   ;; don't use tabs to indent
+;; (setq-default tab-width 8)            ;; but maintain correct appearance
 
 ;; Newline at end of file
-(setq require-final-newline t)
+;; (setq require-final-newline t)
 
 ;; delete the selection with a keypress
 (delete-selection-mode t)
@@ -58,9 +58,9 @@
       `((".*" ,temporary-file-directory t)))
 
 ;; autosave the undo-tree history
-(setq undo-tree-history-directory-alist
-      `((".*" . ,temporary-file-directory)))
-(setq undo-tree-auto-save-history t)
+;; (setq undo-tree-history-directory-alist
+;;       `((".*" . ,temporary-file-directory)))
+;; (setq undo-tree-auto-save-history t)
 
 ;; revert buffers automatically when underlying files are changed externally
 (global-auto-revert-mode t)
@@ -81,11 +81,11 @@
 (setq tab-always-indent 'complete)
 
 ;; smart pairing for all
-(require 'smartparens-config)
-(setq sp-base-key-bindings 'paredit)
-(setq sp-autoskip-closing-pair 'always)
-(setq sp-hybrid-kill-entire-symbol nil)
-(sp-use-paredit-bindings)
+;; (require 'smartparens-config)
+;; (setq sp-base-key-bindings 'paredit)
+;; (setq sp-autoskip-closing-pair 'always)
+;; (setq sp-hybrid-kill-entire-symbol nil)
+;; (sp-use-paredit-bindings)
 
 (show-smartparens-global-mode +1)
 
@@ -113,15 +113,15 @@
 (save-place-mode 1)
 
 ;; savehist keeps track of some history
-(require 'savehist)
-(setq savehist-additional-variables
-      ;; search entries
-      '(search-ring regexp-search-ring)
-      ;; save every minute
-      savehist-autosave-interval 60
-      ;; keep the home clean
-      savehist-file (expand-file-name "savehist" prelude-savefile-dir))
-(savehist-mode +1)
+;; (require 'savehist)
+;; (setq savehist-additional-variables
+;;       ;; search entries
+;;       '(search-ring regexp-search-ring)
+;;       ;; save every minute
+;;       savehist-autosave-interval 60
+;;       ;; keep the home clean
+;;       savehist-file (expand-file-name "savehist" prelude-savefile-dir))
+;; (savehist-mode +1)
 
 ;; ;; save recent files
 ;; (require 'recentf)
@@ -144,8 +144,8 @@
 ;; (recentf-mode +1)
 
 ;; use shift + arrow keys to switch between visible buffers
-(require 'windmove)
-(windmove-default-keybindings)
+;; (require 'windmove)
+;; (windmove-default-keybindings)
 
 ;; automatically save buffers associated with files on buffer switch
 ;; and on windows switch
@@ -174,10 +174,10 @@
 (require 'rect)
 (crux-with-region-or-line kill-region)
 
-;; tramp, for sudo access
-(require 'tramp)
-;; keep in mind known issues with zsh - see emacs wiki
-(setq tramp-default-method "ssh")
+;; ;; tramp, for sudo access
+;; (require 'tramp)
+;; ;; keep in mind known issues with zsh - see emacs wiki
+;; (setq tramp-default-method "ssh")
 
 (set-default 'imenu-auto-rescan t)
 
@@ -218,30 +218,30 @@
 ;; enable erase-buffer command
 (put 'erase-buffer 'disabled nil)
 
-(require 'expand-region)
+;; (require 'expand-region)
 
 ;; bookmarks
 (require 'bookmark)
 (setq bookmark-default-file (expand-file-name "bookmarks" prelude-savefile-dir)
       bookmark-save-flag 1)
 
-;; projectile is a project management mode
-(require 'projectile)
-(setq projectile-cache-file (expand-file-name  "projectile.cache" prelude-savefile-dir))
-(projectile-mode t)
+;; ;; projectile is a project management mode
+;; (require 'projectile)
+;; (setq projectile-cache-file (expand-file-name  "projectile.cache" prelude-savefile-dir))
+;; (projectile-mode t)
 
 ;; avy allows us to effectively navigate to visible things
 (require 'avy)
 (setq avy-background t)
 (setq avy-style 'at-full)
 
-;; anzu-mode enhances isearch & query-replace by showing total matches and current match position
-(require 'anzu)
-(diminish 'anzu-mode)
-(global-anzu-mode)
+;; ;; anzu-mode enhances isearch & query-replace by showing total matches and current match position
+;; (require 'anzu)
+;; (diminish 'anzu-mode)
+;; (global-anzu-mode)
 
-(global-set-key (kbd "M-%") 'anzu-query-replace)
-(global-set-key (kbd "C-M-%") 'anzu-query-replace-regexp)
+;; (global-set-key (kbd "M-%") 'anzu-query-replace)
+;; (global-set-key (kbd "C-M-%") 'anzu-query-replace-regexp)
 
 ;; dired - reuse current buffer by pressing 'a'
 (put 'dired-find-alternate-file 'disabled nil)
@@ -323,9 +323,9 @@ indent yanked text (with prefix arg don't indent)."
 (add-to-list 'auto-mode-alist '("\\.zsh\\'" . shell-script-mode))
 
 ;; whitespace-mode config
-(require 'whitespace)
-(setq whitespace-line-column 80) ;; limit line length
-(setq whitespace-style '(face tabs empty trailing lines-tail))
+;; (require 'whitespace)
+;; (setq whitespace-line-column 80) ;; limit line length
+;; (setq whitespace-style '(face tabs empty trailing lines-tail))
 
 ;; saner regex syntax
 (require 're-builder)
