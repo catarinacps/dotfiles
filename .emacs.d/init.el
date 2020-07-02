@@ -93,9 +93,9 @@ This is DEPRECATED, use %s instead." prelude-modules-file))
 
 ;; add Prelude's directories to Emacs's `load-path'
 (add-to-list 'load-path prelude-core-dir)
-(add-to-list 'load-path prelude-modules-dir)
-(add-to-list 'load-path prelude-vendor-dir)
-(prelude-add-subfolders-to-load-path prelude-vendor-dir)
+;; (add-to-list 'load-path prelude-modules-dir)
+;; (add-to-list 'load-path prelude-vendor-dir)
+;; (prelude-add-subfolders-to-load-path prelude-vendor-dir)
 
 ;; reduce the frequency of garbage collection by making it happen on
 ;; each 50MB of allocated data (the default is on every 0.76MB)
@@ -119,31 +119,24 @@ This is DEPRECATED, use %s instead." prelude-modules-file))
 (require 'prelude-mode)
 (require 'prelude-editor)
 (require 'prelude-global-keybindings)
-
-;; macOS specific settings
-(when (eq system-type 'darwin)
-  (require 'prelude-macos))
-
-;; Linux specific settings
-(when (eq system-type 'gnu/linux)
-  (require 'prelude-linux))
+(require 'prelude-linux)
 
 (message "Loading Prelude's modules...")
 
 ;; the modules
-(if (file-exists-p prelude-modules-file)
-    (progn
-      (load prelude-modules-file)
-      (if (file-exists-p prelude-deprecated-modules-file)
-          (message "Loading new modules configuration, ignoring DEPRECATED prelude-module.el")))
-  (if (file-exists-p prelude-deprecated-modules-file)
-      (progn
-        (load prelude-deprecated-modules-file)
-        (message (format "The use of %s is DEPRECATED! Use %s instead!"
-                         prelude-deprecated-modules-file
-                         prelude-modules-file)))
-    (message "Missing modules file %s" prelude-modules-file)
-    (message "You can get started by copying the bundled example file from sample/prelude-modules.el")))
+;; (if (file-exists-p prelude-modules-file)
+;;     (progn
+;;       (load prelude-modules-file)
+;;       (if (file-exists-p prelude-deprecated-modules-file)
+;;           (message "Loading new modules configuration, ignoring DEPRECATED prelude-module.el")))
+;;   (if (file-exists-p prelude-deprecated-modules-file)
+;;       (progn
+;;         (load prelude-deprecated-modules-file)
+;;         (message (format "The use of %s is DEPRECATED! Use %s instead!"
+;;                          prelude-deprecated-modules-file
+;;                          prelude-modules-file)))
+;;     (message "Missing modules file %s" prelude-modules-file)
+;;     (message "You can get started by copying the bundled example file from sample/prelude-modules.el")))
 
 ;; load the personal settings (this includes `custom-file')
 ;; (when (file-exists-p prelude-personal-dir)

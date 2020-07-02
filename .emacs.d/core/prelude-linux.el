@@ -34,10 +34,10 @@
 
 ;; On Linux Emacs doesn't use the shell PATH if it's not started from
 ;; the shell. Let's fix that:
-(prelude-require-packages '(exec-path-from-shell))
+;; (prelude-require-packages '(exec-path-from-shell))
 
-(require 'exec-path-from-shell)
-(exec-path-from-shell-initialize)
+;; (require 'exec-path-from-shell)
+;; (exec-path-from-shell-initialize)
 
 (provide 'prelude-linux)
 ;;; prelude-linux.el ends here

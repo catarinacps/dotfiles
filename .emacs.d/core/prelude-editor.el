@@ -49,7 +49,7 @@
 ;; (setq require-final-newline t)
 
 ;; delete the selection with a keypress
-(delete-selection-mode t)
+;; (delete-selection-mode t)
 
 ;; store all backup and autosave files in the tmp dir
 (setq backup-directory-alist
@@ -78,7 +78,7 @@
                                          try-complete-lisp-symbol))
 
 ;; smart tab behavior - indent or complete
-(setq tab-always-indent 'complete)
+;; (setq tab-always-indent 'complete)
 
 ;; smart pairing for all
 ;; (require 'smartparens-config)
@@ -87,30 +87,30 @@
 ;; (setq sp-hybrid-kill-entire-symbol nil)
 ;; (sp-use-paredit-bindings)
 
-(show-smartparens-global-mode +1)
+;; (show-smartparens-global-mode +1)
 
-(define-key prog-mode-map (kbd "M-(") (prelude-wrap-with "("))
+;; (define-key prog-mode-map (kbd "M-(") (prelude-wrap-with "("))
 ;; FIXME: pick terminal friendly binding
 ;; (define-key prog-mode-map (kbd "M-[") (prelude-wrap-with "["))
-(define-key prog-mode-map (kbd "M-\"") (prelude-wrap-with "\""))
+;; (define-key prog-mode-map (kbd "M-\"") (prelude-wrap-with "\""))
 
 ;; disable annoying blink-matching-paren
-(setq blink-matching-paren nil)
+;; (seq blink-matching-paren nil)
 
 ;; diminish keeps the modeline tidy
-(require 'diminish)
+;; (require 'diminish)
 
 ;; meaningful names for buffers with the same name
-(require 'uniquify)
-(setq uniquify-buffer-name-style 'forward)
-(setq uniquify-separator "/")
-(setq uniquify-after-kill-buffer-p t)    ; rename after killing uniquified
-(setq uniquify-ignore-buffers-re "^\\*") ; don't muck with special buffers
+;; (require 'uniquify)
+;; (setq uniquify-buffer-name-style 'forward)
+;; (setq uniquify-separator "/")
+;; (setq uniquify-after-kill-buffer-p t)    ; rename after killing uniquified
+;; (setq uniquify-ignore-buffers-re "^\\*") ; don't muck with special buffers
 
 ;; saveplace remembers your location in a file when saving files
-(setq save-place-file (expand-file-name "saveplace" prelude-savefile-dir))
-;; activate it for all buffers
-(save-place-mode 1)
+;; (setq save-place-file (expand-file-name "saveplace" prelude-savefile-dir))
+;; ;; activate it for all buffers
+;; (save-place-mode 1)
 
 ;; savehist keeps track of some history
 ;; (require 'savehist)
@@ -149,10 +149,10 @@
 
 ;; automatically save buffers associated with files on buffer switch
 ;; and on windows switch
-(require 'super-save)
-;; add integration with ace-window
-(add-to-list 'super-save-triggers 'ace-window)
-(super-save-mode +1)
+;; (require 'super-save)
+;; ;; add integration with ace-window
+;; (add-to-list 'super-save-triggers 'ace-window)
+;; (super-save-mode +1)
 
 (defadvice set-buffer-major-mode (after set-major-mode activate compile)
   "Set buffer major mode according to `auto-mode-alist'."
@@ -163,33 +163,33 @@
     (with-current-buffer buffer (if mode (funcall mode)))))
 
 ;; highlight the current line
-(global-hl-line-mode +1)
+;; (global-hl-line-mode +1)
 
-(require 'volatile-highlights)
-(volatile-highlights-mode t)
-(diminish 'volatile-highlights-mode)
+;; (require 'volatile-highlights)
+;; (volatile-highlights-mode t)
+;; (diminish 'volatile-highlights-mode)
 
 ;; note - this should be after volatile-highlights is required
 ;; add the ability to cut the current line, without marking it
-(require 'rect)
-(crux-with-region-or-line kill-region)
+;; (require 'rect)
+;; (crux-with-region-or-line kill-region)
 
 ;; ;; tramp, for sudo access
 ;; (require 'tramp)
 ;; ;; keep in mind known issues with zsh - see emacs wiki
 ;; (setq tramp-default-method "ssh")
 
-(set-default 'imenu-auto-rescan t)
+;; (set-default 'imenu-auto-rescan t)
 
 ;; flyspell-mode does spell-checking on the fly as you type
-(require 'flyspell)
-(setq ispell-program-name "aspell" ; use aspell instead of ispell
-      ispell-extra-args '("--sug-mode=ultra"))
+;; (require 'flyspell)
+;; (setq ispell-program-name "aspell" ; use aspell instead of ispell
+;;       ispell-extra-args '("--sug-mode=ultra"))
 
-(defun prelude-enable-flyspell ()
-  "Enable command `flyspell-mode' if `prelude-flyspell' is not nil."
-  (when (and prelude-flyspell (executable-find ispell-program-name))
-    (flyspell-mode +1)))
+;; (defun prelude-enable-flyspell ()
+;;   "Enable command `flyspell-mode' if `prelude-flyspell' is not nil."
+;;   (when (and prelude-flyspell (executable-find ispell-program-name))
+;;     (flyspell-mode +1)))
 
 (defun prelude-cleanup-maybe ()
   "Invoke `whitespace-cleanup' if `prelude-clean-whitespace-on-save' is not nil."
@@ -203,27 +203,27 @@
     (add-hook 'before-save-hook 'prelude-cleanup-maybe nil t)
     (whitespace-mode +1)))
 
-(add-hook 'text-mode-hook 'prelude-enable-flyspell)
-(add-hook 'text-mode-hook 'prelude-enable-whitespace)
+;; (add-hook 'text-mode-hook 'prelude-enable-flyspell)
+;; (add-hook 'text-mode-hook 'prelude-enable-whitespace)
 
 ;; enable narrowing commands
-(put 'narrow-to-region 'disabled nil)
-(put 'narrow-to-page 'disabled nil)
-(put 'narrow-to-defun 'disabled nil)
+;; (put 'narrow-to-region 'disabled nil)
+;; (put 'narrow-to-page 'disabled nil)
+;; (put 'narrow-to-defun 'disabled nil)
 
 ;; enabled change region case commands
-(put 'upcase-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
+;; (put 'upcase-region 'disabled nil)
+;; (put 'downcase-region 'disabled nil)
 
 ;; enable erase-buffer command
-(put 'erase-buffer 'disabled nil)
+;; (put 'erase-buffer 'disabled nil)
 
 ;; (require 'expand-region)
 
 ;; bookmarks
-(require 'bookmark)
-(setq bookmark-default-file (expand-file-name "bookmarks" prelude-savefile-dir)
-      bookmark-save-flag 1)
+;; (require 'bookmark)
+;; (setq bookmark-default-file (expand-file-name "bookmarks" prelude-savefile-dir)
+;;       bookmark-save-flag 1)
 
 ;; ;; projectile is a project management mode
 ;; (require 'projectile)
@@ -231,9 +231,9 @@
 ;; (projectile-mode t)
 
 ;; avy allows us to effectively navigate to visible things
-(require 'avy)
-(setq avy-background t)
-(setq avy-style 'at-full)
+;; (require 'avy)
+;; (setq avy-background t)
+;; (setq avy-style 'at-full)
 
 ;; ;; anzu-mode enhances isearch & query-replace by showing total matches and current match position
 ;; (require 'anzu)
@@ -244,30 +244,30 @@
 ;; (global-set-key (kbd "C-M-%") 'anzu-query-replace-regexp)
 
 ;; dired - reuse current buffer by pressing 'a'
-(put 'dired-find-alternate-file 'disabled nil)
+;; (put 'dired-find-alternate-file 'disabled nil)
 
 ;; always delete and copy recursively
-(setq dired-recursive-deletes 'always)
-(setq dired-recursive-copies 'always)
+;; (setq dired-recursive-deletes 'always)
+;; (setq dired-recursive-copies 'always)
 
 ;; if there is a dired buffer displayed in the next window, use its
 ;; current subdir, instead of the current subdir of this dired buffer
-(setq dired-dwim-target t)
+;; (setq dired-dwim-target t)
 
 ;; enable some really cool extensions like C-x C-j(dired-jump)
-(require 'dired-x)
+;; (require 'dired-x)
 
 ;; ediff - don't start another frame
 (require 'ediff)
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
 ;; clean up obsolete buffers automatically
-(require 'midnight)
+;; (require 'midnight)
 
 ;; smarter kill-ring navigation
-(require 'browse-kill-ring)
-(browse-kill-ring-default-keybindings)
-(global-set-key (kbd "s-y") 'browse-kill-ring)
+;; (require 'browse-kill-ring)
+;; (browse-kill-ring-default-keybindings)
+;; (global-set-key (kbd "s-y") 'browse-kill-ring)
 
 (defadvice exchange-point-and-mark (before deactivate-mark activate compile)
   "When called with no active region, do not activate mark."
@@ -283,8 +283,8 @@
           (list (region-beginning) (region-end))
         (list (point-min) (point-max))))))
 
-;; (with-region-or-buffer indent-region)
-;; (with-region-or-buffer untabify)
+(with-region-or-buffer indent-region)
+(with-region-or-buffer untabify)
 
 ;; automatically indenting yanked text if in programming-modes
 (defun yank-advised-indent-function (beg end)
@@ -350,8 +350,7 @@ indent yanked text (with prefix arg don't indent)."
 (setq compilation-ask-about-save nil  ; Just save before compiling
       compilation-always-kill t       ; Just kill old compile processes before
                                         ; starting the new one
-      compilation-scroll-output 'first-error ; Automatically scroll to first
-                                        ; error
+      compilation-scroll-output 'first-error ; Automatically scroll to first error
       )
 
 ;; Colorize output of Compilation Mode, see
@@ -363,8 +362,8 @@ indent yanked text (with prefix arg don't indent)."
 (prelude-mode t)
 
 ;; sensible undo
-(global-undo-tree-mode)
-(diminish 'undo-tree-mode)
+;; (global-undo-tree-mode)
+;; (diminish 'undo-tree-mode)
 ;; enable winner-mode to manage window configurations
 (winner-mode +1)
 
@@ -374,8 +373,8 @@ indent yanked text (with prefix arg don't indent)."
 (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
 
 ;; easy-kill
-(global-set-key [remap kill-ring-save] 'easy-kill)
-(global-set-key [remap mark-sexp] 'easy-mark)
+;; (global-set-key [remap kill-ring-save] 'easy-kill)
+;; (global-set-key [remap mark-sexp] 'easy-mark)
 
 ;; operate-on-number
 (require 'operate-on-number)
@@ -414,8 +413,8 @@ and file 'filename' will be opened and cursor set on line 'linenumber'"
                             fn))) files)))
 
 ;; use settings from .editorconfig file when present
-(require 'editorconfig)
-(editorconfig-mode 1)
+;; (require 'editorconfig)
+;; (editorconfig-mode 1)
 
 (provide 'prelude-editor)
 

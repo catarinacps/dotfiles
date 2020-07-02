@@ -442,6 +442,7 @@ any further.
               ;; posssible values: (left right center full nil)
               default-justification 'left
               indent-tabs-mode nil
+              tab-always-indent 'complete
               sentence-end-double-space nil
               tab-width 4
               line-spacing 0
@@ -510,6 +511,7 @@ Random configs and definitions that don't have a clear category.
 (setq-default ad-redefinition-action 'accept       ; Silence warnings for redefinition
               confirm-kill-emacs 'yes-or-no-p      ; Confirm before exiting Emacs
               select-enable-clipboard t            ; Merge system's and Emacs' clipboard
+              blink-matching-paren nil             ; Disable annoying blink-matching-paren
               cursor-in-non-selected-windows nil   ; No phantom cursors in unselected windows
               window-combination-resize t          ; Resize windows proportionally
               ring-bell-function 'ignore)          ; No bell ring
@@ -530,6 +532,9 @@ Random configs and definitions that don't have a clear category.
 These are Emacs-behaviour related! In other words, these extend the
 capabilities of Emacs as a text editor, and do NOT add support to other
 languages or etc.
+
+- [ ] save-place
+- [ ] bookmark
 
 *** Package loading setup
 
@@ -870,6 +875,7 @@ Undo and redo and kools with =undo-tree=!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package undo-tree
+  :diminish
   :preface
   (defvar hcps/undo-tree-visualizer-diff t
     "My value for the `undo-tree-visualizer-diff' variable.")
@@ -1099,6 +1105,7 @@ As I love some overkill, here's =avy=.
   :custom
   (avy-styles-alist
    '((avy-goto-char-2 . post) (avy-goto-line . at-full)))
+  (avy-background t)
   :general
   (:states 'normal
    "s" 'avy-goto-char-2
@@ -1543,7 +1550,7 @@ Emacs loses focus, etc.
   (super-save-remote-files nil)
   :config
   (add-to-list 'super-save-triggers 'ace-window)
-  (super-save-mode 1))
+  (super-save-mode +1))
 #+end_src
 
 *** Templates and snippets

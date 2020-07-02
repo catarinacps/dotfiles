@@ -35,57 +35,57 @@
 (require 'cl)
 (require 'package)
 
-;; accessing a package repo over https on Windows is a no go, so we
-;; fallback to http there
-(add-to-list 'package-archives
-             '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives
-             '("org" . "https://orgmode.org/elpa/") t)
+;; ;; accessing a package repo over https on Windows is a no go, so we
+;; ;; fallback to http there
+;; (add-to-list 'package-archives
+;;              '("melpa" . "https://melpa.org/packages/") t)
+;; (add-to-list 'package-archives
+;;              '("org" . "https://orgmode.org/elpa/") t)
 
-;; load the pinned packages
-(let ((prelude-pinned-packages-file (expand-file-name "prelude-pinned-packages.el" prelude-dir)))
-  (if (file-exists-p prelude-pinned-packages-file)
-      (load prelude-pinned-packages-file)))
+;; ;; load the pinned packages
+;; (let ((prelude-pinned-packages-file (expand-file-name "prelude-pinned-packages.el" prelude-dir)))
+;;   (if (file-exists-p prelude-pinned-packages-file)
+;;       (load prelude-pinned-packages-file)))
 
-;; set package-user-dir to be relative to Prelude install path
+;; ;; set package-user-dir to be relative to Prelude install path
 (setq package-user-dir (expand-file-name "elpa" prelude-dir))
 (package-initialize)
 
-(defvar prelude-packages
-'(ace-window
-  avy
-  anzu
-  beacon
-  browse-kill-ring
-  crux
-  discover-my-major
-  diff-hl
-  diminish
-  easy-kill
-  editorconfig
-  epl
-  expand-region
-  flycheck
-  gist
-  git-timemachine
-  gitconfig-mode
-  gitignore-mode
-  guru-mode
-  hl-todo
-  imenu-anywhere
-  projectile
-  magit
-  move-text
-  operate-on-number
-  smartparens
-  smartrep
-  super-save
-  undo-tree
-  volatile-highlights
-  which-key
-  zenburn-theme
-  zop-to-char)
-"A list of packages to ensure are installed at launch.")
+;; (defvar prelude-packages
+;; '(ace-window
+;;   avy
+;;   anzu
+;;   beacon
+;;   browse-kill-ring
+;;   crux
+;;   discover-my-major
+;;   diff-hl
+;;   diminish
+;;   easy-kill
+;;   editorconfig
+;;   epl
+;;   expand-region
+;;   flycheck
+;;   gist
+;;   git-timemachine
+;;   gitconfig-mode
+;;   gitignore-mode
+;;   guru-mode
+;;   hl-todo
+;;   imenu-anywhere
+;;   projectile
+;;   magit
+;;   move-text
+;;   operate-on-number
+;;   smartparens
+;;   smartrep
+;;   super-save
+;;   undo-tree
+;;   volatile-highlights
+;;   which-key
+;;   zenburn-theme
+;;   zop-to-char)
+;; "A list of packages to ensure are installed at launch.")
 
 (defun prelude-packages-installed-p ()
   "Check if all packages in `prelude-packages' are installed."
@@ -116,7 +116,7 @@ Missing packages are installed automatically."
     (prelude-require-packages prelude-packages)))
 
 ;; run package installation
-(prelude-install-packages)
+;; (prelude-install-packages)
 
 (defun prelude-list-foreign-packages ()
   "Browse third-party packages not bundled with Prelude.
@@ -197,14 +197,14 @@ PACKAGE is installed only if not already present.  The file is opened in MODE."
   (add-to-list 'auto-mode-alist '("PKGBUILD\\'" . pkgbuild-mode)))
 
 ;; build auto-install mappings
-(mapc
- (lambda (entry)
-   (let ((extension (car entry))
-         (package (cadr entry))
-         (mode (cadr (cdr entry))))
-     (unless (package-installed-p package)
-       (prelude-auto-install extension package mode))))
- prelude-auto-install-alist)
+;; (mapc
+;;  (lambda (entry)
+;;    (let ((extension (car entry))
+;;          (package (cadr entry))
+;;          (mode (cadr (cdr entry))))
+;;      (unless (package-installed-p package)
+;;        (prelude-auto-install extension package mode))))
+;;  prelude-auto-install-alist)
 
 (provide 'prelude-packages)
 ;; Local Variables:
