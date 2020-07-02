@@ -129,12 +129,12 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 #+begin_src org
 - ace-window
 - aggressive-indent
-- all-the-icons
 - ansi-color
 - anzu
 - auctex
 - auctex-latexmk
 - auto-compile
+- avy
 - bash-completion
 - beacon
 - bspwm
@@ -172,7 +172,6 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - evil-numbers
 - evil-smartparens
 - evil-surround
-- evil-visualstar
 - exec-path-from-shell
 - expand-region
 - flx
@@ -196,6 +195,7 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - julia-mode
 - julia-repl
 - jupyter
+- link-hint
 - lisp-mode
 - lsp-julia
 - lsp-mode
@@ -218,11 +218,11 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - ox-latex
 - ox-twbs
 - page-break-lines
-- pcre2el
 - plantuml-mode
 - projectile
 - rainbow-delimiters
 - ranger
+- recentf
 - rust-mode
 - sh-script
 - smart-mode-line
@@ -240,8 +240,6 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - use-package-ensure-system-package
 - vimish-fold
 - visual-fill-column
-- visual-regexp
-- visual-regexp-steroids
 - websocket
 - which-key
 - whitespace
@@ -1089,23 +1087,30 @@ the slowness of it. So, I use =deadgrep=!
   (evil-collection-deadgrep-setup))
 #+end_src
 
-And, to upgrade Emacs to the 21st century, I use =visual-regexp=!
+=link-hint= replicates the hinting mechanic from trydactil and such.
 
 #+begin_src emacs-lisp :tangle yes
-(use-package visual-regexp
-  :ensure visual-regexp-steroids
-  :ensure pcre2el
-  :init
-  (advice-add 'vr--get-regexp-modifiers-prefix
-              :filter-return (lambda (fun-ret)
-                               (if (not (string= "" fun-ret)) (concat fun-ret " "))))
+(use-package link-hint
   :custom
-  (vr/default-feedback-limit 300)
-  (vr/engine 'pcre2el)
+  (browse-url-browser-function 'browse-url-firefox)
   :general
-  (:states '(normal visual)
+  (:states 'normal
    :prefix hcps/leader-key
-   "R" 'vr/query-replace))
+   "h" 'link-hint-open-link))
+#+end_src
+
+As I love some overkill, here's =avy=.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package avy
+  :after evil
+  :custom
+  (avy-styles-alist
+   '((avy-goto-char-2 . post) (avy-goto-line . at-full)))
+  :general
+  (:states 'normal
+   "s" 'avy-goto-char-2
+   "S" 'avy-goto-line))
 #+end_src
 
 *** Lines and characters
