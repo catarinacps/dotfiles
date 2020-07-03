@@ -58,8 +58,11 @@
 (setq-default custom-file (expand-file-name "custom.el" var-user-dir))
 
 ;; remove old-ass org-mode from load-path to make way to newer org-mode
-(setq load-path (delete (car (file-expand-wildcards "/usr/share/emacs/*/lisp/org")) load-path))
-(add-subfolders-to-load-path package-user-dir)
+(setq load-path
+      (delete (car (file-expand-wildcards "/usr/share/emacs/*/lisp/org")) load-path))
+(add-to-list
+ 'load-path
+ (car (file-expand-wildcards (expand-file-name "org-plus-contrib*" package-user-dir))))
 
 (org-babel-load-file "~/.emacs.d/config.org")
 

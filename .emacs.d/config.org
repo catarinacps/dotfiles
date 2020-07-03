@@ -580,6 +580,7 @@ and put it here eventually, using =use-package=.
   (package-install 'use-package))
 
 (eval-when-compile
+  (add-subfolders-to-load-path package-user-dir)
   (require 'use-package))
 
 (setq use-package-verbose t
