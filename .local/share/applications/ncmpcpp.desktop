@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=ncmpcpp
+Icon=multimedia-audio-player
+Exec=termite -e ncmpcpp --icon=multimedia-audio-player --class=ncmpcpp
+NoDisplay=false
+Categories=Audiovideo;X-Gnome-Other;
+StartupNotify=false
+Terminal=false

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=vis
+Icon=sonic-visualiser
+Exec=termite -e vis --icon=sonic-visualiser --class=cli-vis
+NoDisplay=false
+Categories=Audiovideo;X-Gnome-Other;
+StartupNotify=false
+Terminal=false
