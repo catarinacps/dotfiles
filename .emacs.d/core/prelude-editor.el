@@ -283,8 +283,8 @@
           (list (region-beginning) (region-end))
         (list (point-min) (point-max))))))
 
-(with-region-or-buffer indent-region)
-(with-region-or-buffer untabify)
+;; (with-region-or-buffer indent-region)
+;; (with-region-or-buffer untabify)
 
 ;; automatically indenting yanked text if in programming-modes
 (defun yank-advised-indent-function (beg end)

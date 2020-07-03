@@ -32,8 +32,8 @@
 
 ;;; Code:
 
-(require 'thingatpt)
-(require 'cl-lib)
+;; (require 'thingatpt)
+;; (require 'cl-lib)
 
 (defun prelude-buffer-mode (buffer-or-name)
   "Retrieve the `major-mode' of BUFFER-OR-NAME."
@@ -116,7 +116,7 @@ PROMPT sets the `read-string prompt."
     (when after-init-time
       (eval form))))
 
-(require 'epl)
+;; (require 'epl)
 
 (defun prelude-update ()
   "Update Prelude to its latest version."

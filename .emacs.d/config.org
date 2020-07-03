@@ -28,7 +28,6 @@ Cool Emacs configs from cool people:
 - [[#the-editor][The editor]]
   - [[#definitions-and-preferences][Definitions and preferences]]
     - [[#package-servers][Package servers]]
-    - [[#paths][Paths]]
     - [[#gui-elements][GUI elements]]
     - [[#font][Font]]
     - [[#text][Text]]
@@ -374,17 +373,6 @@ By default we only get the GNU one...
 (package-initialize)
 #+end_src
 
-*** Paths
-
-As in "where we are", as there isn't a direct way of getting such info.
-
-#+begin_src emacs-lisp :tangle yes
-(defvar root-dir (file-name-directory load-file-name) "The root dir of Emacs.")
-
-(setq package-user-dir (expand-file-name "elpa" root-dir))
-(setq var-user-dir (expand-file-name "var" root-dir))
-#+end_src
-
 *** GUI elements
 
 Almost every GUI element of Emacs is useless and a waste of screen
@@ -508,23 +496,67 @@ Highlighting the current line is also very useful.
 Random configs and definitions that don't have a clear category.
 
 #+begin_src emacs-lisp :tangle yes
-(setq-default ad-redefinition-action 'accept       ; Silence warnings for redefinition
-              confirm-kill-emacs 'yes-or-no-p      ; Confirm before exiting Emacs
-              select-enable-clipboard t            ; Merge system's and Emacs' clipboard
-              blink-matching-paren nil             ; Disable annoying blink-matching-paren
-              cursor-in-non-selected-windows nil   ; No phantom cursors in unselected windows
-              window-combination-resize t          ; Resize windows proportionally
-              ring-bell-function 'ignore)          ; No bell ring
+(setq-default ad-redefinition-action 'accept         ; Silence warnings for redefinition
+              confirm-kill-emacs 'yes-or-no-p        ; Confirm before exiting Emacs
+              select-enable-clipboard t              ; Merge system's and Emacs' clipboard
+              gc-cons-threshold 50000000             ; Reduce the default GC frequency
+              blink-matching-paren nil               ; Disable annoying blink-matching-paren
+              cursor-in-non-selected-windows nil     ; No phantom cursors in unselected windows
+              window-combination-resize t            ; Resize windows proportionally
+              ring-bell-function 'ignore)            ; No bell ring
 
-; Replace yes/no prompts with y/n
+;; Replace yes/no prompts with y/n
 (fset 'yes-or-no-p 'y-or-n-p)
 
-; Set Emacs to call the garbage collector on focus-out
+;; Set Emacs to call the garbage collector on focus-out
 (add-hook 'focus-out-hook #'garbage-collect)
 
-; use GPG-agent instead of the default
+;; use GPG-agent instead of the default
 (setenv "SSH_AUTH_SOCK"
           (concat (getenv "XDG_RUNTIME_DIR") "/gnupg/S.gpg-agent.ssh"))
+
+;; Not sure what this is
+(require 'thingatpt)
+(require 'cl-lib)
+
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
+
+(global-auto-revert-mode t)
+
+(setq hippie-expand-try-functions-list '(try-expand-dabbrev
+                                         try-expand-dabbrev-all-buffers
+                                         try-expand-dabbrev-from-kill
+                                         try-complete-file-name-partially
+                                         try-complete-file-name
+                                         try-expand-all-abbrevs
+                                         try-expand-list
+                                         try-expand-line
+                                         try-complete-lisp-symbol-partially
+                                         try-complete-lisp-symbol))
+
+(require 'ediff)
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+
+(add-hook 'after-save-hook
+          'executable-make-buffer-file-executable-if-script-p)
+
+(require 'eshell)
+(setq eshell-directory-name (expand-file-name "eshell" var-user-dir))
+
+(global-diff-hl-mode +1)
+(add-hook 'dired-mode-hook 'diff-hl-dired-mode)
+(add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+
+;; toggle menu-bar visibility
+(global-set-key (kbd "<f12>") 'menu-bar-mode)
+
+;; use hippie-expand instead of dabbrev
+(global-set-key (kbd "M-/") 'hippie-expand)
+
+(require 'cl)
 #+end_src
 
 ** Extensions
@@ -547,20 +579,15 @@ and put it here eventually, using =use-package=.
   (package-refresh-contents)
   (package-install 'use-package))
 
-(require 'use-package-ensure)
-(setq use-package-always-ensure t
-      use-package-verbose t
+(eval-when-compile
+  (require 'use-package))
+
+(setq use-package-verbose t
       use-package-hook-name-suffix nil)
-#+end_src
 
-In order to demand that certain system packages are installed, I use the
-helper package called =use-package-ensure-system-package=. Installing it
-I can use the =:ensure-system-package= keywords and demand that certain
-packages are installed in the system before proceeding (useful to LaTeX,
-for example)!
-
-#+begin_src emacs-lisp :tangle yes
-(use-package use-package-ensure-system-package)
+(use-package use-package-ensure
+  :custom
+  (use-package-always-ensure t))
 #+end_src
 
 Having that said, I too use =auto-compile= to always compile packages
@@ -587,9 +614,9 @@ extensively throughout this file.
     "Leader key for some special commands.")
   :config
   (general-def
-   :states '(normal visual)
-   :prefix hcps/leader-key
-   "" nil))
+    :states '(normal visual)
+    :prefix hcps/leader-key
+    "" nil))
 #+end_src
 
 And we'll use =delight= to hide minor-modes names and such.
@@ -602,7 +629,6 @@ And we'll use =delight= to hide minor-modes names and such.
   (eldoc-mode " eldoc")
   (editorconfig-mode)
   (flymake-mode " flymk" flymake)
-  (prelude-mode)
   (abbrev-mode))
 #+end_src
 
@@ -1432,58 +1458,49 @@ deactivated.
   ("C-c e" 'hydra-eyebrowse/body)
   ("C-c f" 'hydra-flycheck/body)
   :custom
-  (hydra-default-hint nil))
+  (hydra-default-hint nil)
+  :config
+  (defhydra hydra-eyebrowse (:color blue)
+    "
+^
+^Eyebrowse^         ^Do^                ^Switch^
+^─────────^─────────^──^────────────────^──────^────────────
+_q_ quit            _c_ create          _<_ previous
+^^                  _k_ kill            _>_ next
+^^                  _r_ rename          _e_ last
+^^                  ^^                  _s_ switch
+^^                  ^^                  ^^
+"
+    ("q" nil)
+    ("<" eyebrowse-prev-window-config :color red)
+    (">" eyebrowse-next-window-config :color red)
+    ("c" eyebrowse-create-window-config)
+    ("e" eyebrowse-last-window-config)
+    ("k" eyebrowse-close-window-config :color red)
+    ("r" eyebrowse-rename-window-config)
+    ("s" eyebrowse-switch-to-window-config))
+  (defhydra hydra-flycheck (:color pink)
+    "
+^
+^Flycheck^          ^Errors^            ^Checker^
+^────────^──────────^──────^────────────^───────^───────────
+_q_ quit            _<_ previous        _?_ describe
+_m_ manual          _>_ next            _d_ disable
+_v_ verify setup    _f_ check           _s_ select
+^^                  _l_ list            ^^
+^^                  ^^                  ^^
+"
+    ("q" nil)
+    ("<" flycheck-previous-error)
+    (">" flycheck-next-error)
+    ("?" flycheck-describe-checker :color blue)
+    ("d" flycheck-disable-checker :color blue)
+    ("f" flycheck-buffer)
+    ("l" flycheck-list-errors :color blue)
+    ("m" flycheck-manual :color blue)
+    ("s" flycheck-select-checker :color blue)
+    ("v" flycheck-verify-setup :color blue)))
 #+end_src
-
-**** Eyebrowse
-
- #+begin_src emacs-lisp
- (defhydra hydra-eyebrowse (:color blue)
-   "
- ^
- ^Eyebrowse^         ^Do^                ^Switch^
- ^─────────^─────────^──^────────────────^──────^────────────
- _q_ quit            _c_ create          _<_ previous
- ^^                  _k_ kill            _>_ next
- ^^                  _r_ rename          _e_ last
- ^^                  ^^                  _s_ switch
- ^^                  ^^                  ^^
- "
-   ("q" nil)
-   ("<" eyebrowse-prev-window-config :color red)
-   (">" eyebrowse-next-window-config :color red)
-   ("c" eyebrowse-create-window-config)
-   ("e" eyebrowse-last-window-config)
-   ("k" eyebrowse-close-window-config :color red)
-   ("r" eyebrowse-rename-window-config)
-   ("s" eyebrowse-switch-to-window-config))
- #+end_src
-
-**** Flycheck
-
- #+begin_src emacs-lisp
- (defhydra hydra-flycheck (:color pink)
-   "
- ^
- ^Flycheck^          ^Errors^            ^Checker^
- ^────────^──────────^──────^────────────^───────^───────────
- _q_ quit            _<_ previous        _?_ describe
- _m_ manual          _>_ next            _d_ disable
- _v_ verify setup    _f_ check           _s_ select
- ^^                  _l_ list            ^^
- ^^                  ^^                  ^^
- "
-   ("q" nil)
-   ("<" flycheck-previous-error)
-   (">" flycheck-next-error)
-   ("?" flycheck-describe-checker :color blue)
-   ("d" flycheck-disable-checker :color blue)
-   ("f" flycheck-buffer)
-   ("l" flycheck-list-errors :color blue)
-   ("m" flycheck-manual :color blue)
-   ("s" flycheck-select-checker :color blue)
-   ("v" flycheck-verify-setup :color blue))
- #+end_src
 
 *** Buffers and windows
 
@@ -1854,10 +1871,11 @@ the web without leaving Emacs.
 #+begin_src emacs-lisp :tangle yes
 (use-package engine-mode
   :config
-  (defengine google
-    "https://www.google.com/search?q="
-    :keybinding "g")
-  (engine-mode t))
+  (engine-mode t)
+  ;; (defengine google
+  ;;   "https://www.google.com/search?q="
+  ;;   :keybinding "g")
+  )
 #+end_src
 
 **** =no-littering=
@@ -2000,6 +2018,8 @@ I still need to add packages relating to these languages:
 - [X] systemd services/units
 - [X] Rust
 - [ ] Perl
+- [ ] PKGBUILD
+- [ ] Markdown
 
 ** Org
 
@@ -2012,6 +2032,7 @@ your =.org= file.
 (use-package org-plus-contrib
   :defer t
   :ensure toc-org
+  :commands (org org-mode)
   :mode ("\\.org$" . org-mode)
   :hook
   ((org-mode-hook . toc-org-mode)
@@ -2069,7 +2090,10 @@ your =.org= file.
    "l a" 'org-attach)
   (:states 'insert
    :keymaps 'org-mode-map
-   "<tab>" 'org-cycle))
+   "<tab>" 'org-cycle)
+  ;; :config
+  ;; (org-reload)
+  )
 #+end_src
 
 *** Export
@@ -2078,8 +2102,8 @@ Configurations relating all the numerous org exporters.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ox
-  :ensure nil
   :after org
+  :ensure nil
   :ensure htmlize
   :preface
   (defun org-export-output-file-name-modified (orig-fun extension &optional subtreep pub-dir)
@@ -2199,7 +2223,7 @@ that nerdy, is it?
 (use-package ox-dnd
   :ensure nil
   :after ox
-  :load-path "vendor/emacs-org-dnd/")
+  :load-path (lambda () (expand-file-name "emacs-org-dnd" vendor-user-dir)))
 #+end_src
 
 *** Babel
@@ -2208,8 +2232,9 @@ Now, some configurations relating org-babel and its magic source blocks.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ob
-  :ensure nil
+  :defer t
   :after org
+  :ensure nil
   :delight
   (org-src-mode)
   :preface
@@ -2354,7 +2379,6 @@ that can really be of great use while editing C and C++ code.
 #+begin_src emacs-lisp :tangle yes
 (use-package clang-format
   :defer t
-  :ensure-system-package clang
   :preface
   (defun cc-format-on-save-hook ()
     (when c-buffer-is-cc-mode
@@ -2449,6 +2473,7 @@ As for shell-scripting:
 (use-package sh-script
   :defer t
   :ensure nil
+  :mode ("\\.zsh" . shell-script-mode)
   :preface
   (defvar more-sh-utilities
     '("addbib" "apropos" "ar" "at" "awk" "banner" "basename" "batch" "biff"
@@ -2538,7 +2563,6 @@ For =shell= completion I use =bash-complete=, which auto completes several
 
 #+begin_src emacs-lisp :tangle yes
 (use-package bash-completion
-  :ensure-system-package bash-completion
   :hook
   (shell-dynamic-complete-functions . bash-completion-dynamic-complete)
   :custom
@@ -2675,7 +2699,7 @@ Emacs version!
   :preface
   (defun recompile-elc-on-save ()
     "Recompile your elc when saving an elisp file."
-    (when (and (string-prefix-p prelude-dir (file-truename buffer-file-name))
+    (when (and (string-prefix-p root-dir (file-truename buffer-file-name))
                (file-exists-p (byte-compile-dest-file buffer-file-name)))
       (emacs-lisp-byte-compile)))
   :hook
@@ -2892,7 +2916,7 @@ Derives from =conf-mode[space]=. Got it from [[https://notabug.org/arkhan/emacs-
 #+begin_src emacs-lisp :tangle yes
 (use-package bspwm
   :ensure nil
-  :load-path "vendor/bspwm-mode/"
+  :load-path (lambda () (expand-file-name "bspwm-mode" vendor-user-dir))
   :mode
   (("sxhkdrc$" . bspwm-config-mode)
    ("bspwmrc$" . bspwm-config-mode))
@@ -2965,7 +2989,7 @@ Old language, still great for doing admin stuff in few lines.
   (:states '(normal visual)
    :keymaps 'cperl-mode-map
    :prefix hcps/leader-key
-   "SPC i" 'cperl-indent-region)
+   "i" 'cperl-indent-region)
   (:keymaps 'cperl-mode-map
    "{" nil)
   :config
@@ -3058,28 +3082,30 @@ Here I'll define some of my personal keybindings, which means
 above"!
 
 #+begin_src emacs-lisp :tangle yes
-(general-def
-  "C-x k" 'kill-this-buffer
-  "C-c x" 'hcps/date-iso
-  "<f9>" 'hcps/get-selected-text
-  "M--" 'text-scale-decrease
-  "M-+" 'text-scale-increase)
+(eval-after-load "general"
+  '(progn
+     (general-def
+       "C-x k" 'kill-this-buffer
+       "C-c x" 'hcps/date-iso
+       "<f9>" 'hcps/get-selected-text
+       "M--" 'text-scale-decrease
+       "M-+" 'text-scale-increase)
 
-(general-def
-  :states '(normal visual)
-  "C-S-h" 'previous-buffer
-  "C-S-l" 'next-buffer)
+     (general-def
+       :states '(normal visual)
+       "C-S-h" 'previous-buffer
+       "C-S-l" 'next-buffer)
 
-(general-def
-  :states '(normal visual)
-  :prefix hcps/leader-key
-  "B" 'ibuffer
-  "s" 'save-buffer
-  "k" 'kill-this-buffer
-  "i" 'indent-region
-  "c" 'comment-dwim
-  "f n" 'hcps/open-scratch
-  "w k" 'delete-window
-  "w v" 'split-window-vertically
-  "w h" 'split-window-horizontally)
+     (general-def
+       :states '(normal visual)
+       :prefix hcps/leader-key
+       "B" 'ibuffer
+       "s" 'save-buffer
+       "k" 'kill-this-buffer
+       "i" 'indent-region
+       "c" 'comment-dwim
+       "f n" 'hcps/open-scratch
+       "w k" 'delete-window
+       "w v" 'split-window-vertically
+       "w h" 'split-window-horizontally)))
 #+end_src
