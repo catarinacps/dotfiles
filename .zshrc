@@ -2,7 +2,7 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 case "$TERM" in
-    tramp | xterm-mono)
+    (tramp | dumb | xterm-mono)
         PS1='$ '
         unset RPROMPT
         unset RPS1
@@ -103,11 +103,9 @@ if [ -z "$TMUX" ] && [ "$SSH_CONNECTION" ]; then
     tmux attach-session -t ssh_tmux || tmux new-session -s ssh_tmux
 fi
 
-# Preferred editor for local and remote sessions
+# Preferred editor for remote sessions
 if [ "$SSH_CONNECTION" ]; then
     export EDITOR='vim'
-else
-    export EDITOR='emacsclient'
 fi
 
 # Compilation flags

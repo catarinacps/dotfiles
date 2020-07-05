@@ -8,7 +8,7 @@ audible_bell = false
 #dynamic_title = true
 font = Inconsolata 14
 #fullscreen = true
-icon_name = Termite
+icon_name = Terminal
 mouse_autohide = true
 #scroll_on_output = false
 #scroll_on_keystroke = true
@@ -72,8 +72,8 @@ color10 = #a7cc63
 color11 = #ffa000
 color12 = #8cd4f8
 color13 = #b81455
-color14 =  #31a698
-color15 =  #f7efef
+color14 = #31a698
+color15 = #f7efef
 
 [hints]
 #font = Monospace 12

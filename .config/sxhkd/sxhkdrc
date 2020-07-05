@@ -110,7 +110,7 @@ super + {d,x,y,c}
 
 # opens a simple terminal window running zsh
 super + Return
-    SHELL=/usr/bin/zsh termite
+    termite
 
 # kill the window in focus
 super + shift + q
@@ -136,7 +136,7 @@ super + F2
 
 # opens ranger, the file browser
 super + F3
-    termite -e 'ranger'
+    gtk-launch ranger
 
 # opens emacs
 super + F4
@@ -144,9 +144,9 @@ super + F4
 
 # opens ncmpcpp
 super + F5
-    termite -e 'ncmpcpp'
+    gtk-launch ncmpcpp
 
-# opens pcmanfm, sometimes you need x graphics
+# opens pcmanfm, sometimes you need floating windows
 super + {shift,ctrl} + F3
     {_,gksu} pcmanfm
 
