@@ -1309,12 +1309,16 @@ By using =lsp-mode=, we'll be able to have it too!
   (lsp-mode " lsp")
   :hook
   ((lsp-mode-hook . lsp-enable-which-key-integration)
-   (lsp-mode-hook . company-mode))
+   (lsp-managed-mode-hook . lsp-diagnostics-modeline-mode)
+   (lsp-mode-hook . lsp-headerline-breadcrumb-mode))
   :custom
   (lsp-log-io t)
   (lsp-auto-guess-root t)
-  (lsp-prefer-flymake nil)
+  (lsp-auto-configure t)
   (lsp-enable-completion-at-point t)
+  (lsp-enable-snippet nil)
+  (lsp-semantic-highlighting t)
+  (lsp-diagnostics-modeline-scope :project)
   :general
   (:states '(normal visual)
    :prefix hcps/leader-key
@@ -1324,35 +1328,22 @@ By using =lsp-mode=, we'll be able to have it too!
   (add-to-list 'lsp-language-id-configuration '(".*\\.cu$" . "cuda")))
 #+end_src
 
-This package does have 2 extra sister packages: =lsp-ui= and
-=lsp-company=.
+This package does have an extra sister package: =lsp-ui=.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package lsp-ui
+  :defer t
   :after lsp-mode
-  :delight
-  (flycheck-mode)
-  :hook
-  (lsp-mode-hook . lsp-ui-mode)
   :custom
   (lsp-ui-doc-enable t)
-  (lsp-ui-doc-use-childframe t)
-  (lsp-ui-doc-include-signature t)
-  (lsp-ui-sideline-enable nil)
-  (lsp-ui-flycheck-enable t)
-  (lsp-ui-flycheck-list-position 'right)
-  (lsp-ui-flycheck-live-reporting t))
-#+end_src
-
-#+begin_src emacs-lisp :tangle yes
-(use-package company-lsp
-  :after lsp-mode
-  :custom
-  (company-lsp-cache-candidates t)
-  (company-lsp-async t)
-  (company-lsp-enable-recompletion t)
-  :config
-  (add-to-list 'company-backends 'company-lsp))
+  (lsp-ui-doc-position 'at-point)
+  (lsp-ui-doc-delay 1)
+  (lsp-ui-sideline-enable t)
+  (lsp-ui-sideline-delay 1)
+  (lsp-ui-sideline-show-diagnostics t)
+  (lsp-ui-sideline-show-hover t)
+  (lsp-ui-sideline-show-code-actions nil)
+  (lsp-ui-peek-enable nil))
 #+end_src
 
 *** Syntax and Highlighting
