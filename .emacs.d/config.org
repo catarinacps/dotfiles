@@ -603,7 +603,7 @@ and to have their newest version.
   (auto-compile-on-load-mode))
 #+end_src
 
-To add facilitate my keybinding issues, I also use =general.el=. It adds
+To facilitate my keybinding issues, I also use =general.el=. It adds
 some very welcome keywords to =use-package=, in which I'll use
 extensively throughout this file.
 
@@ -614,10 +614,8 @@ extensively throughout this file.
   (defconst hcps/leader-key "SPC"
     "Leader key for some special commands.")
   :config
-  (general-def
-    :states '(normal visual)
-    :prefix hcps/leader-key
-    "" nil))
+  (general-unbind '(normal visual)
+    hcps/leader-key))
 #+end_src
 
 And we'll use =delight= to hide minor-modes names and such.
@@ -646,10 +644,6 @@ Yes, you can have the best of both worlds!
   :ensure evil-surround
   :ensure evil-collection
   :preface
-  (defun hcps/yank-to-eol ()
-    "Yank to the EOL."
-    (interactive)
-    (evil-yank (point) (point-at-eol)))
   (defun hcps/shift-left-region ()
     "Shift left and restore visual selection."
     (interactive)
@@ -674,13 +668,20 @@ Yes, you can have the best of both worlds!
           evil-replace-state-modes)
       (apply fun args)
       (evil-refresh-cursor)))
+  (defun hcps/hide-evil-tag ()
+    "Some buffers don't need it."
+    (setq-local evil-normal-state-tag nil)
+    (setq-local evil-emacs-state-tag nil)
+    (setq-local evil-insert-state-tag nil)
+    (setq-local evil-replace-state-tag nil)
+    (setq-local evil-motion-state-tag nil)
+    (setq-local evil-visual-state-tag nil)
+    (setq-local evil-operator-state-tag nil))
   :init
   (advice-add 'org-babel-do-key-sequence-in-edit-buffer
               :around #'dzop/evil-org-insert-state-in-edit-buffer)
   :general
   (:states '(normal visual)
-   "C-u" 'evil-scroll-up
-   "C-d" 'evil-scroll-down
    "C-a" 'evil-numbers/inc-at-pt
    "C-S-a" 'evil-numbers/dec-at-pt)
   (:states 'insert
@@ -690,8 +691,6 @@ Yes, you can have the best of both worlds!
    "<right>" 'right-char
    "<tab>" 'indent-for-tab-command
    "<return>" 'evil-ret-and-indent)
-  (:states 'normal
-   "Y" 'hcps/yank-to-eol)
   (:states 'visual
    ">" 'hcps/shift-right-region
    "<" 'hcps/shift-left-region)
@@ -704,6 +703,10 @@ Yes, you can have the best of both worlds!
   (evil-search-wrap t)
   (evil-regexp-search t)
   (evil-search-module 'isearch)
+  (evil-echo-state nil)
+  (evil-want-C-u-scroll t)
+  (evil-want-C-d-scroll t)
+  (evil-want-Y-yank-to-eol t)
   (evil-emacs-state-cursor  '("red" box))
   (evil-normal-state-cursor '("gray" box))
   (evil-visual-state-cursor '("gray" hollow))
@@ -739,7 +742,7 @@ other popular packages.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package evil-mc
-  :after evil
+  :requires evil
   :general
   (:states 'visual
    "A" 'evil-mc-make-cursor-in-visual-selection-end
@@ -755,7 +758,7 @@ other popular packages.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package evil-matchit
-  :after evil
+  :requires evil
   :custom
   (evilmi-may-jump-by-percentage nil)
   :config
@@ -766,7 +769,7 @@ And to use better bindings to =smartparens=, =evil-smartparens=!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package evil-smartparens
-  :after (evil smartparens)
+  :requires (evil smartparens)
   :delight
   :hook
   (smartparens-enabled-hook . evil-smartparens-mode))
@@ -3083,30 +3086,29 @@ Here I'll define some of my personal keybindings, which means
 above"!
 
 #+begin_src emacs-lisp :tangle yes
-(eval-after-load "general"
-  '(progn
-     (general-def
-       "C-x k" 'kill-this-buffer
-       "C-c x" 'hcps/date-iso
-       "<f9>" 'hcps/get-selected-text
-       "M--" 'text-scale-decrease
-       "M-+" 'text-scale-increase)
+(with-eval-after-load "general"
+  (general-def
+    "C-x k" 'kill-this-buffer
+    "C-c x" 'hcps/date-iso
+    "<f9>" 'hcps/get-selected-text
+    "M--" 'text-scale-decrease
+    "M-+" 'text-scale-increase)
 
-     (general-def
-       :states '(normal visual)
-       "C-S-h" 'previous-buffer
-       "C-S-l" 'next-buffer)
+  (general-def
+    :states '(normal visual)
+    "C-S-h" 'previous-buffer
+    "C-S-l" 'next-buffer)
 
-     (general-def
-       :states '(normal visual)
-       :prefix hcps/leader-key
-       "B" 'ibuffer
-       "s" 'save-buffer
-       "k" 'kill-this-buffer
-       "i" 'indent-region
-       "c" 'comment-dwim
-       "f n" 'hcps/open-scratch
-       "w k" 'delete-window
-       "w v" 'split-window-vertically
-       "w h" 'split-window-horizontally)))
+  (general-def
+    :states '(normal visual)
+    :prefix hcps/leader-key
+    "B" 'ibuffer
+    "s" 'save-buffer
+    "k" 'kill-this-buffer
+    "i" 'indent-region
+    "c" 'comment-dwim
+    "f n" 'hcps/open-scratch
+    "w k" 'delete-window
+    "w v" 'split-window-vertically
+    "w h" 'split-window-horizontally))
 #+end_src
