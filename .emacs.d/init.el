@@ -33,15 +33,6 @@
 
 ;;; Code:
 
-(defvar current-user (getenv "USER") "The current user.")
-
-;; (defvar prelude-dir (file-name-directory load-file-name)
-;;   "The root dir of the Emacs Prelude distribution.")
-;; (defvar prelude-modules-dir (expand-file-name  "modules" prelude-dir)
-;;   "This directory houses all of the built-in Prelude modules.")
-;; (defvar prelude-vendor-dir (expand-file-name "vendor" prelude-dir)
-;;   "This directory houses packages that are not yet available in ELPA (or MELPA).")
-
 (defun add-subfolders-to-load-path (parent-dir)
   "Add all level PARENT-DIR subdirs to the `load-path'."
   (dolist (f (directory-files parent-dir))
@@ -49,6 +40,8 @@
       (when (and (file-directory-p name)
                  (not (string-prefix-p "." f)))
         (add-to-list 'load-path name)))))
+
+(defvar current-user (getenv "USER") "The current user.")
 
 (defvar root-dir (file-name-directory load-file-name) "The root dir of Emacs.")
 (defvar var-user-dir (expand-file-name "var" root-dir) "The temporaries directory.")
@@ -60,9 +53,10 @@
 ;; remove old-ass org-mode from load-path to make way to newer org-mode
 (setq load-path
       (delete (car (file-expand-wildcards "/usr/share/emacs/*/lisp/org")) load-path))
-(add-to-list
- 'load-path
- (car (file-expand-wildcards (expand-file-name "org-plus-contrib*" package-user-dir))))
+
+;; you may have to install org-plus-contrib by the way...
+(add-to-list 'load-path (car (file-expand-wildcards
+                              (expand-file-name "org-plus-contrib*" package-user-dir))))
 
 (org-babel-load-file "~/.emacs.d/config.org")
 

@@ -47,7 +47,7 @@ Cool Emacs configs from cool people:
     - [[#lines-and-characters][Lines and characters]]
     - [[#compilation][Compilation]]
     - [[#remote-editing][Remote editing]]
-    - [[#helpful-completion][Helpful completion]]
+    - [[#completion][Completion]]
     - [[#language-server-protocol][Language Server Protocol]]
     - [[#syntax-and-highlighting][Syntax and Highlighting]]
     - [[#hydra][Hydra]]
@@ -499,7 +499,7 @@ Random configs and definitions that don't have a clear category.
 (setq-default ad-redefinition-action 'accept         ; Silence warnings for redefinition
               confirm-kill-emacs 'yes-or-no-p        ; Confirm before exiting Emacs
               select-enable-clipboard t              ; Merge system's and Emacs' clipboard
-              gc-cons-threshold 50000000             ; Reduce the default GC frequency
+              gc-cons-threshold 100000000            ; Reduce the default GC frequency
               blink-matching-paren nil               ; Disable annoying blink-matching-paren
               cursor-in-non-selected-windows nil     ; No phantom cursors in unselected windows
               window-combination-resize t            ; Resize windows proportionally
@@ -596,7 +596,6 @@ and to have their newest version.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package auto-compile
-  :demand
   :custom
   (load-prefer-newer t)
   :config
@@ -782,7 +781,10 @@ looks very pretty on =gruvbox=).
 
 #+begin_src emacs-lisp :tangle yes
 (use-package smart-mode-line
-  :demand
+  :preface
+  (defun hcps/clean-mode-line ()
+    "Clean mode-line format."
+    (setq-local mode-line-format ""))
   :init
   (setq sml/no-confirm-load-theme t)
   :custom
@@ -816,7 +818,6 @@ fuzzy matching and whatnot.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ivy
-  :demand
   :ensure flx
   :ensure ivy-rich
   :delight
@@ -835,8 +836,10 @@ fuzzy matching and whatnot.
   (ivy-height 8)
   (ivy-extra-directories nil)
   (ivy-wrap t)
+  (ivy-do-completion-in-region t)
   (ivy-action-wrap t)
   (ivy-initial-inputs-alist nil)
+  (ivy-display-functions-alist nil)
   (ivy-format-functions-alist '((t . ivy-format-function-line)))
   :custom-face
   (ivy-current-match ((t :inherit hl-line :bold t :underline nil)))
@@ -857,8 +860,6 @@ to make sure that =counsel-M-x= has decent candidate sorting.
 #+begin_src emacs-lisp :tangle yes
 (use-package counsel
   :ensure smex
-  :after ivy
-  :demand
   :preface
   (defun hcps/override-yank-pop (&rest args)
     "Delete the region before inserting popped string."
@@ -876,7 +877,9 @@ to make sure that =counsel-M-x= has decent candidate sorting.
    "o" 'counsel-outline
    "m p" 'counsel-package
    "m b" 'counsel-bookmark)
-  ("M-x" 'counsel-M-x))
+  ([remap execute-extended-command] 'counsel-M-x
+   [remap find-file] 'counsel-find-file
+   [remap switch-buffer] 'counsel-switch-buffer))
 #+end_src
 
 As you may know, in Emacs we use =tramp= to edit files remotely using
@@ -891,8 +894,9 @@ a list with possible =ssh= connections AND docker containers (thanks to
 
 #+begin_src emacs-lisp :tangle yes
 (use-package counsel-tramp
-  :ensure docker-tramp
+  :defer t
   :after counsel
+  :ensure docker-tramp
   :general
   (:states '(normal visual)
    :prefix hcps/leader-key
@@ -907,18 +911,15 @@ Undo and redo and kools with =undo-tree=!
 (use-package undo-tree
   :diminish
   :preface
-  (defvar hcps/undo-tree-visualizer-diff t
+  (defconst hcps/undo-tree-visualizer-diff t
     "My value for the `undo-tree-visualizer-diff' variable.")
   (defun reset-visualizer-diff (&rest args)
     "Because undo-tree-visualize sets the value of this variable to nil on quit."
     (setq undo-tree-visualizer-diff hcps/undo-tree-visualizer-diff))
-  (defun undo-tree-clean-mode-line ()
-    "Clean mode-line format."
-    (setq-local mode-line-format ""))
   :hook
   ((after-init-hook . global-undo-tree-mode)
-   (undo-tree-visualizer-mode-hook . undo-tree-clean-mode-line)
-   (diff-mode-hook . undo-tree-clean-mode-line))
+   (undo-tree-visualizer-mode-hook . hcps/clean-mode-line)
+   (diff-mode-hook . hcps/hide-evil-tag))
   :init
   (advice-add 'undo-tree-visualize :before #'reset-visualizer-diff)
   :custom
@@ -941,7 +942,7 @@ Keep a list of recent files with =recentf=
   :hook
   (kill-emacs-hook . recentf-cleanup)
   :custom
-  (recentf-save-file "~/.emacs.d/var/recentf-save.el")
+  (recentf-save-file (expand-file-name "recentf-save.el" var-user-dir))
   (recentf-max-menu-items 0)
   (recentf-max-saved-items 300)
   (recentf-exclude
@@ -1022,7 +1023,6 @@ integrating packages and is overall more popular than the former.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package treemacs
-  :defer t
   :ensure treemacs-evil
   :ensure treemacs-projectile
   :preface
@@ -1033,6 +1033,7 @@ integrating packages and is overall more popular than the former.
   ((treemacs-mode-hook . hide-mode-line-mode)
    (treemacs-select-hook . turn-off-cursor))
   :custom
+  (treemacs-persist-file (expand-file-name "treemacs/persist.org" var-user-dir))
   (treemacs-display-in-side-window t)
   (treemacs-follow-after-init t)
   (treemacs-no-png-images t)
@@ -1060,7 +1061,7 @@ will certainly work on Emacs!
 (use-package exec-path-from-shell
   :demand
   :init
-  (setenv "SHELL" "/bin/sh")
+  (setenv "SHELL" "/bin/bash")
   :custom
   (exec-path-from-shell-arguments '("-l"))
   (exec-path-from-shell-variables '("PATH" "MANPATH"))
@@ -1167,6 +1168,7 @@ extra configuration about it:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package compile
+  :defer t
   :ensure nil
   :custom
   (compilation-ask-about-save nil)
@@ -1181,7 +1183,7 @@ comes to editing remote files and to editing as super-user.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package tramp
-  :demand
+  :defer t
   :ensure nil
   :custom
   (tramp-default-method "ssh")
@@ -1192,6 +1194,7 @@ Here's a small package that allows remotely opening sessions.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ssh
+  :defer t
   :after shell
   :ensure nil
   :preface
@@ -1249,50 +1252,18 @@ Here's a small package that allows remotely opening sessions.
   (shell-dirtrack-mode t))
 #+end_src
 
-*** Helpful completion
-
-This section comprises of text and command completion.
-
-**** Text
-
-I use =company= as my completion framework. In the words of Dmitry
-Gutov:
-
-#+begin_quote
-Company is a text completion framework for Emacs. The name stands for
-"complete anything". It uses pluggable back-ends and front-ends to
-retrieve and display completion candidates.
-
-[[http://company-mode.github.io/][Dmitry Gutov]]
-#+end_quote
-
-#+begin_src emacs-lisp :tangle yes
-(use-package company
-  :general
-  (:keymaps 'company-active-map
-   "TAB" 'company-complete-selection
-   "<right>" 'company-complete-common)
-  :custom
-  (company-idle-delay .5)
-  (company-minimum-prefix-length 1)
-  (company-show-numbers t)
-  (company-tooltip-limit 10)
-  (company-tooltip-flip-when-above t)
-  (company-require-match nil)
-  (company-tooltip-align-annotations t))
-#+end_src
-
-**** Help
+*** Completion
 
 The package called =which-key= shows you possible completions to the
 command you're typing in the mode-line.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package which-key
-  :demand
   :delight
+  :custom
+  (which-key-allow-evil-operators t)
   :config
-  (which-key-mode 1))
+  (which-key-mode +1))
 #+end_src
 
 *** Language Server Protocol
@@ -1390,20 +1361,17 @@ And this is to highlight escape sequences in some common modes:
   :hook
   (after-init-hook . turn-on-hes-mode)
   :preface
-  (defconst hes-shell-escape-sequence-re
-    (rx (submatch
-         (and ?\\ (submatch (any "\"\'\\bfnrtv")))))
+  (defconst hes-shell-escape-sequence-re "\\(\\[\"'\\bfnrtv]\\)"
     "Simple regex to match any common escaped character in sh-mode")
-  ;; :config
-  ;; (add-to-list 'hes-mode-alist '(sh-mode . (:eval hes-shell-escape-sequence-re)))
-  )
+  :config
+  (add-to-list 'hes-mode-alist '(sh-mode . hes-shell-escape-sequence-re)))
 #+end_src
 
 Of course, =flyspell= corrects your writing!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package flyspell
-  :demand
+  :defer t
   :delight
   (flyspell-mode " flysp")
   (flyspell-prog-mode " flysp")
@@ -1423,7 +1391,7 @@ Last minute addition: =ansi-color=!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ansi-color
-  :demand
+  :defer t
   :ensure nil
   :hook
   ((shell-mode-hook . ansi-color-for-comint-mode-on)
@@ -1442,6 +1410,8 @@ deactivated.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package hydra
+  :disabled
+  :defer t
   :preface
   (defvar-local me/ongoing-hydra-body nil)
   (defun me/ongoing-hydra ()
@@ -1450,8 +1420,8 @@ deactivated.
         (funcall me/ongoing-hydra-body)
       (user-error "me/ongoing-hydra: me/ongoing-hydra-body is not set")))
   :general
-  ("C-c e" 'hydra-eyebrowse/body)
-  ("C-c f" 'hydra-flycheck/body)
+  ("C-c e" 'hydra-eyebrowse/body
+   "C-c f" 'hydra-flycheck/body)
   :custom
   (hydra-default-hint nil)
   :config
@@ -1560,6 +1530,7 @@ Emacs loses focus, etc.
   :custom
   (super-save-auto-save-when-idle t)
   (super-save-remote-files nil)
+  (super-save-idle-duration 60)
   :config
   (add-to-list 'super-save-triggers 'ace-window)
   (super-save-mode +1))
@@ -1571,19 +1542,18 @@ I use =yasnippet= to handle my snippet needs.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package yasnippet
-  :demand
-  :delight (yas-minor-mode " yas")
+  :delight
+  (yas-minor-mode " yas")
+  :commands yas-minor-mode
   :hook
-  ((html-mode-hook . yas-minor-mode))
+  (html-mode-hook . yas-minor-mode)
   :init
   (add-to-list 'hippie-expand-try-functions-list 'yas-hippie-try-expand)
-  :general
-  (:keymaps 'yas-minor-mode-map
-   :states 'insert
-   "<tab>" yas-maybe-expand)
   :custom
   (yas-snippet-dirs '("~/.emacs.d/snippets"))
   :config
+  (general-def 'insert 'yas-minor-mode-map
+    "<tab>" yas-maybe-expand)
   (yas-reload-all))
 #+end_src
 
@@ -1669,7 +1639,7 @@ in the visible universe, nay, in the whole multiverse.
   :hook
   ((after-save-hook . magit-after-save-refresh-status)
    (git-commit-mode-hook . evil-emacs-state)
-   (magit-mode-hook . hide-mode-line-mode))
+   (magit-mode-hook . hcps/hide-evil-tag))
   :preface
   ;; easy on-off for the following function
   (defcustom magit-push-protected-branch nil
@@ -1749,6 +1719,7 @@ adapt to the structure of the current major mode.
 
 #+begin_src emacs-lisp
 (use-package expand-region
+  :defer t
   :general
   ("C-+" 'er/contract-region
    "C-=" 'er/expand-region))
@@ -1758,6 +1729,7 @@ When in need of smart pairing, look no further than =smartparens=!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package smartparens
+  :defer t
   :delight (smartparens-mode " sp")
   :custom
   (sp-base-key-bindings 'paredit)
@@ -1772,7 +1744,8 @@ When in need of smart pairing, look no further than =smartparens=!
 With that, =rainbow-delimiters= is a great match:
 
 #+begin_src emacs-lisp :tangle yes
-(use-package rainbow-delimiters)
+(use-package rainbow-delimiters
+  :defer t)
 #+end_src
 
 This little add-on will highlight big cursor movements.
@@ -1791,6 +1764,7 @@ I use =aggressive-indent= to keep my code indented as I type.
 
 #+begin_src emacs-lisp
 (use-package aggressive-indent
+  :defer t
   :preface
   (defun me/aggressive-indent-mode-off ()
     (aggressive-indent-mode 0))
@@ -1805,7 +1779,7 @@ it out of the box.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package highlight-indent-guides
-  :demand
+  :defer t
   :disabled
   :custom
   (highlight-indent-guides-method 'character)
@@ -1820,13 +1794,14 @@ it out of the box.
 
 *** Command evaluation
 
-This package enhances the default =eval-expression= function.
+Some basic configuration to enhance the =eval-expression= command.
 
 #+begin_src emacs-lisp :tangle yes
-(use-package eval-expr
-  :demand
-  :config
-  (eval-expr-install))
+(defun sane-eval-expr-defaults ()
+  "Enable some sane modes for `eval-expression'."
+  (smartparens-strict-mode +1))
+
+(add-hook 'eval-expression-minibuffer-setup-hook 'sane-eval-expr-defaults)
 #+end_src
 
 *** Utilities
@@ -1841,9 +1816,15 @@ Random utilities that don't fit anywhere else.
 #+begin_src emacs-lisp :tangle yes
 (use-package helpful
   :general
-  ("C-h f" 'helpful-callable)
-  ("C-h v" 'helpful-variable)
-  ("C-h k" 'helpful-key))
+  ([remap describe-function] 'helpful-callable
+   [remap describe-variable] 'helpful-variable
+   [remap describe-key] 'helpful-key
+   "C-h F" 'helpful-function
+   "C-h C" 'helpful-command
+   "C-h M" 'helpful-macro)
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable))
 #+end_src
 
 **** =dumb-jump=
@@ -1854,8 +1835,8 @@ minimal setup (i.e. no TAG or RTAGS or etc.).
 #+begin_src emacs-lisp :tangle yes
 (use-package dumb-jump
   :general
-  ("M-g o" 'dumb-jump-go-other-window)
-  ("M-g j" 'dumb-jump-go))
+  ("M-g o" 'dumb-jump-go-other-window
+   "M-g j" 'dumb-jump-go))
 #+end_src
 
 **** =engine-mode=
@@ -1865,22 +1846,13 @@ the web without leaving Emacs.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package engine-mode
+  :defer t
   :config
   (engine-mode t)
   ;; (defengine google
   ;;   "https://www.google.com/search?q="
   ;;   :keybinding "g")
   )
-#+end_src
-
-**** =no-littering=
-
-=no-littering= is a package that helps to maintain your =.emacs.d/=
-clean.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package no-littering
-  :demand)
 #+end_src
 
 **** =openwith=
@@ -1921,7 +1893,7 @@ A Collection of Ridiculously Useful eXtensions for Emacs.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package crux
-  :demand
+  :defer t
   :general
   (:states '(normal visual)
    :prefix hcps/leader-key
@@ -1942,6 +1914,7 @@ To make pretty page breaks in your Emacs buffers:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package page-break-lines
+  :defer t
   :delight
   :hook
   ((prog-mode-hook . page-break-lines-mode)
@@ -1977,7 +1950,6 @@ nice support for a lot of packages and is very pleasant for the eyes.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package gruvbox-theme
-  :demand
   :config
   (load-theme 'gruvbox-dark-medium t))
 #+end_src
@@ -2033,6 +2005,7 @@ your =.org= file.
   ((org-mode-hook . toc-org-mode)
    (org-mode-hook . turn-on-auto-fill)
    (org-mode-hook . yas-minor-mode)
+   (org-mode-hook . eldoc-mode)
    (org-mode-hook . (lambda () (whitespace-toggle-options 'lines-tail))))
   :init
   ;; this only works here, don't ask me why
@@ -2085,10 +2058,7 @@ your =.org= file.
    "l a" 'org-attach)
   (:states 'insert
    :keymaps 'org-mode-map
-   "<tab>" 'org-cycle)
-  ;; :config
-  ;; (org-reload)
-  )
+   "<tab>" 'org-cycle))
 #+end_src
 
 *** Export
@@ -2097,6 +2067,7 @@ Configurations relating all the numerous org exporters.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ox
+  :defer t
   :after org
   :ensure nil
   :ensure htmlize
@@ -2134,8 +2105,9 @@ Configurations relating all the numerous org exporters.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ox-extra
-  :ensure nil
+  :defer t
   :after ox
+  :ensure nil
   :hook
   (org-export-filter-parse-tree-functions . org-export-ignore-headlines))
 #+end_src
@@ -2146,8 +2118,9 @@ Configurations to the LaTeX org exporter.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ox-latex
-  :ensure nil
+  :defer t
   :after ox
+  :ensure nil
   :custom
   (org-latex-image-default-width "1\\linewidth")
   (org-latex-packages-alist
@@ -2195,6 +2168,7 @@ To the oh-so-pretty Hugo markdown format!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ox-hugo
+  :defer t
   :after ox)
 #+end_src
 
@@ -2204,6 +2178,7 @@ It's very pretty oh-kay?
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ox-twbs
+  :defer t
   :after ox)
 #+end_src
 
@@ -2216,8 +2191,9 @@ that nerdy, is it?
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ox-dnd
-  :ensure nil
+  :defer t
   :after ox
+  :ensure nil
   :load-path (lambda () (expand-file-name "emacs-org-dnd" vendor-user-dir)))
 #+end_src
 
@@ -2558,6 +2534,7 @@ For =shell= completion I use =bash-complete=, which auto completes several
 
 #+begin_src emacs-lisp :tangle yes
 (use-package bash-completion
+  :defer t
   :hook
   (shell-dynamic-complete-functions . bash-completion-dynamic-complete)
   :custom
@@ -2571,6 +2548,7 @@ So, we'll set that up.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package make-mode
+  :defer t
   :ensure nil
   :preface
   (defun makefile-mode-defaults ()
@@ -2687,6 +2665,7 @@ Emacs version!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package elisp-mode
+  :defer t
   :after lisp-mode
   :ensure nil
   :ensure elisp-slime-nav
@@ -2792,14 +2771,6 @@ Packages to write Julia source code in Emacs.
   (inferior-julia-program-name "/usr/bin/julia"))
 #+end_src
 
-#+begin_src emacs-lisp :tangle yes
-(use-package lsp-julia
-  :after (lsp julia-mode)
-  :custom
-  (lsp-julia-default-environment "~/.julia/environments/v1.2")
-  (lsp-julia-package-dir nil))
-#+end_src
-
 ** Jupyter
 
 An interface to communicate with Jupyter kernels in Emacs.
@@ -2900,8 +2871,7 @@ Python).
   :mode "meson\\.build$"
   :commands meson
   :hook
-  ((meson-mode-hook . (lambda () (run-hooks 'prog-mode-hook)))
-   (meson-mode-hook . company-mode)))
+  (meson-mode-hook . (lambda () (run-hooks 'prog-mode-hook))))
 #+end_src
 
 ** bspwm/sxhkd
@@ -2910,6 +2880,7 @@ Derives from =conf-mode[space]=. Got it from [[https://notabug.org/arkhan/emacs-
 
 #+begin_src emacs-lisp :tangle yes
 (use-package bspwm
+  :defer t
   :ensure nil
   :load-path (lambda () (expand-file-name "bspwm-mode" vendor-user-dir))
   :mode
@@ -2955,6 +2926,7 @@ Old language, still great for doing admin stuff in few lines.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package cperl-mode
+  :defer t
   :ensure nil
   :mode "\\.p[lm]$"
   :interpreter "perl"
