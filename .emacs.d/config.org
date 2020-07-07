@@ -630,6 +630,14 @@ And we'll use =delight= to hide minor-modes names and such.
   (abbrev-mode))
 #+end_src
 
+=no-littering= will help us by setting sane paths to all cache and
+history files the packages might set.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package no-littering
+  :demand)
+#+end_src
+
 *** Keybindings
 
 =evil=, or /Extensible vi Layer/, is a minor mode that changes Emacs
@@ -1596,6 +1604,10 @@ buffers or searching the whole project and replacing something.
   (projectile-find-dir-includes-top-level t)
   (projectile-enable-caching t)
   (projectile-indexing-method 'native)
+  (projectile-known-projects-file
+   (expand-file-name "projectile/known-projects.el" var-user-dir))
+  (projectile-cache-file
+   (expand-file-name "projectile/cache.el" var-user-dir))
   (projectile-project-root-files-top-down-recurring
    '(".projectile" "compile_commands.json" ".ccls" ".svn" "CVS" "Makefile"))
   (projectile-globally-ignored-file-suffixes
