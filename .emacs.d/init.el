@@ -34,7 +34,7 @@
 ;;; Code:
 
 (defun add-subfolders-to-load-path (parent-dir)
-  "Add all level PARENT-DIR subdirs to the `load-path'."
+  "Add all first level PARENT-DIR subdirs to the `load-path'."
   (dolist (f (directory-files parent-dir))
     (let ((name (expand-file-name f parent-dir)))
       (when (and (file-directory-p name)
@@ -47,6 +47,8 @@
 (defvar var-user-dir (expand-file-name "var" root-dir) "The temporaries directory.")
 (defvar vendor-user-dir (expand-file-name "vendor" root-dir) "The random .el directory.")
 
+(defvar config-file (expand-file-name "config" root-dir) "The literate config path.")
+
 (setq-default package-user-dir (expand-file-name "elpa" root-dir))
 (setq-default custom-file (expand-file-name "custom.el" var-user-dir))
 
@@ -58,7 +60,13 @@
 (add-to-list 'load-path (car (file-expand-wildcards
                               (expand-file-name "org-plus-contrib*" package-user-dir))))
 
-(org-babel-load-file "~/.emacs.d/config.org")
+;; let's first load custom.el (keep in mind this is problematic when using use-package)
+(load-file custom-file)
+
+;; if we have a new .el, just load it
+(if (file-newer-than-file-p (concat config-file ".el") (concat config-file ".org"))
+    (load config-file)
+  (org-babel-load-file (concat config-file ".org")))
 
 (message "Emacs is ready to do thy bidding, Master %s!" current-user)
 

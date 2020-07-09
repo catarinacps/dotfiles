@@ -1,4 +1,4 @@
-# -*- org -*-
+# -*- mode: org; eval: (add-hook 'after-save-hook #'org-babel-tangle nil t) -*-
 #+title: My Emacs configuration file
 #+author: Henrique Silva
 #+email: hcpsilva@inf.ufrgs.br
@@ -776,7 +776,7 @@ And to use better bindings to =smartparens=, =evil-smartparens=!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package evil-smartparens
-  :requires (evil smartparens)
+  :requires evil
   :delight
   :hook
   (smartparens-enabled-hook . evil-smartparens-mode))
@@ -793,8 +793,6 @@ looks very pretty on =gruvbox=).
   (defun hcps/clean-mode-line ()
     "Clean mode-line format."
     (setq-local mode-line-format ""))
-  :init
-  (setq sml/no-confirm-load-theme t)
   :custom
   (sml/projectile-replacement-format "[%s] ")
   (sml/size-indication-format " %I ")
@@ -805,11 +803,19 @@ looks very pretty on =gruvbox=).
   (sml/mode-width 'right)
   (sml/name-width 40)
   (sml/theme 'respectful)
+  (sml/no-confirm-load-theme t)
+  (sml/replacer-regexp-list
+   '(("^~/\\.emacs\\.d/elpa/" ":ELPA:")
+     ("^~/\\.emacs\\.d/" ":ED:")
+     ("^/sudo:.*:" ":SU:")
+     ("^~/Documents/" ":DOC:")
+     ("^~/OneDrive/CIC/" ":UNI:")
+     ("^~/OneDrive/" ":OD:")))
   :config
   (sml/setup))
 #+end_src
 
-Made by the doom-emacs guy. Yeah i know i could just write a function
+Made by the doom-emacs guy. Yeah I know I could just write a function
 for this, but eh.
 
 #+begin_src emacs-lisp :tangle yes
@@ -954,10 +960,16 @@ Keep a list of recent files with =recentf=
   (recentf-max-menu-items 0)
   (recentf-max-saved-items 300)
   (recentf-exclude
-   (list #'file-remote-p "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
-         "^/tmp/" "^/ssh:" "\\.?ido\\.last$" "\\.revive$" "/TAGS$"
-         var-user-dir package-user-dir
-         (expand-file-name "savefile" root-dir)))
+   `(file-remote-p
+     "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
+     "^/tmp/"
+     "^/ssh:"
+     "\\.?ido\\.last$"
+     "\\.revive$"
+     "/TAGS$"
+     ,var-user-dir
+     ,package-user-dir
+     ,(expand-file-name "savefile" root-dir)))
   (recentf-auto-cleanup 'never)
   :config
   (recentf-mode +1))
@@ -1372,7 +1384,7 @@ And this is to highlight escape sequences in some common modes:
   (defconst hes-shell-escape-sequence-re "\\(\\[\"'\\bfnrtv]\\)"
     "Simple regex to match any common escaped character in sh-mode")
   :config
-  (add-to-list 'hes-mode-alist '(sh-mode . hes-shell-escape-sequence-re)))
+  (add-to-list 'hes-mode-alist `(sh-mode . ,hes-shell-escape-sequence-re)))
 #+end_src
 
 Of course, =flyspell= corrects your writing!
@@ -1558,7 +1570,7 @@ I use =yasnippet= to handle my snippet needs.
   :init
   (add-to-list 'hippie-expand-try-functions-list 'yas-hippie-try-expand)
   :custom
-  (yas-snippet-dirs '("~/.emacs.d/snippets"))
+  (yas-snippet-dirs `(,(expand-file-name "snippets" root-dir)))
   :config
   (general-def 'insert 'yas-minor-mode-map
     "<tab>" yas-maybe-expand)
@@ -1650,7 +1662,6 @@ in the visible universe, nay, in the whole multiverse.
   :defer t
   :hook
   ((after-save-hook . magit-after-save-refresh-status)
-   (git-commit-mode-hook . evil-emacs-state)
    (magit-mode-hook . hcps/hide-evil-tag))
   :preface
   ;; easy on-off for the following function
@@ -1698,7 +1709,8 @@ in the visible universe, nay, in the whole multiverse.
   (evil-add-hjkl-bindings magit-status-mode-map 'emacs
     "K" 'magit-discard
     "l" 'magit-log
-    "h" 'magit-diff-toggle-refine-hunk))
+    "h" 'magit-diff-toggle-refine-hunk)
+  (evil-set-initial-state 'git-commit-mode 'emacs))
 #+end_src
 
 Also, =git-timemachine= is a beautiful way to walk through git history:
@@ -1906,6 +1918,7 @@ A Collection of Ridiculously Useful eXtensions for Emacs.
 #+begin_src emacs-lisp :tangle yes
 (use-package crux
   :defer t
+  :commands crux-with-region-or-buffer
   :general
   (:states '(normal visual)
    :prefix hcps/leader-key
@@ -2008,9 +2021,11 @@ an useful way to automatically maintain an updated table of contents of
 your =.org= file.
 
 #+begin_src emacs-lisp :tangle yes
-(use-package org-plus-contrib
+(use-package org
   :defer t
+  :ensure nil
   :ensure toc-org
+  :ensure org-plus-contrib
   :commands (org org-mode)
   :mode ("\\.org$" . org-mode)
   :hook
@@ -2036,8 +2051,11 @@ your =.org= file.
   (org-attach-use-inheritance t)
   (org-attach-dir-relative t)
   (org-startup-indented t)
-  (org-modules
-   (append org-modules '(org-tempo org-inlinetask)))
+  ;; 10 because default-font-width doesn't work with daemon mode
+  (org-image-actual-width (round (* 10 fill-column 0.85)))
+  (org-modules '(ol-w3m ol-bbdb ol-bibtex ol-docview ol-gnus
+                 ol-info ol-irc ol-mhe ol-rmail ol-eww org-tempo
+                 org-inlinetask))
   :general
   (:states '(normal visual)
    :keymaps 'org-mode-map
@@ -2070,7 +2088,9 @@ your =.org= file.
    "l a" 'org-attach)
   (:states 'insert
    :keymaps 'org-mode-map
-   "<tab>" 'org-cycle))
+   "<tab>" 'org-cycle)
+  :config
+  (add-to-list 'sml/replacer-regexp-list `(,(concat "^" org-directory) ":ORG:")))
 #+end_src
 
 *** Export
@@ -2117,7 +2137,6 @@ Configurations relating all the numerous org exporters.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ox-extra
-  :defer t
   :after ox
   :ensure nil
   :hook
@@ -2130,7 +2149,6 @@ Configurations to the LaTeX org exporter.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ox-latex
-  :defer t
   :after ox
   :ensure nil
   :custom
@@ -2180,7 +2198,6 @@ To the oh-so-pretty Hugo markdown format!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ox-hugo
-  :defer t
   :after ox)
 #+end_src
 
@@ -2190,7 +2207,6 @@ It's very pretty oh-kay?
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ox-twbs
-  :defer t
   :after ox)
 #+end_src
 
@@ -2203,7 +2219,6 @@ that nerdy, is it?
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ox-dnd
-  :defer t
   :after ox
   :ensure nil
   :load-path (lambda () (expand-file-name "emacs-org-dnd" vendor-user-dir)))
@@ -2282,7 +2297,11 @@ Now, some configurations relating org-babel and its magic source blocks.
    :prefix hcps/leader-key
    "l x" 'org-babel-execute-buffer
    "l z" 'org-babel-tangle-block
-   "l Z" 'org-babel-tangle))
+   "l Z" 'org-babel-tangle)
+  (:keymaps 'org-mode-map
+   "C-c SPC" 'org-edit-special)
+  (:keymaps 'org-src-mode-map
+   "C-c SPC" 'org-edit-src-exit))
 #+end_src
 
 *** Journal
