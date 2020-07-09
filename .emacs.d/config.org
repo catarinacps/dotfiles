@@ -1491,7 +1491,7 @@ _v_ verify setup    _f_ check           _s_ select
 
 =windmove= is a package that creates commands to move around windows.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle yes
 (use-package windmove
   :general
   ("C-M-h" 'windmove-left)
@@ -1503,7 +1503,7 @@ _v_ verify setup    _f_ check           _s_ select
 Originally, =midnight= is used to /run something at midnight/. I use its
 feature that kills old buffers.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle yes
 (use-package midnight
   :ensure nil
   :custom
@@ -1581,7 +1581,7 @@ I use =yasnippet= to handle my snippet needs.
 
 Enables vim-like folding of regions.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle yes
 (use-package vimish-fold
   :general
   (:keymaps 'vimish-fold-folded-keymap
@@ -1741,7 +1741,7 @@ Also, =git-timemachine= is a beautiful way to walk through git history:
 Increase region by semantic units. It tries to be smart about it and
 adapt to the structure of the current major mode.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle yes
 (use-package expand-region
   :defer t
   :general
@@ -1786,7 +1786,7 @@ This little add-on will highlight big cursor movements.
 
 I use =aggressive-indent= to keep my code indented as I type.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle yes
 (use-package aggressive-indent
   :defer t
   :preface
@@ -3030,7 +3030,7 @@ To get the current selected text without newlines.
 
 Insert the current date.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle yes
 (defun hcps/date-iso ()
   "Insert the current date, ISO format, eg. 2016-12-09."
   (interactive)

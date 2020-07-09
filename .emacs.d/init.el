@@ -52,21 +52,27 @@
 (setq-default package-user-dir (expand-file-name "elpa" root-dir))
 (setq-default custom-file (expand-file-name "custom.el" var-user-dir))
 
-;; remove old-ass org-mode from load-path to make way to newer org-mode
-(setq load-path
-      (delete (car (file-expand-wildcards "/usr/share/emacs/*/lisp/org")) load-path))
+(defvar org-original-package-path
+  (car (file-expand-wildcards "/usr/share/emacs/*/lisp/org")))
+(defvar org-plus-contrib-package-path
+  (car (file-expand-wildcards (expand-file-name "org-plus-contrib*" package-user-dir))))
 
-;; you may have to install org-plus-contrib by the way...
-(add-to-list 'load-path (car (file-expand-wildcards
-                              (expand-file-name "org-plus-contrib*" package-user-dir))))
+;; remove old-ass org-mode from load-path to make way to newer org-mode
+(setq load-path (delete org-original-package-path load-path))
 
 ;; let's first load custom.el (keep in mind this is problematic when using use-package)
 (load-file custom-file)
 
 ;; if we have a new .el, just load it
 (if (file-newer-than-file-p (concat config-file ".el") (concat config-file ".org"))
-    (load config-file)
-  (org-babel-load-file (concat config-file ".org")))
+    (ignore)
+  ;; else, we gotta load at least *one* org-mode package
+  (add-to-list 'load-path (if org-plus-contrib-package-path org-plus-contrib-package-path
+                            org-original-package-path))
+  (org-babel-tangle-file (concat config-file ".org"))
+  (setq load-path (delete org-original-package-path load-path)))
+
+(load config-file)
 
 (message "Emacs is ready to do thy bidding, Master %s!" current-user)
 
