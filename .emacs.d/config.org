@@ -647,9 +647,6 @@ Yes, you can have the best of both worlds!
 #+begin_src emacs-lisp :tangle yes
 (use-package evil
   :demand
-  :ensure evil-numbers
-  :ensure evil-surround
-  :ensure evil-collection
   :preface
   (defun hcps/shift-left-region ()
     "Shift left and restore visual selection."
@@ -685,12 +682,10 @@ Yes, you can have the best of both worlds!
     (setq-local evil-visual-state-tag nil)
     (setq-local evil-operator-state-tag nil))
   :init
+  (setq evil-want-keybinding nil)
   (advice-add 'org-babel-do-key-sequence-in-edit-buffer
               :around #'dzop/evil-org-insert-state-in-edit-buffer)
   :general
-  (:states '(normal visual)
-   "C-a" 'evil-numbers/inc-at-pt
-   "C-S-a" 'evil-numbers/dec-at-pt)
   (:states 'insert
    "<up>" 'previous-line
    "<down>" 'next-line
@@ -704,7 +699,6 @@ Yes, you can have the best of both worlds!
   :custom
   (evil-esc-delay 0)
   (evil-shift-width 2)
-  (evil-want-keybinding nil)
   (evil-auto-indent t)
   (evil-want-fine-undo t)
   (evil-search-wrap t)
@@ -729,27 +723,32 @@ Yes, you can have the best of both worlds!
   (evil-visual-state-tag   (propertize "   VISUAL   " 'face '((:background "gray"           :foreground "black"))))
   (evil-operator-state-tag (propertize "  OPERATOR  " 'face '((:background "sandy brown"    :foreground "black"))))
   :config
-  (evil-mode +1)
-  (global-evil-surround-mode +1)
-  (evil-collection-init))
+  (evil-mode +1))
 #+end_src
 
-Also I use =evil-surround=, which is a port of =surround= from vim and
-allow you to quickly delete or change surrounding ="= and ='= from words
-or paragraphs or whatever, as it integrates with vim's verb way of
-expressing actions.
+**** Cursors
 
-=evil-visualstar= enables searching visual selections with the =*= key.
+Here we have both =evil-matchit=, which allows you to jump between tags
+automatically,
 
-The package =evil-collection= adds a bunch of cool =evil= keybindings to
-other popular packages.
+#+begin_src emacs-lisp :tangle yes
+(use-package evil-matchit
+  :after evil
+  :defer 1
+  :custom
+  (evilmi-may-jump-by-percentage nil)
+  :config
+  (global-evil-matchit-mode +1))
+#+end_src
 
-=evil-mc= implements the =multiple-cursors= functionality to
+and =evil-mc= implements the =multiple-cursors= functionality to
 =evil-mode=.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package evil-mc
-  :requires evil
+  :after evil
+  :defer 1
+  :delight
   :general
   (:states 'visual
    "A" 'evil-mc-make-cursor-in-visual-selection-end
@@ -758,28 +757,61 @@ other popular packages.
    :prefix hcps/leader-key
    "ESC" 'evil-mc-undo-all-cursors)
   :config
-  (global-evil-mc-mode 1))
+  (global-evil-mc-mode +1))
 #+end_src
 
-=evil-matchit= allows you to jump between tags automatically!
+**** Pairs
 
-#+begin_src emacs-lisp :tangle yes
-(use-package evil-matchit
-  :requires evil
-  :custom
-  (evilmi-may-jump-by-percentage nil)
-  :config
-  (global-evil-matchit-mode 1))
-#+end_src
-
-And to use better bindings to =smartparens=, =evil-smartparens=!
+On pairs (and regions really) we have =evil-smartparens=, to use better
+bindings to =smartparens=,
 
 #+begin_src emacs-lisp :tangle yes
 (use-package evil-smartparens
-  :requires evil
+  :after evil
+  :defer 1
   :delight
   :hook
   (smartparens-enabled-hook . evil-smartparens-mode))
+#+end_src
+
+and =evil-surround=, which is a port of =surround= from vim and allow
+you to quickly delete or change surrounding ="= and ='= from words or
+paragraphs or whatever, as it integrates with vim's verb way of
+expressing actions.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package evil-surround
+  :after evil
+  :defer 1
+  :config
+  (global-evil-surround-mode +1))
+#+end_src
+
+**** Utilities
+
+As it gets impossible to not use vim keybindings everywhere,
+=evil-collection= adds a bunch of cool =evil= keybindings to other
+popular packages,
+
+#+begin_src emacs-lisp :tangle yes
+(use-package evil-collection
+  :after evil
+  :defer 1
+  :config
+  (evil-collection-init))
+#+end_src
+
+and also =evil-numbers=, to have nice keybindings to increase or
+decrease numbers.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package evil-numbers
+  :after evil
+  :defer 1
+  :general
+  (:states '(normal visual)
+   "C-a" 'evil-numbers/inc-at-pt
+   "C-S-a" 'evil-numbers/dec-at-pt))
 #+end_src
 
 *** Mode line
