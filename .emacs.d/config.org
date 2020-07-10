@@ -86,7 +86,7 @@ Cool Emacs configs from cool people:
   - [[#coq][Coq]]
   - [[#meson][Meson]]
   - [[#bspwmsxhkd][bspwm/sxhkd]]
-  - [[#systemd-services][systemd services]]
+  - [[#configurations][Configurations]]
   - [[#rust][Rust]]
   - [[#perl][Perl]]
 - [[#personal][Personal]]
@@ -2921,13 +2921,19 @@ Derives from =conf-mode[space]=. Got it from [[https://notabug.org/arkhan/emacs-
   (bspwm-config-mode-hook . page-break-lines-mode))
 #+end_src
 
-** systemd services
+** Configurations
 
 Just a little hook to start the desired =conf-mode= when we open these
 files.
 
 #+begin_src emacs-lisp :tangle yes
-(add-to-list 'auto-mode-alist '("\\.service$" . conf-mode))
+(use-package conf-mode
+  :defer t
+  :ensure nil
+  :mode "\\.service$"
+  :hook
+  ((conf-mode-hook . (lambda () (run-hooks 'prog-mode-hook)))
+   (conf-mode-hook . smartparens-strict-mode)))
 #+end_src
 
 ** Rust
