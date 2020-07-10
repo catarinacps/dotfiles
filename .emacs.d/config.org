@@ -142,9 +142,8 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - clang-format
 - cmake-font-lock
 - cmake-mode
-- company
-- company-lsp
 - compile
+- conf-mode
 - counsel
 - counsel-projectile
 - counsel-tramp
@@ -163,7 +162,6 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - elpy
 - engine-mode
 - ess
-- eval-expr
 - evil
 - evil-collection
 - evil-matchit
@@ -196,7 +194,6 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - jupyter
 - link-hint
 - lisp-mode
-- lsp-julia
 - lsp-mode
 - lsp-ui
 - magit
@@ -208,6 +205,7 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - no-littering
 - ob
 - openwith
+- org
 - org-journal
 - org-plus-contrib
 - ox
@@ -236,7 +234,7 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - treemacs-projectile
 - undo-tree
 - uniquify
-- use-package-ensure-system-package
+- use-package-ensure
 - vimish-fold
 - visual-fill-column
 - websocket
@@ -2986,8 +2984,7 @@ The newest greatest compiled language!
    (rust-mode-hook . cargo-minor-mode)
    (rust-mode-hook . subword-mode)
    (rust-mode-hook . smartparens-strict-mode)
-   (rust-mode-hook . rainbow-delimiters-mode)
-   (rust-mode-hook . highlight-numbers-mode))
+   (rust-mode-hook . rainbow-delimiters-mode))
   :custom
   (rust-format-on-save t)
   (rust-indent-method-chain t))
