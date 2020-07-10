@@ -69,11 +69,10 @@
   ;; else, we gotta load at least *one* org-mode package
   (add-to-list 'load-path (if org-plus-contrib-package-path org-plus-contrib-package-path
                             org-original-package-path))
-  (org-babel-tangle-file (concat config-file ".org"))
-  (setq load-path (delete org-original-package-path load-path)))
+  (org-babel-tangle-file (concat config-file ".org")))
 
 (load config-file)
 
-(message "Emacs is ready to do thy bidding, Master %s!" current-user)
+(message "Emacs is ready to do thy bidding, %s!" current-user)
 
 ;;; init.el ends here

@@ -909,7 +909,6 @@ a list with possible =ssh= connections AND docker containers (thanks to
 #+begin_src emacs-lisp :tangle yes
 (use-package counsel-tramp
   :defer t
-  :after counsel
   :ensure docker-tramp
   :general
   (:states '(normal visual)
@@ -1169,7 +1168,7 @@ Let's monitor ourselves with =whitespace=.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package whitespace
-  :demand
+  :defer t
   :hook
   ((before-save-hook . whitespace-cleanup)
    (before-save-hook . delete-trailing-whitespace)
@@ -1279,6 +1278,7 @@ command you're typing in the mode-line.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package which-key
+  :defer 1
   :delight
   :custom
   (which-key-allow-evil-operators t)
@@ -1378,11 +1378,12 @@ And this is to highlight escape sequences in some common modes:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package highlight-escape-sequences
-  :hook
-  (after-init-hook . turn-on-hes-mode)
+  :defer t
   :preface
-  (defconst hes-shell-escape-sequence-re "\\(\\[\"'\\bfnrtv]\\)"
+  (defconst hes-shell-escape-sequence-re "\\(\\\\[\"'\\bfnrtv]\\)"
     "Simple regex to match any common escaped character in sh-mode")
+  :hook
+  (prog-mode-hook . turn-on-hes-mode)
   :config
   (add-to-list 'hes-mode-alist `(sh-mode . ,hes-shell-escape-sequence-re)))
 #+end_src
@@ -1520,7 +1521,6 @@ name:
 #+begin_src emacs-lisp :tangle yes
 (use-package uniquify
   :ensure nil
-  :demand
   :custom
   (uniquify-buffer-name-style 'forward)
   (uniquify-separator "/")
@@ -1532,6 +1532,7 @@ name:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ace-window
+  :defer t
   :custom
   (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
   :general
@@ -1589,7 +1590,6 @@ Enables vim-like folding of regions.
   (:keymaps 'vimish-fold-unfolded-keymap
    "C-<tab>" 'vimish-fold-refold)
   :custom
-  (vimish-fold-dir (expand-file-name ".vimish-fold/" user-emacs-directory))
   (vimish-fold-header-width 79)
   :config
   (vimish-fold-global-mode 1))
@@ -1605,6 +1605,7 @@ buffers or searching the whole project and replacing something.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package projectile
+  :defer t
   :hook
   (after-init-hook . projectile-mode)
   ;; there's already a hint to the project name in the name of the buffer,
@@ -1848,7 +1849,9 @@ Random utilities that don't fit anywhere else.
    "C-h M" 'helpful-macro)
   :custom
   (counsel-describe-function-function #'helpful-callable)
-  (counsel-describe-variable-function #'helpful-variable))
+  (counsel-describe-variable-function #'helpful-variable)
+  :config
+  (require 'counsel))
 #+end_src
 
 **** =dumb-jump=
@@ -1858,6 +1861,7 @@ minimal setup (i.e. no TAG or RTAGS or etc.).
 
 #+begin_src emacs-lisp :tangle yes
 (use-package dumb-jump
+  :defer t
   :general
   ("M-g o" 'dumb-jump-go-other-window
    "M-g j" 'dumb-jump-go))
@@ -1872,7 +1876,7 @@ the web without leaving Emacs.
 (use-package engine-mode
   :defer t
   :config
-  (engine-mode t)
+  (engine-mode +1)
   ;; (defengine google
   ;;   "https://www.google.com/search?q="
   ;;   :keybinding "g")
@@ -1902,7 +1906,7 @@ well to other diverse media files.
      ("\\.mp4$" "mpv" (file))))
   (openwith-confirm-invocation t)
   :config
-  (openwith-mode t))
+  (openwith-mode +1))
 #+end_src
 
 **** =crux=
