@@ -25,6 +25,13 @@ Cool Emacs configs from cool people:
     - [[#demand][:demand]]
     - [[#init][:init]]
     - [[#config][:config]]
+- [[#personal][Personal]]
+  - [[#functions][Functions]]
+    - [[#fetching-text][Fetching text]]
+    - [[#date][Date]]
+    - [[#opening-things][Opening things]]
+    - [[#one-time-advice][One-time advice]]
+  - [[#keybindings][Keybindings]]
 - [[#the-editor][The editor]]
   - [[#definitions-and-preferences][Definitions and preferences]]
     - [[#package-servers][Package servers]]
@@ -36,7 +43,7 @@ Cool Emacs configs from cool people:
     - [[#randoms][Randoms]]
   - [[#extensions][Extensions]]
     - [[#package-loading-setup][Package loading setup]]
-    - [[#keybindings][Keybindings]]
+    - [[#keybindings-1][Keybindings]]
     - [[#mode-line-1][Mode line]]
     - [[#completion-framework][Completion framework]]
     - [[#history][History]]
@@ -89,12 +96,6 @@ Cool Emacs configs from cool people:
   - [[#configurations][Configurations]]
   - [[#rust][Rust]]
   - [[#perl][Perl]]
-- [[#personal][Personal]]
-  - [[#functions][Functions]]
-    - [[#fetching-text][Fetching text]]
-    - [[#date][Date]]
-    - [[#opening-things][Opening things]]
-  - [[#keybindings-1][Keybindings]]
 
 * Introduction
 
@@ -343,6 +344,124 @@ actually need it.
 (use-package foo
   :config
   (foo-init))
+#+end_src
+
+* Personal
+
+Stuff that isn't either a package nor a language nor downloadable: stuff
+you coded yourself.
+
+To-do:
+
+- [X] Increase/decrease font size
+- [ ] Input date on command (and as a new heading in =org-mode=)
+
+** Functions
+
+Some very useful functions I got from other people or that I coded
+myself.
+
+*** Fetching text
+
+To get the current selected text without newlines.
+
+#+begin_src emacs-lisp :tangle yes
+(defun hcps/get-selected-text (start end)
+  (interactive "r")
+  (kill-new
+   (replace-regexp-in-string
+    "\n" " "
+    (if (use-region-p)
+        (regionp (buffer-substring start end))))))
+#+end_src
+
+*** Date
+
+Insert the current date.
+
+#+begin_src emacs-lisp :tangle yes
+(defun hcps/date-iso ()
+  "Insert the current date, ISO format, eg. 2016-12-09."
+  (interactive)
+  (insert (format-time-string "%F")))
+
+(defun hcps/date-iso-with-time ()
+  "Insert the current date, ISO format with time, eg. 2016-12-09T14:34:54+0100."
+  (interactive)
+  (insert (format-time-string "%FT%T%z")))
+
+(defun hcps/date-long ()
+  "Insert the current date, long format, eg. December 09, 2016."
+  (interactive)
+  (insert (format-time-string "%B %d, %Y")))
+
+(defun hcps/date-long-with-time ()
+  "Insert the current date, long format, eg. December 09, 2016 - 14:34."
+  (interactive)
+  (insert (capitalize (format-time-string "%B %d, %Y - %H:%M"))))
+
+(defun hcps/date-short ()
+  "Insert the current date, short format, eg. 2016.12.09."
+  (interactive)
+  (insert (format-time-string "%Y.%m.%d")))
+
+(defun hcps/date-short-with-time ()
+  "Insert the current date, short format with time, eg. 2016.12.09 14:34"
+  (interactive)
+  (insert (format-time-string "%Y.%m.%d %H:%M")))
+#+end_src
+
+*** Opening things
+
+Like the title says...
+
+#+begin_src emacs-lisp :tangle yes
+(defun hcps/open-scratch ()
+  "Switch to the *scratch* buffer whenever you are."
+  (interactive)
+  (switch-to-buffer "*scratch*" nil t))
+#+end_src
+
+*** One-time advice
+
+'Cause that is kinda cool to have. Got it from [[https://emacs.stackexchange.com/questions/26251/one-time-advice][this]] place.
+
+#+begin_src emacs-lisp :tangle yes
+(defun advise-once (symbol where function &optional props)
+  (advice-add symbol :after `(lambda (&rest _) (advice-remove ',symbol ',function)))
+  (advice-add symbol where function props))
+#+end_src
+
+** Keybindings
+
+Here I'll define some of my personal keybindings, which means
+"keybindings not related to some package configured in the sections
+above"!
+
+#+begin_src emacs-lisp :tangle yes
+(with-eval-after-load "general"
+  (general-def
+    "C-x k" 'kill-this-buffer
+    "C-c x" 'hcps/date-iso
+    "<f9>" 'hcps/get-selected-text
+    "M--" 'text-scale-decrease
+    "M-+" 'text-scale-increase)
+
+  (general-def '(normal visual)
+    "C-S-h" 'previous-buffer
+    "C-S-l" 'next-buffer)
+
+  (general-def '(normal visual)
+    :prefix hcps/leader-key
+    "B" 'ibuffer
+    "s" 'save-buffer
+    "k" 'kill-this-buffer
+    "i" 'indent-region
+    "c" 'comment-dwim
+    "f n" 'hcps/open-scratch
+    "w k" 'delete-window
+    "w v" 'split-window-vertically
+    "w h" 'split-window-horizontally))
 #+end_src
 
 * The editor
@@ -1921,7 +2040,6 @@ well to other diverse media files.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package openwith
-  :demand
   :custom
   (openwith-associations
    '(("\\.pdf$" "zathura" (file))
@@ -1953,6 +2071,9 @@ A Collection of Ridiculously Useful eXtensions for Emacs.
 (use-package crux
   :defer t
   :commands crux-with-region-or-buffer
+  :init
+  (advise-once 'indent-region :before (lambda (&rest _) (require 'crux)))
+  (advise-once 'untabify :before (lambda (&rest _) (require 'crux)))
   :general
   (:states '(normal visual)
    :prefix hcps/leader-key
@@ -2043,7 +2164,7 @@ I still need to add packages relating to these languages:
 - [X] bspwm/sxhkd
 - [X] systemd services/units
 - [X] Rust
-- [ ] Perl
+- [X] Perl
 - [ ] PKGBUILD
 - [ ] Markdown
 
@@ -2877,10 +2998,7 @@ Let's start with some basic =auctex= editing so it starts the way I want
   (TeX-source-correlate-method 'synctex)
   (TeX-master nil)
   (reftex-plug-into-AUCTeX t)
-  (reftex-bibliography-commands '("bibliography" "nobibliography" "addbibresource"))
-  :config
-  (add-to-list 'company-backends 'company-math-symbols-latex)
-  (add-to-list 'company-backends 'company-latex-commands))
+  (reftex-bibliography-commands '("bibliography" "nobibliography" "addbibresource")))
 #+end_src
 
 So, for my LaTeX config I'll mainly use =latexmk= as it's way simpler to
@@ -2922,7 +3040,6 @@ we need to redefine them then.
 Not set up, but when I get to it:
 
 - proof-general
-- company-coq-mode
 - hrs config!
 
 ** Meson
@@ -3034,114 +3151,4 @@ Old language, still great for doing admin stuff in few lines.
   (font-lock-add-keywords
    'cperl-mode `(("^#!\\/\\(?:\\w+\\/\\)*\\(\\w+\\)"
                (1 'font-lock-keyword-face prepend)))))
-#+end_src
-
-* Personal
-
-Stuff that isn't either a package nor a language nor downloadable: stuff
-you coded yourself.
-
-To-do:
-
-- [X] Increase/decrease font size
-- [ ] Input date on command (and as a new heading in =org-mode=)
-
-** Functions
-
-Some very useful functions I got from other people or that I coded
-myself.
-
-*** Fetching text
-
-To get the current selected text without newlines.
-
-#+begin_src emacs-lisp :tangle yes
-(defun hcps/get-selected-text (start end)
-  (interactive "r")
-  (kill-new
-   (replace-regexp-in-string
-    "\n" " "
-    (if (use-region-p)
-        (regionp (buffer-substring start end))))))
-#+end_src
-
-*** Date
-
-Insert the current date.
-
-#+begin_src emacs-lisp :tangle yes
-(defun hcps/date-iso ()
-  "Insert the current date, ISO format, eg. 2016-12-09."
-  (interactive)
-  (insert (format-time-string "%F")))
-
-(defun hcps/date-iso-with-time ()
-  "Insert the current date, ISO format with time, eg. 2016-12-09T14:34:54+0100."
-  (interactive)
-  (insert (format-time-string "%FT%T%z")))
-
-(defun hcps/date-long ()
-  "Insert the current date, long format, eg. December 09, 2016."
-  (interactive)
-  (insert (format-time-string "%B %d, %Y")))
-
-(defun hcps/date-long-with-time ()
-  "Insert the current date, long format, eg. December 09, 2016 - 14:34."
-  (interactive)
-  (insert (capitalize (format-time-string "%B %d, %Y - %H:%M"))))
-
-(defun hcps/date-short ()
-  "Insert the current date, short format, eg. 2016.12.09."
-  (interactive)
-  (insert (format-time-string "%Y.%m.%d")))
-
-(defun hcps/date-short-with-time ()
-  "Insert the current date, short format with time, eg. 2016.12.09 14:34"
-  (interactive)
-  (insert (format-time-string "%Y.%m.%d %H:%M")))
-#+end_src
-
-*** Opening things
-
-Like the title says...
-
-#+begin_src emacs-lisp :tangle yes
-(defun hcps/open-scratch ()
-  "Switch to the *scratch* buffer whenever you are."
-  (interactive)
-  (switch-to-buffer "*scratch*" nil t))
-#+end_src
-
-** Keybindings
-
-Here I'll define some of my personal keybindings, which means
-"keybindings not related to some package configured in the sections
-above"!
-
-#+begin_src emacs-lisp :tangle yes
-(with-eval-after-load "general"
-  (general-def
-    "C-x k" 'kill-this-buffer
-    "C-c x" 'hcps/date-iso
-    "<f9>" 'hcps/get-selected-text
-    "M--" 'text-scale-decrease
-    "M-+" 'text-scale-increase)
-
-  (general-def
-    :states '(normal visual)
-    "C-S-h" 'previous-buffer
-    "C-S-l" 'next-buffer)
-
-  (general-def
-    :states '(normal visual)
-    :prefix hcps/leader-key
-    "B" 'ibuffer
-    "s" 'save-buffer
-    "k" 'kill-this-buffer
-    "i" 'indent-region
-    "c" 'comment-dwim
-    "f n" 'hcps/open-scratch
-    "w k" 'delete-window
-    "w v" 'split-window-vertically
-    "w h" 'split-window-horizontally))
 #+end_src
