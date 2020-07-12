@@ -1,4 +1,4 @@
-# -*- mode: org; eval: (add-hook 'after-save-hook #'org-babel-tangle nil t) -*-
+# -*- mode: org; eval: (add-hook 'after-save-hook #'hcps/byte-compile-org-config nil t) -*-
 #+title: My Emacs configuration file
 #+author: Henrique Silva
 #+email: hcpsilva@inf.ufrgs.br
@@ -26,23 +26,31 @@ Cool Emacs configs from cool people:
     - [[#init][:init]]
     - [[#config][:config]]
 - [[#personal][Personal]]
+  - [[#information][Information]]
   - [[#functions][Functions]]
     - [[#fetching-text][Fetching text]]
     - [[#date][Date]]
     - [[#opening-things][Opening things]]
     - [[#one-time-advice][One-time advice]]
+    - [[#automatic-byte-compile][Automatic byte-compile]]
   - [[#keybindings][Keybindings]]
 - [[#the-editor][The editor]]
   - [[#definitions-and-preferences][Definitions and preferences]]
-    - [[#package-servers][Package servers]]
+    - [[#default-org-mode][Default =org-mode=]]
+    - [[#paths-and-defvar][Paths and =defvar=]]
+    - [[#garbage-collection][Garbage collection]]
     - [[#gui-elements][GUI elements]]
     - [[#font][Font]]
     - [[#text][Text]]
     - [[#mode-line][Mode line]]
     - [[#line-numbering-and-scrolling][Line numbering and scrolling]]
     - [[#randoms][Randoms]]
+    - [[#custom-file][Custom file]]
+  - [[#package-loading][Package loading]]
+    - [[#load-path][Load path]]
+    - [[#use-package-setup][Use-package setup]]
+    - [[#additional-support-packages][Additional support packages]]
   - [[#extensions][Extensions]]
-    - [[#package-loading-setup][Package loading setup]]
     - [[#keybindings-1][Keybindings]]
     - [[#mode-line-1][Mode line]]
     - [[#completion-framework][Completion framework]]
@@ -96,6 +104,7 @@ Cool Emacs configs from cool people:
   - [[#configurations][Configurations]]
   - [[#rust][Rust]]
   - [[#perl][Perl]]
+- [[#post-init][Post-init]]
 
 * Introduction
 
@@ -356,6 +365,15 @@ To-do:
 - [X] Increase/decrease font size
 - [ ] Input date on command (and as a new heading in =org-mode=)
 
+** Information
+
+Some basic info about me.
+
+#+begin_src emacs-lisp :tangle yes
+(setq user-full-name "Henrique Silva"
+      user-mail-address "hcpsilva@inf.ufrgs.br")
+#+end_src
+
 ** Functions
 
 Some very useful functions I got from other people or that I coded
@@ -432,6 +450,23 @@ Like the title says...
   (advice-add symbol where function props))
 #+end_src
 
+*** Automatic byte-compile
+
+To use with this configuration file.
+
+#+begin_src emacs-lisp :tangle yes
+(defvar config-file-name (expand-file-name "config.org" user-emacs-directory)
+  "The path to the configuration ")
+
+(defun hcps/byte-compile-org-config ()
+  "To add as a hook when saving the config file."
+  (if (y-or-n-p "Recompile config?")
+      (byte-compile-file (car (org-babel-tangle-file config-file-name)))))
+
+(add-hook 'compilation-finish-functions
+	  (lambda (buffer &rest _) (delete-windows-on buffer 0)))
+#+end_src
+
 ** Keybindings
 
 Here I'll define some of my personal keybindings, which means
@@ -461,7 +496,16 @@ above"!
     "f n" 'hcps/open-scratch
     "w k" 'delete-window
     "w v" 'split-window-vertically
-    "w h" 'split-window-horizontally))
+    "w h" 'split-window-horizontally)
+
+  (general-def '(normal visual)
+    :prefix hcps/leader-key
+    "" '(:ignore t :wk "leader")
+    "f" '(:ignore t :wk "file")
+    "w" '(:ignore t :wk "window")
+    "r" '(:ignore t :wk "replace")
+    "l" '(:ignore t :wk "language")
+    "m" '(:ignore t :wk "misc")))
 #+end_src
 
 * The editor
@@ -475,19 +519,37 @@ Everything related to Emacs as the editor and platform.
 
 Defaults that are better if defined /other/ way.
 
-*** Package servers
+*** Default =org-mode=
 
-By default we only get the GNU one...
+To ensure ELPA =org= is prioritized above built-in org.
 
 #+begin_src emacs-lisp :tangle yes
-(require 'package)
+;; (require 'cl)
+;; (setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path))
+(setq load-path
+      (delete (car (file-expand-wildcards "/usr/share/emacs/*/lisp/org")) load-path))
+#+end_src
 
-(setq-default package-archives
-              '(("melpa" . "https://melpa.org/packages/")
-                ("org" . "https://orgmode.org/elpa/")
-                ("gnu" . "https://elpa.gnu.org/packages/")))
+*** Paths and =defvar=
 
-(package-initialize)
+Silly names for easier path usage.
+
+#+begin_src emacs-lisp :tangle yes
+(defvar current-user (getenv "USER") "The current user.")
+
+(defvar root-dir (expand-file-name user-emacs-directory) "The root dir of Emacs.")
+(defvar var-user-dir (expand-file-name "var" root-dir) "The temporaries directory.")
+(defvar vendor-user-dir (expand-file-name "vendor" root-dir) "The random .el directory.")
+#+end_src
+
+*** Garbage collection
+
+A better GC threshold for eval.
+
+#+begin_src emacs-lisp :tangle yes
+(eval-and-compile
+  (setq gc-cons-threshold 402653184
+        gc-cons-percentage 0.6))
 #+end_src
 
 *** GUI elements
@@ -505,9 +567,9 @@ space.
 To be fair, some stuff is really personal preference of mine.
 
 #+begin_src emacs-lisp :tangle yes
-(setq-default inhibit-startup-screen t
-              initial-scratch-message nil
-              initial-major-mode 'text-mode)
+(setq inhibit-startup-screen t
+      initial-scratch-message nil
+      initial-major-mode 'text-mode)
 #+end_src
 
 And then there's the title question. I for one like Emacs capitalized,
@@ -552,8 +614,8 @@ any further.
               tab-width 4
               line-spacing 0
               require-final-newline t
-              x-stretch-cursor t
-              cursor-in-non-selected-windows t)
+              x-stretch-cursor nil
+              cursor-in-non-selected-windows nil)
 
 (blink-cursor-mode 0)
 #+end_src
@@ -562,7 +624,7 @@ Also, =auto-fill-mode= is very useful to justify paragraphs
 automatically while writing.
 
 #+begin_src emacs-lisp :tangle yes
-(add-hook 'text-mode-hook 'turn-on-auto-fill)
+(add-hook 'text-mode-hook #'turn-on-auto-fill)
 #+end_src
 
 *** Mode line
@@ -573,7 +635,7 @@ Here's everything related to the mode-line.
 (setq-default display-time-format "%H:%M "
               display-time-default-load-average nil)
 
-(display-time-mode 1)
+(display-time-mode +1)
 (line-number-mode t)
 (column-number-mode t)
 (size-indication-mode t)
@@ -613,111 +675,129 @@ Highlighting the current line is also very useful.
 Random configs and definitions that don't have a clear category.
 
 #+begin_src emacs-lisp :tangle yes
-(setq-default ad-redefinition-action 'accept         ; Silence warnings for redefinition
-              confirm-kill-emacs 'yes-or-no-p        ; Confirm before exiting Emacs
-              select-enable-clipboard t              ; Merge system's and Emacs' clipboard
-              gc-cons-threshold 100000000            ; Reduce the default GC frequency
-              blink-matching-paren nil               ; Disable annoying blink-matching-paren
-              cursor-in-non-selected-windows nil     ; No phantom cursors in unselected windows
-              window-combination-resize t            ; Resize windows proportionally
-              ring-bell-function 'ignore)            ; No bell ring
+(setq ad-redefinition-action 'accept         ; Silence warnings for redefinition
+      confirm-kill-emacs 'yes-or-no-p        ; Confirm before exiting Emacs
+      select-enable-clipboard t              ; Merge system's and Emacs' clipboard
+      blink-matching-paren nil               ; Disable annoying blink-matching-paren
+      window-combination-resize t            ; Resize windows proportionally
+      ring-bell-function 'ignore)            ; No bell ring
+
+(eval-and-compile
+  (setq backup-directory-alist `((".*" . ,temporary-file-directory))
+        auto-save-file-name-transforms `((".*" ,temporary-file-directory t))))
+
+(add-hook 'after-save-hook
+          #'executable-make-buffer-file-executable-if-script-p)
 
 ;; Replace yes/no prompts with y/n
 (fset 'yes-or-no-p 'y-or-n-p)
 
 ;; Set Emacs to call the garbage collector on focus-out
-(add-hook 'focus-out-hook #'garbage-collect)
+;; (add-hook 'focus-out-hook #'garbage-collect)
 
 ;; use GPG-agent instead of the default
 (setenv "SSH_AUTH_SOCK"
-          (concat (getenv "XDG_RUNTIME_DIR") "/gnupg/S.gpg-agent.ssh"))
-
-;; Not sure what this is
-(require 'thingatpt)
-(require 'cl-lib)
-
-(setq backup-directory-alist
-      `((".*" . ,temporary-file-directory)))
-(setq auto-save-file-name-transforms
-      `((".*" ,temporary-file-directory t)))
+        (concat (getenv "XDG_RUNTIME_DIR") "/gnupg/S.gpg-agent.ssh"))
 
 (global-auto-revert-mode t)
 
-(setq hippie-expand-try-functions-list '(try-expand-dabbrev
-                                         try-expand-dabbrev-all-buffers
-                                         try-expand-dabbrev-from-kill
-                                         try-complete-file-name-partially
-                                         try-complete-file-name
-                                         try-expand-all-abbrevs
-                                         try-expand-list
-                                         try-expand-line
-                                         try-complete-lisp-symbol-partially
-                                         try-complete-lisp-symbol))
+;; (setq hippie-expand-try-functions-list '(try-expand-dabbrev
+;;                                          try-expand-dabbrev-all-buffers
+;;                                          try-expand-dabbrev-from-kill
+;;                                          try-complete-file-name-partially
+;;                                          try-complete-file-name
+;;                                          try-expand-all-abbrevs
+;;                                          try-expand-list
+;;                                          try-expand-line
+;;                                          try-complete-lisp-symbol-partially
+;;                                          try-complete-lisp-symbol))
 
-(require 'ediff)
-(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+;; (require 'ediff)
+;; (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
-(add-hook 'after-save-hook
-          'executable-make-buffer-file-executable-if-script-p)
+;; (require 'eshell)
+;; (setq eshell-directory-name (expand-file-name "eshell" var-user-dir))
 
-(require 'eshell)
-(setq eshell-directory-name (expand-file-name "eshell" var-user-dir))
+;; (global-diff-hl-mode +1)
+;; (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
+;; (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
 
-(global-diff-hl-mode +1)
-(add-hook 'dired-mode-hook 'diff-hl-dired-mode)
-(add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+;; ;; toggle menu-bar visibility
+;; (global-set-key (kbd "<f12>") 'menu-bar-mode)
 
-;; toggle menu-bar visibility
-(global-set-key (kbd "<f12>") 'menu-bar-mode)
+;; ;; use hippie-expand instead of dabbrev
+;; (global-set-key (kbd "M-/") 'hippie-expand)
 
-;; use hippie-expand instead of dabbrev
-(global-set-key (kbd "M-/") 'hippie-expand)
-
-(require 'cl)
+;; (require 'cl)
 #+end_src
 
-** Extensions
+*** Custom file
 
-These are Emacs-behaviour related! In other words, these extend the
-capabilities of Emacs as a text editor, and do NOT add support to other
-languages or etc.
-
-- [ ] save-place
-- [ ] bookmark
-
-*** Package loading setup
-
-I use =use-package= to load my packages and to organize them neatly in
-this org file. I plan to gradually rip everything I want from =prelude=
-and put it here eventually, using =use-package=.
+Perhaps is necessary sometimes.
 
 #+begin_src emacs-lisp :tangle yes
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+(setq custom-file (expand-file-name "custom.el" var-user-dir))
 
-(eval-when-compile
-  (add-subfolders-to-load-path package-user-dir)
-  (require 'use-package))
+(load custom-file)
+#+end_src
 
+** Package loading
+
+Some sanity definitions and checks...
+
+#+begin_src emacs-lisp :tangle yes
+(eval-and-compile
+  (setq load-prefer-newer t
+        package-user-dir (expand-file-name "elpa" user-emacs-directory)
+        package--init-file-ensured t
+        package-enable-at-startup nil)
+
+  (unless (file-directory-p package-user-dir)
+    (make-directory package-user-dir t)))
+#+end_src
+
+*** Load path
+
+And then let's initialize the load path:
+
+#+begin_src emacs-lisp :tangle yes
+(eval-and-compile
+  (setq load-path (append load-path (directory-files package-user-dir t "^[^.]" t))))
+#+end_src
+
+*** Use-package setup
+
+I use =use-package= to load my packages and to organize them neatly in
+this org file.
+
+#+begin_src emacs-lisp :tangle yes
 (setq use-package-verbose t
       use-package-hook-name-suffix nil)
 
-(use-package use-package-ensure
-  :custom
-  (use-package-always-ensure t))
+(setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local))
+
+(eval-when-compile
+  (require 'package)
+
+  (setq package-archives
+        '(("melpa" . "https://melpa.org/packages/")
+          ("org" . "https://orgmode.org/elpa/")
+          ("gnu" . "https://elpa.gnu.org/packages/")))
+
+  (package-initialize)
+
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+
+  (require 'use-package)
+
+  (setq use-package-always-ensure t))
+
+(add-hook 'emacs-startup-hook (lambda () (require 'use-package)))
 #+end_src
 
-Having that said, I too use =auto-compile= to always compile packages
-and to have their newest version.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package auto-compile
-  :custom
-  (load-prefer-newer t)
-  :config
-  (auto-compile-on-load-mode))
-#+end_src
+*** Additional support packages
 
 To facilitate my keybinding issues, I also use =general.el=. It adds
 some very welcome keywords to =use-package=, in which I'll use
@@ -726,6 +806,7 @@ extensively throughout this file.
 #+begin_src emacs-lisp :tangle yes
 (use-package general
   :demand
+  :commands (general-def general-define-key general-unbind)
   :preface
   (defconst hcps/leader-key "SPC"
     "Leader key for some special commands.")
@@ -755,6 +836,15 @@ history files the packages might set.
   :demand)
 #+end_src
 
+** Extensions
+
+These are Emacs-behaviour related! In other words, these extend the
+capabilities of Emacs as a text editor, and do NOT add support to other
+languages or etc.
+
+- [ ] save-place
+- [ ] bookmark
+
 *** Keybindings
 
 =evil=, or /Extensible vi Layer/, is a minor mode that changes Emacs
@@ -763,7 +853,7 @@ Yes, you can have the best of both worlds!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package evil
-  :demand
+  :defer .1
   :preface
   (defun hcps/shift-left-region ()
     "Shift left and restore visual selection."
@@ -851,7 +941,6 @@ automatically,
 #+begin_src emacs-lisp :tangle yes
 (use-package evil-matchit
   :after evil
-  :defer 1
   :custom
   (evilmi-may-jump-by-percentage nil)
   :config
@@ -864,7 +953,6 @@ and =evil-mc= implements the =multiple-cursors= functionality to
 #+begin_src emacs-lisp :tangle yes
 (use-package evil-mc
   :after evil
-  :defer 1
   :delight
   :general
   (:states 'visual
@@ -885,7 +973,6 @@ bindings to =smartparens=,
 #+begin_src emacs-lisp :tangle yes
 (use-package evil-smartparens
   :after evil
-  :defer 1
   :delight
   :hook
   (smartparens-enabled-hook . evil-smartparens-mode))
@@ -899,7 +986,18 @@ expressing actions.
 #+begin_src emacs-lisp :tangle yes
 (use-package evil-surround
   :after evil
-  :defer 1
+  :commands
+  (evil-surround-edit
+   evil-Surround-edit
+   evil-surround-region
+   evil-Surround-region)
+  :general
+  (:states 'operator
+   "s" 'evil-surround-edit
+   "S" 'evil-Surround-edit)
+  (:states 'visual
+   "S" 'evil-surround-region
+   "gS" 'evil-Surround-region)
   :config
   (global-evil-surround-mode +1))
 #+end_src
@@ -913,7 +1011,6 @@ popular packages,
 #+begin_src emacs-lisp :tangle yes
 (use-package evil-collection
   :after evil
-  :defer 1
   :config
   (evil-collection-init))
 #+end_src
@@ -924,7 +1021,6 @@ decrease numbers.
 #+begin_src emacs-lisp :tangle yes
 (use-package evil-numbers
   :after evil
-  :defer 1
   :general
   (:states '(normal visual)
    "C-a" 'evil-numbers/inc-at-pt
@@ -982,7 +1078,6 @@ fuzzy matching and whatnot.
 #+begin_src emacs-lisp :tangle yes
 (use-package ivy
   :ensure flx
-  :ensure ivy-rich
   :delight
   :preface
   (defun hcps/ivy-open-current-typed-path ()
@@ -1013,7 +1108,16 @@ fuzzy matching and whatnot.
    "C-l" 'ivy-next-line
    "C-h" 'ivy-previous-line)
   :config
-  (ivy-mode +1)
+  (require 'flx)
+  (ivy-mode +1))
+#+end_src
+
+and =ivy-rich= to have a better looking =ivy=
+
+#+begin_src emacs-lisp :tangle yes
+(use-package ivy-rich
+  :after ivy
+  :config
   (ivy-rich-mode +1))
 #+end_src
 
@@ -1024,7 +1128,7 @@ to make sure that =counsel-M-x= has decent candidate sorting.
 (use-package counsel
   :ensure smex
   :preface
-  (defun hcps/override-yank-pop (&rest args)
+  (defun hcps/override-yank-pop (&rest _)
     "Delete the region before inserting popped string."
     (when (and evil-mode (eq 'visual evil-state))
       (kill-region (region-beginning) (region-end))))
@@ -1042,7 +1146,9 @@ to make sure that =counsel-M-x= has decent candidate sorting.
    "m b" 'counsel-bookmark)
   ([remap execute-extended-command] 'counsel-M-x
    [remap find-file] 'counsel-find-file
-   [remap switch-buffer] 'counsel-switch-buffer))
+   [remap switch-buffer] 'counsel-switch-buffer)
+  :config
+  (require 'smex))
 #+end_src
 
 As you may know, in Emacs we use =tramp= to edit files remotely using
@@ -1071,7 +1177,8 @@ Undo and redo and kools with =undo-tree=!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package undo-tree
-  :diminish
+  :defer t
+  :delight
   :preface
   (defconst hcps/undo-tree-visualizer-diff t
     "My value for the `undo-tree-visualizer-diff' variable.")
@@ -1427,7 +1534,7 @@ command you're typing in the mode-line.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package which-key
-  :defer 1
+  :defer .1
   :delight
   :custom
   (which-key-allow-evil-operators t)
@@ -1756,7 +1863,7 @@ buffers or searching the whole project and replacing something.
 (use-package projectile
   :defer t
   :hook
-  (after-init-hook . projectile-mode)
+  (emacs-startup-hook . projectile-mode)
   ;; there's already a hint to the project name in the name of the buffer,
   ;; thanks to smart-mode-line
   :delight
@@ -1784,7 +1891,7 @@ buffers or searching the whole project and replacing something.
   ([remap compile] 'projectile-compile-project)
   (:states '(normal visual)
    :prefix hcps/leader-key
-   "p" '(:keymap projectile-command-map :package projectile))
+   "p" '(:wk "projectile" :keymap projectile-command-map :package projectile))
   :config
   ;; clean dead projects when Emacs is idle
   (run-with-idle-timer 10 nil #'projectile-cleanup-known-projects))
@@ -1843,6 +1950,7 @@ in the visible universe, nay, in the whole multiverse.
   :general
   (:states '(normal visual)
    :prefix hcps/leader-key
+   "g" '(:ignore t :wk "git")
    "g p" 'magit-list-repositories
    "g g" 'magit-status
    "g d" 'magit-dispatch
@@ -1905,6 +2013,7 @@ When in need of smart pairing, look no further than =smartparens=!
 (use-package smartparens
   :defer t
   :delight (smartparens-mode " sp")
+  :commands (smartparens-mode smartparens-strict-mode)
   :custom
   (sp-base-key-bindings 'paredit)
   (sp-autoskip-closing-pair 'always)
@@ -1919,6 +2028,7 @@ With that, =rainbow-delimiters= is a great match:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package rainbow-delimiters
+  :commands rainbow-delimiters-mode
   :defer t)
 #+end_src
 
@@ -1939,6 +2049,7 @@ I use =aggressive-indent= to keep my code indented as I type.
 #+begin_src emacs-lisp :tangle yes
 (use-package aggressive-indent
   :defer t
+  :commands aggressive-indent-mode
   :preface
   (defun me/aggressive-indent-mode-off ()
     (aggressive-indent-mode 0))
@@ -2011,6 +2122,7 @@ minimal setup (i.e. no TAG or RTAGS or etc.).
 #+begin_src emacs-lisp :tangle yes
 (use-package dumb-jump
   :defer t
+  :disabled                             ; deprecated on the xref backend
   :general
   ("M-g o" 'dumb-jump-go-other-window
    "M-g j" 'dumb-jump-go))
@@ -2209,8 +2321,8 @@ your =.org= file.
   ;; 10 because default-font-width doesn't work with daemon mode
   (org-image-actual-width (round (* 10 fill-column 0.85)))
   (org-modules '(ol-w3m ol-bbdb ol-bibtex ol-docview ol-gnus
-                 ol-info ol-irc ol-mhe ol-rmail ol-eww org-tempo
-                 org-inlinetask))
+                        ol-info ol-irc ol-mhe ol-rmail ol-eww org-tempo
+                        org-inlinetask))
   :general
   (:states '(normal visual)
    :keymaps 'org-mode-map
@@ -2234,6 +2346,7 @@ your =.org= file.
   (:states '(normal visual)
    :keymaps 'org-mode-map
    :prefix hcps/leader-key
+   "l n" '(:ignore t :wk "narrow")
    "l n s" 'org-narrow-to-subtree
    "l n p" 'narrow-to-page
    "l n b" 'org-narrow-to-block
@@ -2245,7 +2358,9 @@ your =.org= file.
    :keymaps 'org-mode-map
    "<tab>" 'org-cycle)
   :config
-  (add-to-list 'sml/replacer-regexp-list `(,(concat "^" org-directory) ":ORG:")))
+  (add-to-list 'sml/replacer-regexp-list `(,(concat "^" org-directory) ":ORG:"))
+  :config
+  (require 'toc-org))
 #+end_src
 
 *** Export
@@ -2580,7 +2695,7 @@ Statistics/. It provides you with everything you need from R.
 #+begin_src emacs-lisp :tangle yes
 (use-package ess
   :defer t
-  :commands (R ess-r-mode ess-r-transcript-mode ess-bugs-mode ess-jags-mode)
+  :commands (R ess-r-mode ess-r-transcript-mode)
   :hook
   ((ess-r-mode-hook . yas-minor-mode)
    (ess-r-mode-hook . aggressive-indent-mode)
@@ -2588,31 +2703,12 @@ Statistics/. It provides you with everything you need from R.
    ;; (ess-r-mode-hook . lsp)
    (ess-r-mode-hook . rainbow-delimiters-mode))
   :preface
-  (defcustom existing-remote-session nil
-    "Defines the existence of a remote R session."
-    :type 'boolean
-    :safe #'booleanp
-    :group 'R)
   (defun hcps/insert-r-pipe ()
     "Lets us insert the magrittr piping operator %>% in R"
     (interactive)
     (just-one-space 1)
     (insert "%>%")
     (reindent-then-newline-and-indent))
-  (defun hcps/make-remote-r-session (BUFFER)
-    (interactive (list (call-interactively 'ssh-connect-remote)))
-    (with-current-buffer (buffer-name BUFFER)
-      (goto-char (point-max))
-      (insert "R")
-      (comint-send-input))
-    (setq existing-remote-session t))
-  (defun hcps/use-remote-r-session ()
-    (interactive)
-    (if (equal ssh-current-server nil)
-        (call-interactively 'hcps/make-remote-r-session))
-    (if (not existing-remote-session)
-        (hcps/make-remote-r-session (get-buffer-create ssh-current-server)))
-    ssh-current-server)
   :general
   (:states 'insert
    :keymaps 'ess-r-mode-map
@@ -2736,6 +2832,7 @@ So, we'll set that up.
 (use-package make-mode
   :defer t
   :ensure nil
+  :mode ("^[Mm]akefile$" . makefile-mode)
   :preface
   (defun makefile-mode-defaults ()
     "Turn on tabs only for make-mode."
@@ -2765,6 +2862,7 @@ Fix for the annoying keyword default indentation:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package lisp-mode
+  :demand
   :ensure nil
   :preface
   (defun fuco1/lisp-indent-function (indent-point state)
@@ -2856,10 +2954,11 @@ Emacs version!
   :ensure nil
   :ensure elisp-slime-nav
   :commands emacs-lisp-mode
+  :mode ("\\.el" . emacs-lisp-mode)
   :preface
   (defun recompile-elc-on-save ()
     "Recompile your elc when saving an elisp file."
-    (when (and (string-prefix-p root-dir (file-truename buffer-file-name))
+    (when (and (string-prefix-p user-emacs-directory (file-truename buffer-file-name))
                (file-exists-p (byte-compile-dest-file buffer-file-name)))
       (emacs-lisp-byte-compile)))
   :hook
@@ -2910,6 +3009,7 @@ little mode colors them accordingly.
   :defer t
   :ensure nil
   :ensure cmake-font-lock
+  :mode "^CMakeLists\\.txt$"
   :hook
   ((cmake-mode-hook . smartparens-strict-mode)
    (cmake-mode-hook . rainbow-delimiters-mode)
@@ -2926,7 +3026,6 @@ image directly from the buffer using =C-c C-b=.
 #+begin_src emacs-lisp :tangle yes
 (use-package dockerfile-mode
   :defer t
-  :ensure docker-compose-mode
   :mode "Dockerfile$")
 #+end_src
 
@@ -3050,7 +3149,7 @@ Python).
 #+begin_src emacs-lisp :tangle yes
 (use-package meson-mode
   :defer t
-  :mode "meson\\.build$"
+  :mode "^meson\\.build$"
   :commands meson
   :hook
   (meson-mode-hook . (lambda () (run-hooks 'prog-mode-hook))))
@@ -3066,8 +3165,7 @@ Derives from =conf-mode[space]=. Got it from [[https://notabug.org/arkhan/emacs-
   :ensure nil
   :load-path (lambda () (expand-file-name "bspwm-mode" vendor-user-dir))
   :mode
-  (("sxhkdrc$" . bspwm-config-mode)
-   ("bspwmrc$" . bspwm-config-mode))
+  ("^\\(?:sxhkd\\|bspwm\\)rc$" . bspwm-config-mode)
   :hook
   (bspwm-config-mode-hook . page-break-lines-mode))
 #+end_src
@@ -3152,3 +3250,14 @@ Old language, still great for doing admin stuff in few lines.
    'cperl-mode `(("^#!\\/\\(?:\\w+\\/\\)*\\(\\w+\\)"
                (1 'font-lock-keyword-face prepend)))))
 #+end_src
+
+* Post-init
+
+Lets lower a bit our GC threshold:
+
+#+begin_src emacs-lisp :tangle yes
+(setq gc-cons-threshold 16777216
+      gc-cons-percentage 0.1)
+#+end_src
+
+And that's it!
