@@ -461,10 +461,12 @@ To use with this configuration file.
 (defun hcps/byte-compile-org-config ()
   "To add as a hook when saving the config file."
   (if (y-or-n-p "Recompile config?")
-      (byte-compile-file (car (org-babel-tangle-file config-file-name)))))
+      (let ((tangled-file (car (org-babel-tangle-file config-file-name))))
+        (byte-compile-file tangled-file)
+        (delete-file tangled-file))))
 
 (add-hook 'compilation-finish-functions
-	  (lambda (buffer &rest _) (delete-windows-on buffer 0)))
+          (lambda (buffer &rest _) (delete-windows-on buffer 0)))
 #+end_src
 
 ** Keybindings
