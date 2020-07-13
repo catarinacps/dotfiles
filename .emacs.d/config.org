@@ -37,7 +37,7 @@ Cool Emacs configs from cool people:
 - [[#the-editor][The editor]]
   - [[#definitions-and-preferences][Definitions and preferences]]
     - [[#default-org-mode][Default =org-mode=]]
-    - [[#paths-and-defvar][Paths and =defvar=]]
+    - [[#paths-and-defconst][Paths and =defconst=]]
     - [[#garbage-collection][Garbage collection]]
     - [[#gui-elements][GUI elements]]
     - [[#font][Font]]
@@ -455,7 +455,7 @@ Like the title says...
 To use with this configuration file.
 
 #+begin_src emacs-lisp :tangle yes
-(defvar config-file-name (expand-file-name "config.org" user-emacs-directory)
+(defconst config-file-name (expand-file-name "config.org" user-emacs-directory)
   "The path to the configuration ")
 
 (defun hcps/byte-compile-org-config ()
@@ -477,19 +477,18 @@ above"!
 
 #+begin_src emacs-lisp :tangle yes
 (with-eval-after-load "general"
-  (general-def
+  (general-def '(global-map special-mode-map)
     "C-x k" 'kill-this-buffer
     "C-c x" 'hcps/date-iso
     "<f9>" 'hcps/get-selected-text
     "M--" 'text-scale-decrease
     "M-+" 'text-scale-increase)
 
-  (general-def '(normal visual)
+  (general-def '(global-map special-mode-map)
     "C-S-h" 'previous-buffer
     "C-S-l" 'next-buffer)
 
-  (general-def '(normal visual)
-    :prefix hcps/leader-key
+  (general-def 'hcps/leader-map
     "B" 'ibuffer
     "s" 'save-buffer
     "k" 'kill-this-buffer
@@ -500,8 +499,8 @@ above"!
     "w v" 'split-window-vertically
     "w h" 'split-window-horizontally)
 
-  (general-def '(normal visual)
-    :prefix hcps/leader-key
+  ;; some interesting names for the future prefixes
+  (general-def 'hcps/leader-map
     "" '(:ignore t :wk "leader")
     "f" '(:ignore t :wk "file")
     "w" '(:ignore t :wk "window")
@@ -532,16 +531,16 @@ To ensure ELPA =org= is prioritized above built-in org.
       (delete (car (file-expand-wildcards "/usr/share/emacs/*/lisp/org")) load-path))
 #+end_src
 
-*** Paths and =defvar=
+*** Paths and =defconst=
 
 Silly names for easier path usage.
 
 #+begin_src emacs-lisp :tangle yes
-(defvar current-user (getenv "USER") "The current user.")
+(defconst current-user (getenv "USER") "The current user.")
 
-(defvar root-dir (expand-file-name user-emacs-directory) "The root dir of Emacs.")
-(defvar var-user-dir (expand-file-name "var" root-dir) "The temporaries directory.")
-(defvar vendor-user-dir (expand-file-name "vendor" root-dir) "The random .el directory.")
+(defconst root-dir (expand-file-name user-emacs-directory) "The root dir of Emacs.")
+(defconst var-user-dir (expand-file-name "var" root-dir) "The temporaries directory.")
+(defconst vendor-user-dir (expand-file-name "vendor" root-dir) "The random .el directory.")
 #+end_src
 
 *** Garbage collection
@@ -798,21 +797,22 @@ extensively throughout this file.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package general
-  :demand
-  :commands (general-def general-define-key general-unbind)
+  :commands (general-define-key general-def general-unbind)
   :preface
   (defconst hcps/leader-key "SPC"
     "Leader key for some special commands.")
-  :config
-  (general-unbind '(normal visual)
-    hcps/leader-key))
+  (defvar hcps/leader-map (make-sparse-keymap)
+    "Keymap for all my leader bindings.")
+  :general
+  (:keymaps '(global-map special-mode-map)
+   hcps/leader-key '(:wk "leader" :keymap hcps/leader-map :package general)))
 #+end_src
 
 And we'll use =delight= to hide minor-modes names and such.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package delight
-  :demand
+  :commands delight
   :delight
   (auto-fill-function " af")
   (eldoc-mode " eldoc")
@@ -846,7 +846,7 @@ Yes, you can have the best of both worlds!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package evil
-  :defer .1
+  :defines evil-normal-state-map
   :preface
   (defun hcps/shift-left-region ()
     "Shift left and restore visual selection."
@@ -881,11 +881,18 @@ Yes, you can have the best of both worlds!
     (setq-local evil-motion-state-tag nil)
     (setq-local evil-visual-state-tag nil)
     (setq-local evil-operator-state-tag nil))
+  (defun hcps/ensure-evil-and-quit ()
+    (remove-hook 'pre-command-hook #'hcps/ensure-evil-and-quit)
+    (require 'evil))
   :init
   (setq evil-want-keybinding nil)
   (advice-add 'org-babel-do-key-sequence-in-edit-buffer
               :around #'dzop/evil-org-insert-state-in-edit-buffer)
+  :hook
+  (pre-command-hook . hcps/ensure-evil-and-quit)
   :general
+  (:states '(normal visual)
+   hcps/leader-key '(:wk "leader" :keymap hcps/leader-map :package general))
   (:states 'insert
    "<up>" 'previous-line
    "<down>" 'next-line
@@ -951,8 +958,7 @@ and =evil-mc= implements the =multiple-cursors= functionality to
   (:states 'visual
    "A" 'evil-mc-make-cursor-in-visual-selection-end
    "I" 'evil-mc-make-cursor-in-visual-selection-beg)
-  (:states '(normal visual)
-   :prefix hcps/leader-key
+  (:keymaps 'hcps/leader-map
    "ESC" 'evil-mc-undo-all-cursors)
   :config
   (global-evil-mc-mode +1))
@@ -1015,7 +1021,7 @@ decrease numbers.
 (use-package evil-numbers
   :after evil
   :general
-  (:states '(normal visual)
+  (:states 'normal
    "C-a" 'evil-numbers/inc-at-pt
    "C-S-a" 'evil-numbers/dec-at-pt))
 #+end_src
@@ -1128,8 +1134,7 @@ to make sure that =counsel-M-x= has decent candidate sorting.
   :init
   (advice-add 'counsel-yank-pop :before #'hcps/override-yank-pop)
   :general
-  (:states '(normal visual)
-   :prefix hcps/leader-key
+  (:keymaps 'hcps/leader-map
    "f f" 'counsel-find-file
    "f r" 'counsel-recentf
    "b" 'counsel-switch-buffer
@@ -1159,8 +1164,7 @@ a list with possible =ssh= connections AND docker containers (thanks to
   :defer t
   :ensure docker-tramp
   :general
-  (:states '(normal visual)
-   :prefix hcps/leader-key
+  (:keymaps 'hcps/leader-map
    "m t" 'counsel-tramp))
 #+end_src
 
@@ -1178,6 +1182,17 @@ Undo and redo and kools with =undo-tree=!
   (defun reset-visualizer-diff (&rest args)
     "Because undo-tree-visualize sets the value of this variable to nil on quit."
     (setq undo-tree-visualizer-diff hcps/undo-tree-visualizer-diff))
+  (defun wolfgang/clean-undo-tree ()
+    "Clear current buffer's undo-tree."
+    (interactive)
+    (let ((buff (current-buffer)))
+      (if (local-variable-p 'buffer-undo-tree)
+          (if (y-or-n-p "Clear buffer-undo-tree? ")
+              (progn
+                (setq buffer-undo-tree nil)
+                (message "Cleared undo-tree of buffer: %s" (buffer-name buff)))
+            (message "Cancelled clearing undo-tree of buffer: %s" (buffer-name buff)))
+        (error "Buffer %s has no local binding of `buffer-undo-tree'" (buffer-name buff)))))
   :hook
   ((after-init-hook . global-undo-tree-mode)
    (undo-tree-visualizer-mode-hook . hcps/clean-mode-line)
@@ -1191,9 +1206,9 @@ Undo and redo and kools with =undo-tree=!
   (undo-tree-history-directory-alist `((".*" . ,temporary-file-directory)))
   (undo-tree-visualizer-diff hcps/undo-tree-visualizer-diff)
   :general
-  (:states '(normal visual)
-   :prefix hcps/leader-key
-   "u" 'undo-tree-visualize))
+  (:keymaps 'hcps/leader-map
+   "u" 'undo-tree-visualize
+   "U" 'wolfgang/clean-undo-tree))
 #+end_src
 
 Keep a list of recent files with =recentf=
@@ -1230,8 +1245,14 @@ there's a cool extension that provides such functionality.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package dashboard
+  :commands (dashboard-mode dashboard-insert-startupify-lists)
+  :preface
+  (defun hcps/open-dashboard ()
+    (let ((buffer (switch-to-buffer "*dashboard*")))
+      (dashboard-mode)
+      buffer))
+  (setq-default initial-buffer-choice #'hcps/open-dashboard)
   :custom
-  (initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
   (dashboard-banner-logo-title (format "Welcome to Emacs, %s!" current-user))
   (dashboard-set-heading-icons nil)
   (dashboard-set-file-icons nil)
@@ -1239,13 +1260,7 @@ there's a cool extension that provides such functionality.
   (dashboard-page-separator "\n\n\n")
   (dashboard-startup-banner 'logo)
   (dashboard-items '((recents  . 5)
-                     (projects . 5)
-                     (bookmarks . 5)
-                     (agenda . 5)))
-  :general
-  (:states '(normal visual)
-   :keymaps 'dashboard-mode-map
-   "SPC" nil)
+                     (bookmarks . 5)))
   :config
   (dashboard-setup-startup-hook))
 #+end_src
@@ -1257,6 +1272,7 @@ instead of the default =dired=.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ranger
+  :defer t
   :hook
   ((ranger-mode-hook . hide-mode-line-mode)
    (ranger-parent-dir-hook . hide-mode-line-mode)
@@ -1270,8 +1286,7 @@ instead of the default =dired=.
    (ranger-preview-dir-hook . ranger-truncate)
    (ranger-preview-dir-hook . ranger-show-details))
   :general
-  (:states '(normal visual)
-   :prefix hcps/leader-key
+  (:keymaps 'hcps/leader-map
    "d" 'ranger)
   :custom
   (ranger-excluded-extensions '("mkv" "iso" "mp4" "bin" "exe" "msi" "pdf"))
@@ -1291,6 +1306,7 @@ integrating packages and is overall more popular than the former.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package treemacs
+  :defer t
   :ensure treemacs-evil
   :ensure treemacs-projectile
   :preface
@@ -1310,8 +1326,7 @@ integrating packages and is overall more popular than the former.
   :general
   ("M-0" 'treemacs-select-window
    "M-t" 'treemacs)
-  (:states '(normal visual)
-   :prefix hcps/leader-key
+  (:keymaps 'hcps/leader-map
    "t" 'treemacs)
   :config
   (treemacs-follow-mode +1)
@@ -1326,10 +1341,11 @@ I use =exec-path-from-shell=. That way commands that work on the =shell=
 will certainly work on Emacs!
 
 #+begin_src emacs-lisp :tangle yes
+(setenv "SHELL" "/bin/bash")
+
 (use-package exec-path-from-shell
-  :demand
-  :init
-  (setenv "SHELL" "/bin/bash")
+  :defer .1
+  :disabled
   :custom
   (exec-path-from-shell-arguments '("-l"))
   (exec-path-from-shell-variables '("PATH" "MANPATH"))
@@ -1344,6 +1360,7 @@ Besides the =ISearch= from Emacs itself or the search function from
 
 #+begin_src emacs-lisp :tangle yes
 (use-package anzu
+  :defer t
   :delight
   (isearch-mode)
   (anzu-mode)
@@ -1359,8 +1376,7 @@ Besides the =ISearch= from Emacs itself or the search function from
   (anzu-cons-mode-line-p t)
   (anzu-mode-line-update-function #'hcps/anzu-update-func)
   :general
-  (:states 'normal
-   :prefix hcps/leader-key
+  (:keymaps 'hcps/leader-map
    "r SPC" 'anzu-replace-at-cursor-thing
    "r q" 'anzu-query-replace-regexp)
   :config
@@ -1375,10 +1391,10 @@ the slowness of it. So, I use =deadgrep=!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package deadgrep
+  :defer t
   :after evil-collection
   :general
-  (:states '(normal visual)
-   :prefix hcps/leader-key
+  (:keymaps 'hcps/leader-map
    "m g" 'deadgrep)
   :config
   (evil-collection-deadgrep-setup))
@@ -1388,11 +1404,11 @@ the slowness of it. So, I use =deadgrep=!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package link-hint
+  :defer t
   :custom
   (browse-url-browser-function 'browse-url-firefox)
   :general
-  (:states 'normal
-   :prefix hcps/leader-key
+  (:keymaps 'hcps/leader-map
    "h" 'link-hint-open-link))
 #+end_src
 
@@ -1400,13 +1416,14 @@ As I love some overkill, here's =avy=.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package avy
+  :defer t
   :after evil
   :custom
   (avy-styles-alist
    '((avy-goto-char-2 . post) (avy-goto-line . at-full)))
   (avy-background t)
   :general
-  (:states 'normal
+  (:states '(normal visual)
    "s" 'avy-goto-char-2
    "S" 'avy-goto-line))
 #+end_src
@@ -1418,6 +1435,7 @@ Let's monitor ourselves with =whitespace=.
 #+begin_src emacs-lisp :tangle yes
 (use-package whitespace
   :defer t
+  :commands (whitespace-mode whitespace-cleanup delete-trailing-whitespace)
   :hook
   ((before-save-hook . whitespace-cleanup)
    (before-save-hook . delete-trailing-whitespace)
@@ -1438,6 +1456,7 @@ extra configuration about it:
 (use-package compile
   :defer t
   :ensure nil
+  :commands compile-mode
   :custom
   (compilation-ask-about-save nil)
   (compilation-always-kill t)
@@ -1512,8 +1531,7 @@ Here's a small package that allows remotely opening sessions.
   (ssh-default-server "aeon.inf")
   (ssh-directory-tracking-mode t)
   :general
-  (:states '(normal visual)
-   :prefix hcps/leader-key
+  (:keymaps 'hcps/leader-map
    "m s" 'hcps/ssh-user-connect
    "m S" 'hcps/store-user-remote)
   :config
@@ -1527,7 +1545,7 @@ command you're typing in the mode-line.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package which-key
-  :defer .1
+  ;; :defer .1
   :delight
   :custom
   (which-key-allow-evil-operators t)
@@ -1560,8 +1578,7 @@ By using =lsp-mode=, we'll be able to have it too!
   (lsp-semantic-highlighting t)
   (lsp-diagnostics-modeline-scope :project)
   :general
-  (:states '(normal visual)
-   :prefix hcps/leader-key
+  (:keymaps 'hcps/leader-map
    "L" '(:keymap lsp-command-map :package lsp-mode))
   :config
   (add-to-list 'lsp-language-id-configuration '(cuda-mode . "cuda"))
@@ -1619,6 +1636,7 @@ This highlights numbers in =prog-mode=:
 #+begin_src emacs-lisp :tangle yes
 (use-package highlight-numbers
   :defer t
+  :commands highlight-numbers-mode
   :hook
   (prog-mode-hook . highlight-numbers-mode))
 #+end_src
@@ -1628,6 +1646,7 @@ And this is to highlight escape sequences in some common modes:
 #+begin_src emacs-lisp :tangle yes
 (use-package highlight-escape-sequences
   :defer t
+  :commands turn-on-hes-mode
   :preface
   (defconst hes-shell-escape-sequence-re "\\(\\\\[\"'\\bfnrtv]\\)"
     "Simple regex to match any common escaped character in sh-mode")
@@ -1642,6 +1661,7 @@ Of course, =flyspell= corrects your writing!
 #+begin_src emacs-lisp :tangle yes
 (use-package flyspell
   :defer t
+  :commands (flyspell-prog-mode flyspell-mode ispell-change-dictionary)
   :delight
   (flyspell-mode " flysp")
   (flyspell-prog-mode " flysp")
@@ -1652,8 +1672,7 @@ Of course, =flyspell= corrects your writing!
   (ispell-program-name "aspell")
   (ispell-extra-args '("--sug-mode=ultra"))
   :general
-  (:states '(normal visual)
-   :prefix hcps/leader-key
+  (:keymaps 'hcps/leader-map
    "m d" 'ispell-change-dictionary))
 #+end_src
 
@@ -1663,6 +1682,7 @@ Last minute addition: =ansi-color=!
 (use-package ansi-color
   :defer t
   :ensure nil
+  :commands (ansi-color-for-comint-mode-on ansi-color-filter-apply)
   :hook
   ((shell-mode-hook . ansi-color-for-comint-mode-on)
    (eshell-preoutput-filter-functions . ansi-color-filter-apply))
@@ -1743,11 +1763,12 @@ _v_ verify setup    _f_ check           _s_ select
 
 #+begin_src emacs-lisp :tangle yes
 (use-package windmove
+  :defer t
   :general
-  ("C-M-h" 'windmove-left)
-  ("C-M-l" 'windmove-right)
-  ("C-M-k" 'windmove-up)
-  ("C-M-j" 'windmove-down))
+  ("C-M-h" 'windmove-left
+   "C-M-l" 'windmove-right
+   "C-M-k" 'windmove-up
+   "C-M-j" 'windmove-down))
 #+end_src
 
 Originally, =midnight= is used to /run something at midnight/. I use its
@@ -1755,6 +1776,7 @@ feature that kills old buffers.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package midnight
+  :defer 60
   :ensure nil
   :custom
   (clean-buffer-list-delay-general 0.5)
@@ -1769,6 +1791,7 @@ name:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package uniquify
+  :defer 10
   :ensure nil
   :custom
   (uniquify-buffer-name-style 'forward)
@@ -1785,8 +1808,7 @@ name:
   :custom
   (aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l))
   :general
-  (:states '(normal visual)
-   :prefix hcps/leader-key
+  (:keymaps 'hcps/leader-map
    "w o" 'ace-window))
 #+end_src
 
@@ -1795,7 +1817,6 @@ Emacs loses focus, etc.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package super-save
-  :demand
   :delight
   :custom
   (super-save-auto-save-when-idle t)
@@ -1812,6 +1833,7 @@ I use =yasnippet= to handle my snippet needs.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package yasnippet
+  :defer t
   :delight
   (yas-minor-mode " yas")
   :commands yas-minor-mode
@@ -1833,6 +1855,7 @@ Enables vim-like folding of regions.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package vimish-fold
+  :defer t
   :general
   (:keymaps 'vimish-fold-folded-keymap
    "C-<tab>" 'vimish-fold-unfold)
@@ -1855,8 +1878,6 @@ buffers or searching the whole project and replacing something.
 #+begin_src emacs-lisp :tangle yes
 (use-package projectile
   :defer t
-  :hook
-  (emacs-startup-hook . projectile-mode)
   ;; there's already a hint to the project name in the name of the buffer,
   ;; thanks to smart-mode-line
   :delight
@@ -1882,8 +1903,7 @@ buffers or searching the whole project and replacing something.
      ".tox" ".svn" ".stack-work"))
   :general
   ([remap compile] 'projectile-compile-project)
-  (:states '(normal visual)
-   :prefix hcps/leader-key
+  (:keymaps 'hcps/leader-map
    "p" '(:wk "projectile" :keymap projectile-command-map :package projectile))
   :config
   ;; clean dead projects when Emacs is idle
@@ -1941,8 +1961,7 @@ in the visible universe, nay, in the whole multiverse.
   (magit-revision-show-gravatars nil)
   (magit-bury-buffer-function 'magit-mode-quit-window)
   :general
-  (:states '(normal visual)
-   :prefix hcps/leader-key
+  (:keymaps 'hcps/leader-map
    "g" '(:ignore t :wk "git")
    "g p" 'magit-list-repositories
    "g g" 'magit-status
@@ -1980,8 +1999,7 @@ Also, =git-timemachine= is a beautiful way to walk through git history:
    "w" 'git-timemachine-kill-abbreviated-revision
    "g" 'git-timemachine-show-nth-revision
    "c" 'git-timemachine-show-commit)
-  (:states '(normal visual)
-   :prefix hcps/leader-key
+  (:keymaps 'hcps/leader-map
    "g t" 'git-timemachine)
   :config
   (evil-make-overriding-map git-timemachine-mode-map 'normal))
@@ -2021,18 +2039,17 @@ With that, =rainbow-delimiters= is a great match:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package rainbow-delimiters
-  :commands rainbow-delimiters-mode
-  :defer t)
+  :defer t
+  :commands rainbow-delimiters-mode)
 #+end_src
 
 This little add-on will highlight big cursor movements.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package beacon
-  :demand
   :delight
   :config
-  (beacon-mode 1))
+  (beacon-mode +1))
 #+end_src
 
 *** Indentation
@@ -2180,8 +2197,7 @@ A Collection of Ridiculously Useful eXtensions for Emacs.
   (advise-once 'indent-region :before (lambda (&rest _) (require 'crux)))
   (advise-once 'untabify :before (lambda (&rest _) (require 'crux)))
   :general
-  (:states '(normal visual)
-   :prefix hcps/leader-key
+  (:keymaps 'hcps/leader-map
    ;; file stuff
    "f s" 'crux-sudo-edit
    "f m" 'crux-rename-buffer-and-file ;; for `move'
@@ -2200,6 +2216,7 @@ To make pretty page breaks in your Emacs buffers:
 #+begin_src emacs-lisp :tangle yes
 (use-package page-break-lines
   :defer t
+  :commands page-break-lines-mode
   :delight
   :hook
   ((prog-mode-hook . page-break-lines-mode)
@@ -2223,8 +2240,7 @@ A nice writing environment for Emacs in a minor-mode.
   (writeroom-fullscreen-effect 'maximized)
   (writeroom-width (+ 3 fill-column))
   :general
-  (:states '(normal visual)
-   :prefix hcps/leader-key
+  (:keymaps 'hcps/leader-map
    "m w" 'writeroom-mode))
 #+end_src
 
@@ -2286,7 +2302,6 @@ your =.org= file.
   :ensure nil
   :ensure toc-org
   :ensure org-plus-contrib
-  :commands (org org-mode)
   :mode ("\\.org$" . org-mode)
   :hook
   ((org-mode-hook . toc-org-mode)
@@ -2336,9 +2351,7 @@ your =.org= file.
    "<S-right>" nil
    "<S-up>" nil
    "<S-down>" nil)
-  (:states '(normal visual)
-   :keymaps 'org-mode-map
-   :prefix hcps/leader-key
+  (:keymaps '(org-mode-map hcps/leader-map)
    "l n" '(:ignore t :wk "narrow")
    "l n s" 'org-narrow-to-subtree
    "l n p" 'narrow-to-page
@@ -2352,7 +2365,6 @@ your =.org= file.
    "<tab>" 'org-cycle)
   :config
   (add-to-list 'sml/replacer-regexp-list `(,(concat "^" org-directory) ":ORG:"))
-  :config
   (require 'toc-org))
 #+end_src
 
@@ -2388,9 +2400,7 @@ Configurations relating all the numerous org exporters.
   (org-export-babel-evaluate t)
   (org-export-in-background nil)
   :general
-  (:states '(normal visual)
-   :keymaps 'org-mode-map
-   :prefix hcps/leader-key
+  (:keymaps '(org-mode-map hcps/leader-map)
    "l e" 'org-export-dispatch))
 #+end_src
 
@@ -2555,9 +2565,7 @@ Now, some configurations relating org-babel and its magic source blocks.
      (lilypond . t)
      (emacs-lisp . t)))
   :general
-  (:states '(normal visual)
-   :keymaps 'org-mode-map
-   :prefix hcps/leader-key
+  (:keymaps '(org-mode-map hcps/leader-map)
    "l x" 'org-babel-execute-buffer
    "l z" 'org-babel-tangle-block
    "l Z" 'org-babel-tangle)
@@ -2582,8 +2590,7 @@ Now, some configurations relating org-babel and its magic source blocks.
   (org-journal-date-format "%e %b %Y (%A)")
   (org-journal-time-format "")
   :general
-  (:states '(normal visual)
-   :prefix hcps/leader-key
+  (:keymaps 'hcps/leader-map
    "m j" 'org-journal-new-entry))
 #+end_src
 
@@ -2649,9 +2656,7 @@ that can really be of great use while editing C and C++ code.
     (when c-buffer-is-cc-mode
       (clang-format-buffer)))
   :general
-  (:states '(normal visual)
-   :keymaps 'c-mode-base-map
-   :prefix hcps/leader-key
+  (:keymaps '(c-mode-base-map hcps/leader-map)
    "i" 'clang-format-region)
   :custom
   (clang-format-style "webkit")
@@ -2719,9 +2724,10 @@ As for shell-scripting:
 (use-package sh-script
   :defer t
   :ensure nil
+  :commands shell-script-mode
   :mode ("\\.zsh" . shell-script-mode)
   :preface
-  (defvar more-sh-utilities
+  (defconst more-sh-utilities
     '("addbib" "apropos" "ar" "at" "awk" "banner" "basename" "batch" "biff"
       "cal" "calendar" "cancel" "cat" "cb" "cc" "checkeq" "checknr" "chgrp"
       "chmod" "chown" "chroot" "clear" "cmp" "colcrt" "comm" "compress" "cp"
@@ -2742,7 +2748,7 @@ As for shell-scripting:
       "who" "whoami" "write" "xargs" "xstr" "yacc" "yes" "zcat" "gawk" "curl"
       "ip")
     "A list of common shell commands to be fontified especially in `sh-mode'.")
-  (defvar more-sh-builtins
+  (defconst more-sh-builtins
     '("alias" "bg" "bind" "break" "builtin" "caller" "cd"
       "command" "compgen" "complete" "compopt" "continue" "declare" "dirs"
       "disown" "echo" "enable" "eval" "exec" "exit" "export" "false" "fc" "fg"
@@ -2825,6 +2831,7 @@ So, we'll set that up.
 (use-package make-mode
   :defer t
   :ensure nil
+  :commands makefile-mode
   :mode ("^[Mm]akefile$" . makefile-mode)
   :preface
   (defun makefile-mode-defaults ()
@@ -2855,8 +2862,11 @@ Fix for the annoying keyword default indentation:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package lisp-mode
-  :demand
+  :defer t
   :ensure nil
+  :mode
+  (("\\.lsp$" . lisp-mode)
+   ("\\.cl$" . lisp-mode))
   :preface
   (defun fuco1/lisp-indent-function (indent-point state)
     "This function is the normal value of the variable `lisp-indent-function'.
@@ -2933,7 +2943,9 @@ Lisp function does not specify a special indentation."
    (lisp-mode-hook . aggressive-indent-mode)
    (lisp-mode-hook . rainbow-delimiters-mode))
   :custom
-  (lisp-indent-function #'fuco1/lisp-indent-function))
+  (lisp-indent-function #'fuco1/lisp-indent-function)
+  :config
+  (require 'use-package))
 #+end_src
 
 ** Elisp
@@ -2943,7 +2955,6 @@ Emacs version!
 #+begin_src emacs-lisp :tangle yes
 (use-package elisp-mode
   :defer t
-  :after lisp-mode
   :ensure nil
   :ensure elisp-slime-nav
   :commands emacs-lisp-mode
@@ -2957,7 +2968,9 @@ Emacs version!
   :hook
   ((after-save-hook . recompile-elc-on-save)
    (emacs-lisp-mode-hook . (lambda () (run-hooks 'lisp-mode-hook)))
-   (emacs-lisp-mode-hook . yas-minor-mode)))
+   (emacs-lisp-mode-hook . yas-minor-mode))
+  :config
+  (require 'lisp-mode))
 #+end_src
 
 ** English
@@ -2970,8 +2983,7 @@ thesaurus.
 (use-package mw-thesaurus
   :defer t
   :general
-  (:states '(normal visual)
-   :prefix hcps/leader-key
+  (:keymaps 'hcps/leader-map
    "T" 'mw-thesaurus-lookup-at-point))
 #+end_src
 
@@ -3142,8 +3154,8 @@ Python).
 #+begin_src emacs-lisp :tangle yes
 (use-package meson-mode
   :defer t
-  :mode "^meson\\.build$"
   :commands meson
+  :mode "^meson\\.build$"
   :hook
   (meson-mode-hook . (lambda () (run-hooks 'prog-mode-hook))))
 #+end_src
@@ -3156,6 +3168,7 @@ Derives from =conf-mode[space]=. Got it from [[https://notabug.org/arkhan/emacs-
 (use-package bspwm
   :defer t
   :ensure nil
+  :commands bspwm-config-mode
   :load-path (lambda () (expand-file-name "bspwm-mode" vendor-user-dir))
   :mode
   ("^\\(?:sxhkd\\|bspwm\\)rc$" . bspwm-config-mode)
@@ -3231,9 +3244,7 @@ Old language, still great for doing admin stuff in few lines.
   (cperl-label-offset -4)
   (cperl-continued-statement-offset 4)
   :general
-  (:states '(normal visual)
-   :keymaps 'cperl-mode-map
-   :prefix hcps/leader-key
+  (:keymaps '(cperl-mode-map hcps/leader-map)
    "i" 'cperl-indent-region)
   (:keymaps 'cperl-mode-map
    "{" nil)
@@ -3241,7 +3252,7 @@ Old language, still great for doing admin stuff in few lines.
   (crux-with-region-or-buffer cperl-indent-region)
   (font-lock-add-keywords
    'cperl-mode `(("^#!\\/\\(?:\\w+\\/\\)*\\(\\w+\\)"
-               (1 'font-lock-keyword-face prepend)))))
+                  (1 'font-lock-keyword-face prepend)))))
 #+end_src
 
 * Post-init
