@@ -12,7 +12,7 @@ ExecStartPre=/usr/bin/mkfifo $FIFO
 ExecStart=/usr/bin/sxhkd -s $FIFO -m -1
 ExecReload=/usr/bin/kill -SIGUSR1 $MAINPID
 Restart=always
-RestartSec=2s
+RestartSec=1s
 
 [Install]
 WantedBy=default.target
