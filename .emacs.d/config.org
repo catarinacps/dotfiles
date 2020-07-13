@@ -557,14 +557,7 @@ A better GC threshold for eval.
 *** GUI elements
 
 Almost every GUI element of Emacs is useless and a waste of screen
-space.
-
-#+begin_src emacs-lisp :tangle yes
-(customize-set-variable 'scroll-bar-mode nil)
-(customize-set-variable 'horizontal-scroll-bar-mode nil)
-(customize-set-variable 'menu-bar-mode nil)
-(customize-set-variable 'tool-bar-mode nil)
-#+end_src
+space. Those are turned off in my =xresources= config.
 
 To be fair, some stuff is really personal preference of mine.
 
@@ -618,8 +611,6 @@ any further.
               require-final-newline t
               x-stretch-cursor nil
               cursor-in-non-selected-windows nil)
-
-(blink-cursor-mode 0)
 #+end_src
 
 Also, =auto-fill-mode= is very useful to justify paragraphs
