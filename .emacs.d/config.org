@@ -848,7 +848,6 @@ Yes, you can have the best of both worlds!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package evil
-  :defines evil-normal-state-map
   :preface
   (defun hcps/shift-left-region ()
     "Shift left and restore visual selection."
@@ -1254,6 +1253,10 @@ there's a cool extension that provides such functionality.
       (dashboard-mode)
       buffer))
   (setq-default initial-buffer-choice #'hcps/open-dashboard)
+  :general
+  (:states '(normal visual)
+   :keymaps 'dashboard-mode-map
+   hcps/leader-key nil)
   :custom
   (dashboard-banner-logo-title (format "Welcome to Emacs, %s!" current-user))
   (dashboard-set-heading-icons nil)
@@ -1275,6 +1278,7 @@ instead of the default =dired=.
 #+begin_src emacs-lisp :tangle yes
 (use-package ranger
   :defer t
+  :disabled
   :hook
   ((ranger-mode-hook . hide-mode-line-mode)
    (ranger-parent-dir-hook . hide-mode-line-mode)
@@ -1906,10 +1910,11 @@ buffers or searching the whole project and replacing something.
   :general
   ([remap compile] 'projectile-compile-project)
   (:keymaps 'hcps/leader-map
-   "p" '(:wk "projectile" :keymap projectile-command-map :package projectile))
+   "p" 'projectile-command-map)
   :config
+  (require 'counsel)
   ;; clean dead projects when Emacs is idle
-  (run-with-idle-timer 10 nil #'projectile-cleanup-known-projects))
+  (run-with-idle-timer 60 nil #'projectile-cleanup-known-projects))
 #+end_src
 
 And, as a further integration of =ivy= and =projectile=, there is a
@@ -2164,6 +2169,13 @@ well to other diverse media files.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package openwith
+  :defer t
+  :preface
+  (defun hcps/ensure-openwith-and-quit ()
+    (remove-hook 'pre-command-hook #'hcps/ensure-openwith-and-quit)
+    (require 'openwith))
+  :hook
+  (pre-command-hook . hcps/ensure-openwith-and-quit)
   :custom
   (openwith-associations
    '(("\\.pdf$" "zathura" (file))
