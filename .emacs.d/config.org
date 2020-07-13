@@ -501,7 +501,6 @@ above"!
 
   ;; some interesting names for the future prefixes
   (general-def 'hcps/leader-map
-    "" '(:ignore t :wk "leader")
     "f" '(:ignore t :wk "file")
     "w" '(:ignore t :wk "window")
     "r" '(:ignore t :wk "replace")
@@ -804,7 +803,10 @@ extensively throughout this file.
   (defvar hcps/leader-map (make-sparse-keymap)
     "Keymap for all my leader bindings.")
   :general
-  (:keymaps '(global-map special-mode-map)
+  (:keymaps 'global-map
+   (concat "C-" hcps/leader-key) '(:wk "leader" :keymap hcps/leader-map :package general)
+   (concat "ESC " hcps/leader-key) '(:wk "leader" :keymap hcps/leader-map :package general))
+  (:keymaps 'special-mode-map
    hcps/leader-key '(:wk "leader" :keymap hcps/leader-map :package general)))
 #+end_src
 
@@ -2351,7 +2353,9 @@ your =.org= file.
    "<S-right>" nil
    "<S-up>" nil
    "<S-down>" nil)
-  (:keymaps '(org-mode-map hcps/leader-map)
+  (:states '(normal visual)
+   :keymaps 'org-mode-map
+   :prefix hcps/leader-key
    "l n" '(:ignore t :wk "narrow")
    "l n s" 'org-narrow-to-subtree
    "l n p" 'narrow-to-page
@@ -2400,7 +2404,9 @@ Configurations relating all the numerous org exporters.
   (org-export-babel-evaluate t)
   (org-export-in-background nil)
   :general
-  (:keymaps '(org-mode-map hcps/leader-map)
+  (:states '(normal visual)
+   :keymaps 'org-mode-map
+   :prefix hcps/leader-key
    "l e" 'org-export-dispatch))
 #+end_src
 
@@ -2565,7 +2571,9 @@ Now, some configurations relating org-babel and its magic source blocks.
      (lilypond . t)
      (emacs-lisp . t)))
   :general
-  (:keymaps '(org-mode-map hcps/leader-map)
+  (:states '(normal visual)
+   :keymaps 'org-mode-map
+   :prefix hcps/leader-key
    "l x" 'org-babel-execute-buffer
    "l z" 'org-babel-tangle-block
    "l Z" 'org-babel-tangle)
@@ -2656,7 +2664,9 @@ that can really be of great use while editing C and C++ code.
     (when c-buffer-is-cc-mode
       (clang-format-buffer)))
   :general
-  (:keymaps '(c-mode-base-map hcps/leader-map)
+  (:states '(normal visual)
+   :keymaps 'c-mode-base-map
+   :prefix hcps/leader-key
    "i" 'clang-format-region)
   :custom
   (clang-format-style "webkit")
@@ -3244,7 +3254,9 @@ Old language, still great for doing admin stuff in few lines.
   (cperl-label-offset -4)
   (cperl-continued-statement-offset 4)
   :general
-  (:keymaps '(cperl-mode-map hcps/leader-map)
+  (:states '(normal visual)
+   :keymaps 'cperl-mode-map
+   :prefix hcps/leader-key
    "i" 'cperl-indent-region)
   (:keymaps 'cperl-mode-map
    "{" nil)
