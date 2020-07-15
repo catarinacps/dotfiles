@@ -2733,15 +2733,11 @@ For R you pretty much /need/ the =ess= package, i.e. /Emacs Speaks
 Statistics/. It provides you with everything you need from R.
 
 #+begin_src emacs-lisp :tangle yes
-(use-package ess
+(use-package ess-r-mode
   :defer t
-  :commands (R ess-r-mode ess-r-transcript-mode)
-  :hook
-  ((ess-r-mode-hook . yas-minor-mode)
-   (ess-r-mode-hook . aggressive-indent-mode)
-   (ess-r-mode-hook . smartparens-strict-mode)
-   ;; (ess-r-mode-hook . lsp)
-   (ess-r-mode-hook . rainbow-delimiters-mode))
+  :ensure nil
+  :ensure ess
+  :commands (R R-mode r-mode ess-r-mode ess-r-transcript-mode)
   :preface
   (defun hcps/insert-r-pipe ()
     "Lets us insert the magrittr piping operator %>% in R"
@@ -2749,6 +2745,12 @@ Statistics/. It provides you with everything you need from R.
     (just-one-space 1)
     (insert "%>%")
     (reindent-then-newline-and-indent))
+  :hook
+  ((ess-r-mode-hook . yas-minor-mode)
+   (ess-r-mode-hook . aggressive-indent-mode)
+   (ess-r-mode-hook . smartparens-strict-mode)
+   ;; (ess-r-mode-hook . lsp)
+   (ess-r-mode-hook . rainbow-delimiters-mode))
   :general
   (:states 'insert
    :keymaps 'ess-r-mode-map
