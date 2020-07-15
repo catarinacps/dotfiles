@@ -30,7 +30,6 @@ Cool Emacs configs from cool people:
   - [[#functions-and-macros][Functions and Macros]]
     - [[#fetching-text][Fetching text]]
     - [[#date][Date]]
-    - [[#opening-things][Opening things]]
     - [[#one-time-advice][One-time advice]]
     - [[#automatic-byte-compile][Automatic byte-compile]]
     - [[#auto-removing-hook][Auto-removing hook]]
@@ -431,17 +430,6 @@ Insert the current date.
   (insert (format-time-string "%Y.%m.%d %H:%M")))
 #+end_src
 
-*** Opening things
-
-Like the title says...
-
-#+begin_src emacs-lisp :tangle yes
-(defun hcps/open-scratch ()
-  "Switch to the *scratch* buffer whenever you are."
-  (interactive)
-  (switch-to-buffer "*scratch*" nil t))
-#+end_src
-
 *** One-time advice
 
 'Cause that is kinda cool to have. Got it from [[https://emacs.stackexchange.com/questions/26251/one-time-advice][this]] place.
@@ -513,7 +501,6 @@ above"!
     "k" 'kill-this-buffer
     "i" 'indent-region
     "c" 'comment-dwim
-    "f n" 'hcps/open-scratch
     "w k" 'delete-window
     "w v" 'split-window-vertically
     "w h" 'split-window-horizontally)
@@ -2253,6 +2240,7 @@ A Collection of Ridiculously Useful eXtensions for Emacs.
    "f m" 'crux-rename-buffer-and-file ;; for `move'
    "f d" 'crux-delete-buffer-and-file
    "f c" 'crux-find-user-custom-file
+   "f n" 'crux-create-scratch-buffer
    "f i" 'crux-find-user-init-file)
   :config
   (crux-with-region-or-buffer indent-region)
