@@ -1050,10 +1050,9 @@ looks very pretty on =gruvbox=).
     "Clean mode-line format."
     (setq-local mode-line-format ""))
   :custom
-  (sml/projectile-replacement-format "[%s] ")
   (sml/size-indication-format " %I ")
   (sml/line-number-format "%4l")
-  (sml/use-projectile-p 'after-prefixes)
+  (sml/use-projectile-p nil)
   (sml/shorten-directory nil)
   (sml/shorten-modes t)
   (sml/mode-width 'right)
@@ -1906,19 +1905,23 @@ buffers or searching the whole project and replacing something.
 #+begin_src emacs-lisp :tangle yes
 (use-package projectile
   :defer t
-  ;; there's already a hint to the project name in the name of the buffer,
-  ;; thanks to smart-mode-line
-  :delight
+  :preface
+  (defun hcps/projectile-custom-mode-line ()
+    "Report project name and type in the modeline."
+    (let ((project-name (projectile-project-name))
+          (project-type (projectile-project-type)))
+      (unless (string-empty-p project-name)
+        (format "%s:%s"
+                projectile-mode-line-prefix
+                project-name))))
   :custom
   (projectile-completion-system 'ivy)
+  (projectile-mode-line-prefix " proj")
+  (projectile-mode-line-function #'hcps/projectile-custom-mode-line)
   (projectile-switch-project-action 'projectile-find-file)
   (projectile-find-dir-includes-top-level t)
   (projectile-enable-caching t)
   (projectile-indexing-method 'native)
-  (projectile-known-projects-file
-   (expand-file-name "projectile/known-projects.el" var-user-dir))
-  (projectile-cache-file
-   (expand-file-name "projectile/cache.el" var-user-dir))
   (projectile-project-root-files-top-down-recurring
    '(".projectile" "compile_commands.json" ".ccls" ".svn" "CVS" "Makefile"))
   (projectile-globally-ignored-file-suffixes
@@ -1931,12 +1934,13 @@ buffers or searching the whole project and replacing something.
      ".tox" ".svn" ".stack-work"))
   :general
   ([remap compile] 'projectile-compile-project)
-  (:keymaps 'hcps/leader-map
-   "p" 'projectile-command-map)
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   "p" '(:keymap projectile-command-map :wk "projectile"))
   :config
   (require 'counsel)
   ;; clean dead projects when Emacs is idle
-  (run-with-idle-timer 60 nil #'projectile-cleanup-known-projects))
+  (run-with-idle-timer 180 nil #'projectile-cleanup-known-projects))
 #+end_src
 
 And, as a further integration of =ivy= and =projectile=, there is a
