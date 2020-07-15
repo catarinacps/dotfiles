@@ -27,12 +27,13 @@ Cool Emacs configs from cool people:
     - [[#config][:config]]
 - [[#personal][Personal]]
   - [[#information][Information]]
-  - [[#functions][Functions]]
+  - [[#functions-and-macros][Functions and Macros]]
     - [[#fetching-text][Fetching text]]
     - [[#date][Date]]
     - [[#opening-things][Opening things]]
     - [[#one-time-advice][One-time advice]]
     - [[#automatic-byte-compile][Automatic byte-compile]]
+    - [[#auto-removing-hook][Auto-removing hook]]
   - [[#keybindings][Keybindings]]
 - [[#the-editor][The editor]]
   - [[#definitions-and-preferences][Definitions and preferences]]
@@ -374,7 +375,7 @@ Some basic info about me.
       user-mail-address "hcpsilva@inf.ufrgs.br")
 #+end_src
 
-** Functions
+** Functions and Macros
 
 Some very useful functions I got from other people or that I coded
 myself.
@@ -467,6 +468,22 @@ To use with this configuration file.
 
 (add-hook 'compilation-finish-functions
           (lambda (buffer &rest _) (delete-windows-on buffer 0)))
+#+end_src
+
+*** Auto-removing hook
+
+Sometimes it's cool to have a single-use hook.
+
+#+begin_src emacs-lisp :tangle yes
+(eval-and-compile
+  (defmacro hcps/hook-require-and-quit (package)
+    "Add a hook to `pre-command-hook' which requires the given package."
+    (let ((func (intern (concat "hcps/" (symbol-name package) "-require-and-quit"))))
+      `(progn
+         (defun ,func ()
+           (remove-hook 'pre-command-hook #',func)
+           (require ',package))
+         (add-hook 'pre-command-hook #',func)))))
 #+end_src
 
 ** Keybindings
@@ -882,15 +899,12 @@ Yes, you can have the best of both worlds!
     (setq-local evil-motion-state-tag nil)
     (setq-local evil-visual-state-tag nil)
     (setq-local evil-operator-state-tag nil))
-  (defun hcps/ensure-evil-and-quit ()
-    (remove-hook 'pre-command-hook #'hcps/ensure-evil-and-quit)
-    (require 'evil))
+  ;; require and then remove the hook (it hooks to pre-command-hook)
+  (hcps/hook-require-and-quit evil)
   :init
   (setq evil-want-keybinding nil)
   (advice-add 'org-babel-do-key-sequence-in-edit-buffer
               :around #'dzop/evil-org-insert-state-in-edit-buffer)
-  :hook
-  (pre-command-hook . hcps/ensure-evil-and-quit)
   :general
   (:states '(normal visual)
    hcps/leader-key '(:wk "leader" :keymap hcps/leader-map :package general))
@@ -1551,8 +1565,10 @@ command you're typing in the mode-line.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package which-key
-  ;; :defer .1
+  :defer t
   :delight
+  :preface
+  (hcps/hook-require-and-quit which-key)
   :custom
   (which-key-allow-evil-operators t)
   :config
@@ -2054,6 +2070,9 @@ This little add-on will highlight big cursor movements.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package beacon
+  :defer t
+  :preface
+  (hcps/hook-require-and-quit beacon)
   :delight
   :config
   (beacon-mode +1))
@@ -2171,11 +2190,7 @@ well to other diverse media files.
 (use-package openwith
   :defer t
   :preface
-  (defun hcps/ensure-openwith-and-quit ()
-    (remove-hook 'pre-command-hook #'hcps/ensure-openwith-and-quit)
-    (require 'openwith))
-  :hook
-  (pre-command-hook . hcps/ensure-openwith-and-quit)
+  (hcps/hook-require-and-quit openwith)
   :custom
   (openwith-associations
    '(("\\.pdf$" "zathura" (file))
