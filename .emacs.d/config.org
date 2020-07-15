@@ -79,6 +79,7 @@ Cool Emacs configs from cool people:
   - [[#theme][Theme]]
 - [[#file-modes][File modes]]
   - [[#org][Org]]
+    - [[#add-ons][Add-ons]]
     - [[#export][Export]]
     - [[#babel][Babel]]
     - [[#journal][Journal]]
@@ -2329,18 +2330,15 @@ your =.org= file.
 (use-package org
   :defer t
   :ensure nil
-  :ensure toc-org
   :ensure org-plus-contrib
   :mode ("\\.org$" . org-mode)
+  :delight
+  (org-indent-mode nil org-indent)
   :hook
-  ((org-mode-hook . toc-org-mode)
-   (org-mode-hook . turn-on-auto-fill)
+  ((org-mode-hook . turn-on-auto-fill)
    (org-mode-hook . yas-minor-mode)
    (org-mode-hook . eldoc-mode)
    (org-mode-hook . (lambda () (whitespace-toggle-options 'lines-tail))))
-  :init
-  ;; this only works here, don't ask me why
-  (delight 'org-indent-mode nil 'org-indent)
   :custom
   (org-return-follows-link t)
   ;; the following used to be '(latex script entities)
@@ -2348,14 +2346,14 @@ your =.org= file.
   (org-hide-leading-stars t)
   (org-support-shift-select nil)
   (org-link-descriptive t)
-  (org-log-done 'time)
+  (org-log-done 'note)
   (org-directory "~/org/")
   (org-cycle-emulate-tab 'exc-hl-bol)
   (org-use-property-inheritance t)
   (org-attach-use-inheritance t)
   (org-attach-dir-relative t)
   (org-startup-indented t)
-  ;; 10 because default-font-width doesn't work with daemon mode
+  ;; 10 pixels because default-font-width doesn't work with daemon mode
   (org-image-actual-width (round (* 10 fill-column 0.85)))
   (org-modules '(ol-w3m ol-bbdb ol-bibtex ol-docview ol-gnus
                         ol-info ol-irc ol-mhe ol-rmail ol-eww org-tempo
@@ -2395,8 +2393,18 @@ your =.org= file.
    :keymaps 'org-mode-map
    "<tab>" 'org-cycle)
   :config
-  (add-to-list 'sml/replacer-regexp-list `(,(concat "^" org-directory) ":ORG:"))
-  (require 'toc-org))
+  (add-to-list 'sml/replacer-regexp-list `(,(concat "^" org-directory) ":ORG:")))
+#+end_src
+
+*** Add-ons
+
+For now only =toc-org=. You should probably [[https://github.com/snosov1/toc-org][check it out]].
+
+#+begin_src emacs-lisp :tangle yes
+(use-package toc-org
+  :defer t
+  :hook
+  (org-mode-hook . toc-org-mode))
 #+end_src
 
 *** Export
@@ -2405,7 +2413,6 @@ Configurations relating all the numerous org exporters.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ox
-  :defer t
   :after org
   :ensure nil
   :ensure htmlize
@@ -2536,7 +2543,6 @@ Now, some configurations relating org-babel and its magic source blocks.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ob
-  :defer t
   :after org
   :ensure nil
   :delight
@@ -2617,7 +2623,6 @@ Now, some configurations relating org-babel and its magic source blocks.
 #+begin_src emacs-lisp :tangle yes
 (use-package org-journal
   :defer t
-  :after org
   :custom
   (org-journal-dir (format-time-string "~/OneDrive/Documentos/Journal/%Y/"))
   (org-journal-file-type 'monthly)
