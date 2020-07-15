@@ -500,7 +500,8 @@ above"!
     "C-c x" 'hcps/date-iso
     "<f9>" 'hcps/get-selected-text
     "M--" 'text-scale-decrease
-    "M-+" 'text-scale-increase)
+    "M-+" 'text-scale-increase
+    "<f12>" 'menu-bar-mode)
 
   (general-def '(global-map special-mode-map)
     "C-S-h" 'previous-buffer
@@ -691,9 +692,8 @@ Random configs and definitions that don't have a clear category.
       window-combination-resize t            ; Resize windows proportionally
       ring-bell-function 'ignore)            ; No bell ring
 
-(eval-and-compile
-  (setq backup-directory-alist `((".*" . ,temporary-file-directory))
-        auto-save-file-name-transforms `((".*" ,temporary-file-directory t))))
+(setq backup-directory-alist `((".*" . ,temporary-file-directory))
+      auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))
 
 (add-hook 'after-save-hook
           #'executable-make-buffer-file-executable-if-script-p)
@@ -729,10 +729,6 @@ Random configs and definitions that don't have a clear category.
 
 ;; (global-diff-hl-mode +1)
 ;; (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
-;; (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
-
-;; ;; toggle menu-bar visibility
-;; (global-set-key (kbd "<f12>") 'menu-bar-mode)
 
 ;; ;; use hippie-expand instead of dabbrev
 ;; (global-set-key (kbd "M-/") 'hippie-expand)
@@ -1006,6 +1002,17 @@ expressing actions.
    evil-Surround-edit
    evil-surround-region
    evil-Surround-region)
+  :preface
+  (defmacro define-and-bind-quoted-text-object (name key start-regex end-regex)
+    (let ((inner-name (make-symbol (concat "evil-inner-" name)))
+          (outer-name (make-symbol (concat "evil-a-" name))))
+      `(progn
+         (evil-define-text-object ,inner-name (count &optional beg end type)
+           (evil-select-paren ,start-regex ,end-regex beg end type count nil))
+         (evil-define-text-object ,outer-name (count &optional beg end type)
+           (evil-select-paren ,start-regex ,end-regex beg end type count t))
+         (define-key evil-inner-text-objects-map ,key #',inner-name)
+         (define-key evil-outer-text-objects-map ,key #',outer-name))))
   :general
   (:states 'operator
    "s" 'evil-surround-edit
@@ -1014,6 +1021,8 @@ expressing actions.
    "S" 'evil-surround-region
    "gS" 'evil-Surround-region)
   :config
+  (define-and-bind-quoted-text-object "slash" "/" "/" "/")
+  (define-and-bind-quoted-text-object "asterisk" "*" "*" "*")
   (global-evil-surround-mode +1))
 #+end_src
 
@@ -1069,6 +1078,7 @@ looks very pretty on =gruvbox=).
      ("^~/\\.emacs\\.d/" ":ED:")
      ("^/sudo:.*:" ":SU:")
      ("^~/Documents/" ":DOC:")
+     ("^~/Repositories/" ":GIT:")
      ("^~/OneDrive/CIC/" ":UNI:")
      ("^~/OneDrive/" ":OD:")))
   :config
@@ -1713,6 +1723,14 @@ Last minute addition: =ansi-color=!
   (add-to-list 'comint-output-filter-functions 'ansi-color-process-output))
 #+end_src
 
+=diff-hl= to highlight any diffs!
+
+#+begin_src emacs-lisp :tangle yes
+(use-package diff-hl
+  :defer t
+  :commands (diff-hl-mode turn-on-diff-hl-mode diff-hl-magit-post-refresh))
+#+end_src
+
 *** Hydra
 
 =hydra= is a package that allows keybindings to be activated under the
@@ -1956,7 +1974,9 @@ in the visible universe, nay, in the whole multiverse.
   :defer t
   :hook
   ((after-save-hook . magit-after-save-refresh-status)
-   (magit-mode-hook . hcps/hide-evil-tag))
+   (magit-mode-hook . hcps/hide-evil-tag)
+   (magit-file-mode-hook . diff-hl-mode)
+   (magit-post-refresh-hook . diff-hl-magit-post-refresh))
   :preface
   ;; easy on-off for the following function
   (defcustom magit-push-protected-branch nil
@@ -2204,7 +2224,7 @@ well to other diverse media files.
      ("\\.mkv$" "mpv" (file))
      ("\\.mp3$" "mpv" (file))
      ("\\.mp4$" "mpv" (file))))
-  (openwith-confirm-invocation t)
+  (openwith-confirm-invocation nil)
   :config
   (openwith-mode +1))
 #+end_src
@@ -3306,8 +3326,9 @@ Old language, still great for doing admin stuff in few lines.
 Lets lower a bit our GC threshold:
 
 #+begin_src emacs-lisp :tangle yes
-(setq gc-cons-threshold 16777216
-      gc-cons-percentage 0.1)
+(eval-and-compile
+  (setq gc-cons-threshold 16777216
+        gc-cons-percentage 0.1))
 #+end_src
 
 And that's it!
