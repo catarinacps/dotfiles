@@ -34,7 +34,6 @@ Cool Emacs configs from cool people:
     - [[#automatic-byte-compile][Automatic byte-compile]]
     - [[#auto-removing-hook][Auto-removing hook]]
   - [[#keybindings][Keybindings]]
-- [[#setting-up][Setting-up]]
   - [[#definitions-and-preferences][Definitions and preferences]]
     - [[#default-org-mode][Default =org-mode=]]
     - [[#paths-and-defconst][Paths and =defconst=]]
@@ -46,47 +45,60 @@ Cool Emacs configs from cool people:
     - [[#line-numbering-and-scrolling][Line numbering and scrolling]]
     - [[#randoms][Randoms]]
     - [[#custom-file][Custom file]]
-  - [[#package-loading][Package loading]]
-    - [[#load-path][Load path]]
-    - [[#use-package-setup][Use-package setup]]
-    - [[#additional-support-packages][Additional support packages]]
-- [[#built-in-packages][Built-in packages]]
-  - [[#package][=package=]]
-  - [[#whitespace][=whitespace=]]
-  - [[#compile][=compile=]]
-  - [[#tramp][=tramp=]]
-  - [[#ssh][=ssh=]]
-  - [[#ansi-color][=ansi-color=]]
-  - [[#windmove][=windmove=]]
-  - [[#midnight][=midnight=]]
-  - [[#uniquify][=uniquify=]]
-- [[#extensions][Extensions]]
-  - [[#keybindings-1][Keybindings]]
-    - [[#cursors][Cursors]]
-    - [[#pairs][Pairs]]
-    - [[#utilities][Utilities]]
-  - [[#mode-line-1][Mode line]]
-  - [[#completion-framework][Completion framework]]
-  - [[#history][History]]
-  - [[#splash-screen][Splash screen]]
-  - [[#file-management][File management]]
-  - [[#environment-variables][Environment variables]]
-  - [[#find-and-replace][Find and replace]]
-  - [[#completion][Completion]]
-  - [[#language-server-protocol][Language Server Protocol]]
-  - [[#syntax-and-highlighting][Syntax and Highlighting]]
-  - [[#hydra][Hydra]]
-  - [[#buffers-and-windows][Buffers and windows]]
-  - [[#templates-and-snippets][Templates and snippets]]
-  - [[#folding][Folding]]
-  - [[#project-management][Project management]]
-  - [[#versioning][Versioning]]
-  - [[#regions-pointers-and-pairs][Regions, pointers and pairs]]
-  - [[#indentation][Indentation]]
-  - [[#command-evaluation][Command evaluation]]
-  - [[#utilities-1][Utilities]]
+    - [[#better-eval-expression][Better =eval-expression=]]
+- [[#setting-up][Setting-up]]
+  - [[#load-path][Load path]]
+  - [[#use-package-setup][Use-package setup]]
+  - [[#additional-support-packages][Additional support packages]]
+- [[#package-configurations][Package configurations]]
+  - [[#built-in][Built-in]]
+    - [[#package][=package=]]
+    - [[#whitespace][=whitespace=]]
+    - [[#compile][=compile=]]
+    - [[#tramp][=tramp=]]
+    - [[#ssh][=ssh=]]
+    - [[#ansi-color][=ansi-color=]]
+    - [[#windmove][=windmove=]]
+    - [[#midnight][=midnight=]]
+    - [[#uniquify][=uniquify=]]
+    - [[#recentf][=recentf=]]
+  - [[#extension][Extension]]
+    - [[#evil][=evil=]]
+    - [[#smart-mode-line][=smart-mode-line=]]
+    - [[#hide-mode-line][=hide-mode-line=]]
+    - [[#ivy][=ivy=]]
+    - [[#counsel][=counsel=]]
+    - [[#undo-tree][=undo-tree=]]
+    - [[#dashboard][=dashboard=]]
+    - [[#ranger][=ranger=]]
+    - [[#treemacs][=treemacs=]]
+    - [[#exec-path-from-shell][=exec-path-from-shell=]]
+    - [[#anzu][=anzu=]]
+    - [[#deadgrep][=deadgrep=]]
+    - [[#link-hint][=link-hint=]]
+    - [[#avy][=avy=]]
+    - [[#which-key][=which-key=]]
+    - [[#lsp-mode][=lsp-mode=]]
+    - [[#flycheck][=flycheck=]]
+    - [[#highlight-numbers][=highlight-numbers=]]
+    - [[#highlight-escape-sequences][=highlight-escape-sequences=]]
+    - [[#flyspell][=flyspell=]]
+    - [[#diff-hl][=diff-hl=]]
+    - [[#hydra][=hydra=]]
+    - [[#ace-window][=ace-window=]]
+    - [[#super-save][=super-save=]]
+    - [[#yasnippet][=yasnippet=]]
+    - [[#vimish-fold][=vimish-fold=]]
+    - [[#projectile][=projectile=]]
+    - [[#magit][=magit=]]
+    - [[#git-timemachine][=git-timemachine=]]
+    - [[#expand-region][=expand-region=]]
+    - [[#smartparens][=smartparens=]]
+    - [[#rainbow-delimiters][=rainbow-delimiters=]]
+    - [[#beacon][=beacon=]]
+    - [[#aggressive-indent][=aggressive-indent=]]
+    - [[#highligh-indent-guides][=highligh-indent-guides=]]
     - [[#helpful][=helpful=]]
-    - [[#dumb-jump][=dumb-jump=]]
     - [[#engine-mode][=engine-mode=]]
     - [[#openwith][=openwith=]]
     - [[#crux][=crux=]]
@@ -506,34 +518,27 @@ above"!
     "<f9>" 'hcps/get-selected-text
     "M--" 'text-scale-decrease
     "M-+" 'text-scale-increase
+    "C-S-h" 'previous-buffer
+    "C-S-l" 'next-buffer
     "<f12>" 'menu-bar-mode)
 
-  (general-def '(global-map special-mode-map)
-    "C-S-h" 'previous-buffer
-    "C-S-l" 'next-buffer)
-
   (general-def 'hcps/leader-map
-    "B" 'ibuffer
-    "s" 'save-buffer
-    "k" 'kill-this-buffer
-    "i" 'indent-region
-    "c" 'comment-dwim
-    "w k" 'delete-window
-    "w v" 'split-window-vertically
-    "w h" 'split-window-horizontally)
-
-  ;; some interesting names for the future prefixes
-  (general-def 'hcps/leader-map
+    ;; some interesting names for the future prefixes
     "f" '(:ignore t :wk "file")
     "w" '(:ignore t :wk "window")
     "r" '(:ignore t :wk "replace")
     "l" '(:ignore t :wk "language")
-    "m" '(:ignore t :wk "misc")))
+    "m" '(:ignore t :wk "misc")
+    "B" 'ibuffer
+    "s" 'save-buffer
+    "k" 'kill-this-buffer
+    "i" 'indent-region
+    "e" 'eval-region
+    "c" 'comment-dwim
+    "w k" 'delete-window
+    "w v" 'split-window-vertically
+    "w h" 'split-window-horizontally))
 #+end_src
-
-* Setting-up
-
-Some setting up before we start configuring the packages themselves.
 
 ** Definitions and preferences
 
@@ -745,9 +750,21 @@ Perhaps is necessary sometimes.
 (load custom-file)
 #+end_src
 
-** Package loading
+*** Better =eval-expression=
 
-Some sanity definitions and checks...
+Some basic configuration to enhance the =eval-expression= command.
+
+#+begin_src emacs-lisp :tangle yes
+(defun sane-eval-expr-defaults ()
+  "Enable some sane modes for `eval-expression'."
+  (smartparens-mode +1))
+
+(add-hook 'eval-expression-minibuffer-setup-hook #'sane-eval-expr-defaults)
+#+end_src
+
+* Setting-up
+
+Some setting up before we start configuring the packages themselves.
 
 #+begin_src emacs-lisp :tangle yes
 (eval-and-compile
@@ -760,7 +777,7 @@ Some sanity definitions and checks...
     (make-directory package-user-dir t)))
 #+end_src
 
-*** Load path
+** Load path
 
 And then let's initialize the load path:
 
@@ -769,7 +786,7 @@ And then let's initialize the load path:
   (setq load-path (append load-path (directory-files package-user-dir t "^[^.]" t))))
 #+end_src
 
-*** Use-package setup
+** Use-package setup
 
 I use =use-package= to load my packages and to organize them neatly in
 this org file.
@@ -801,7 +818,7 @@ this org file.
 (add-hook 'emacs-startup-hook (lambda () (require 'use-package)))
 #+end_src
 
-*** Additional support packages
+** Additional support packages
 
 To facilitate my keybinding issues, I also use =general.el=. It adds
 some very welcome keywords to =use-package=, in which I'll use
@@ -844,7 +861,11 @@ history files the packages might set.
   :demand)
 #+end_src
 
-* Built-in packages
+* Package configurations
+
+Everything that isn't a language-related package.
+
+** Built-in
 
 The ones that /really/ don't require =use-package :ensure=.
 
@@ -854,13 +875,14 @@ The ones that /really/ don't require =use-package :ensure=.
 - [ ] eshell
 - [ ] save-place
 
-** =package=
+*** =package=                                                     :package:
 
 Same as above but with keybindings and =package-initialize=.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package package
   :defer t
+  :ensure nil
   :custom
   (package-archives
    '(("melpa" . "https://melpa.org/packages/")
@@ -876,7 +898,7 @@ Same as above but with keybindings and =package-initialize=.
   (package-initialize))
 #+end_src
 
-** =whitespace=
+*** =whitespace=                                               :faces:fill:
 
 Let's monitor ourselves with =whitespace=.
 
@@ -896,7 +918,7 @@ Let's monitor ourselves with =whitespace=.
   (whitespace-style '(face tabs empty trailing lines-tail)))
 #+end_src
 
-** =compile=
+*** =compile=                                           :error:naviagation:
 
 This compilation helper mode facilitates the navigation of error outputs
 on compilations.
@@ -912,7 +934,7 @@ on compilations.
   (compilation-scroll-output 'first-error))
 #+end_src
 
-** =tramp=
+*** =tramp=                                                        :remote:
 
 =tramp= is very useful when it comes to editing remote files and to
 editing as super-user.
@@ -926,7 +948,7 @@ editing as super-user.
   (tramp-terminal-type "xterm-mono"))
 #+end_src
 
-** =ssh=
+*** =ssh=                                                          :remote:
 
 Here's a small package that allows remotely opening sessions.
 
@@ -966,7 +988,7 @@ Here's a small package that allows remotely opening sessions.
   (shell-dirtrack-mode t))
 #+end_src
 
-** =ansi-color=
+*** =ansi-color=                                                :highlight:
 
 To have pretty colors on ansi output.
 
@@ -982,7 +1004,7 @@ To have pretty colors on ansi output.
    (comint-output-filter-functions . ansi-color-process-output)))
 #+end_src
 
-** =windmove=
+*** =windmove=                                                    :windows:
 
 A package that creates commands to move around windows.
 
@@ -997,7 +1019,7 @@ A package that creates commands to move around windows.
    "C-M-j" 'windmove-down))
 #+end_src
 
-** =midnight=
+*** =midnight=                                           :buffers:cleaning:
 
 Originally, =midnight= is used to /run something at midnight/. I use its
 feature that kills old buffers.
@@ -1007,21 +1029,20 @@ feature that kills old buffers.
   :defer 60
   :ensure nil
   :custom
-  (clean-buffer-list-delay-general 0.5)
+  (clean-buffer-list-delay-general (/ 1 12))
   (clean-buffer-list-delay-special (* 1 3600))
   (clean-buffer-list-kill-buffer-names
    '("*Help*" "*Apropos*" "*Buffer List*" "*Compile-Log*" "*info*" "*vc*"
      "*vc-diff*" "*diff*" "*IBuffer*" "*Finder*")))
 #+end_src
 
-** =uniquify=
+*** =uniquify=                                                    :buffers:
 
 =uniquify= creates automatic meaningful names for buffers with the same
 name:
 
 #+begin_src emacs-lisp :tangle yes
 (use-package uniquify
-  :defer 10
   :ensure nil
   :custom
   (uniquify-buffer-name-style 'forward)
@@ -1030,15 +1051,43 @@ name:
   (uniquify-ignore-buffers-re "^\\*"))
 #+end_src
 
-* Extensions
+*** =recentf=                                                       :files:
 
-These are Emacs-behaviour related! In other words, these extend the
-capabilities of Emacs as a text editor, and do NOT add support to other
-languages or etc.
+Keep a list of recent files with =recentf=
+
+#+begin_src emacs-lisp :tangle yes
+(use-package recentf
+  :ensure nil
+  :commands recentf-open-files
+  :hook
+  (kill-emacs-hook . recentf-cleanup)
+  :custom
+  (recentf-save-file (expand-file-name "recentf-save.el" var-user-dir))
+  (recentf-max-menu-items 0)
+  (recentf-max-saved-items 300)
+  (recentf-exclude
+   `(file-remote-p
+     "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
+     "^/tmp/"
+     "^/ssh:"
+     "\\.?ido\\.last$"
+     "\\.revive$"
+     "/TAGS$"
+     ,var-user-dir
+     ,package-user-dir
+     ,(expand-file-name "savefile" root-dir)))
+  (recentf-auto-cleanup 'never)
+  :config
+  (recentf-mode +1))
+#+end_src
+
+** Extension
+
+The ones from MELPA and ELPA and whatever.
 
 - [ ] vterm
 
-** Keybindings
+*** =evil=                                                    :keybindings:
 
 =evil=, or /Extensible vi Layer/, is a minor mode that changes Emacs
 text editing keybindings to match the modal edit modes of vi and vim.
@@ -1128,7 +1177,7 @@ Yes, you can have the best of both worlds!
   (evil-mode +1))
 #+end_src
 
-*** Cursors
+**** Cursors
 
 Here we have both =evil-matchit=, which allows you to jump between tags
 automatically,
@@ -1159,7 +1208,7 @@ and =evil-mc= implements the =multiple-cursors= functionality to
   (global-evil-mc-mode +1))
 #+end_src
 
-*** Pairs
+**** Pairs
 
 On pairs (and regions really) we have =evil-smartparens=, to use better
 bindings to =smartparens=,
@@ -1209,7 +1258,7 @@ expressing actions.
   (global-evil-surround-mode +1))
 #+end_src
 
-*** Utilities
+**** Utilities
 
 As it gets impossible to not use vim keybindings everywhere,
 =evil-collection= adds a bunch of cool =evil= keybindings to other
@@ -1234,7 +1283,7 @@ decrease numbers.
    "C-S-a" 'evil-numbers/dec-at-pt))
 #+end_src
 
-** Mode line
+*** =smart-mode-line=                                            :modeline:
 
 I use =smart-mode-line= as it is very minimalist and informative (and it
 looks very pretty on =gruvbox=).
@@ -1267,6 +1316,8 @@ looks very pretty on =gruvbox=).
   (sml/setup))
 #+end_src
 
+*** =hide-mode-line=                                             :modeline:
+
 Made by the doom-emacs guy. Yeah I know I could just write a function
 for this, but eh.
 
@@ -1276,7 +1327,7 @@ for this, but eh.
   :commands hide-mode-line-mode)
 #+end_src
 
-** Completion framework
+*** =ivy=                                                      :completion:
 
 =ivy= is like =ido= but better, I guess. It does fuzzy matching of
 searches to open files and such. =flx= is required here in order to have
@@ -1328,6 +1379,8 @@ and =ivy-rich= to have a better looking =ivy=
   (ivy-rich-mode +1))
 #+end_src
 
+*** =counsel=                                        :enhancement:commands:
+
 =counsel= uses =ivy= to find files and commands. =smex= is required here
 to make sure that =counsel-M-x= has decent candidate sorting.
 
@@ -1376,7 +1429,7 @@ a list with possible =ssh= connections AND docker containers (thanks to
    "m t" 'counsel-tramp))
 #+end_src
 
-** History
+*** =undo-tree=                                                   :history:
 
 Undo and redo and kools with =undo-tree=!
 
@@ -1419,34 +1472,7 @@ Undo and redo and kools with =undo-tree=!
    "U" 'wolfgang/clean-undo-tree))
 #+end_src
 
-Keep a list of recent files with =recentf=
-
-#+begin_src emacs-lisp :tangle yes
-(use-package recentf
-  :commands recentf-open-files
-  :hook
-  (kill-emacs-hook . recentf-cleanup)
-  :custom
-  (recentf-save-file (expand-file-name "recentf-save.el" var-user-dir))
-  (recentf-max-menu-items 0)
-  (recentf-max-saved-items 300)
-  (recentf-exclude
-   `(file-remote-p
-     "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\)$"
-     "^/tmp/"
-     "^/ssh:"
-     "\\.?ido\\.last$"
-     "\\.revive$"
-     "/TAGS$"
-     ,var-user-dir
-     ,package-user-dir
-     ,(expand-file-name "savefile" root-dir)))
-  (recentf-auto-cleanup 'never)
-  :config
-  (recentf-mode +1))
-#+end_src
-
-** Splash screen
+*** =dashboard=                                           :buffers:initial:
 
 There's some utility in having a cool initial screen actually. And
 there's a cool extension that provides such functionality.
@@ -1477,7 +1503,7 @@ there's a cool extension that provides such functionality.
   (dashboard-setup-startup-hook))
 #+end_src
 
-** File management
+*** =ranger=                                             :files:navigation:
 
 I use =ranger.el= to use a file explorer like =ranger= inside Emacs
 instead of the default =dired=.
@@ -1513,6 +1539,8 @@ instead of the default =dired=.
   (ranger-override-dired-mode t))
 #+end_src
 
+*** =treemacs=                                           :files:navigation:
+
 While I've somewhat used =neotree.el=, I believe that =treemacs= is
 turning out to be a better option, as it offers a bunch of extra
 integrating packages and is overall more popular than the former.
@@ -1547,7 +1575,7 @@ integrating packages and is overall more popular than the former.
   (treemacs-fringe-indicator-mode -1))
 #+end_src
 
-** Environment variables
+*** =exec-path-from-shell=                                  :execute:paths:
 
 To ensure that Emacs uses the same path and environment as =shell= uses,
 I use =exec-path-from-shell=. That way commands that work on the =shell=
@@ -1566,7 +1594,7 @@ will certainly work on Emacs!
   (exec-path-from-shell-initialize))
 #+end_src
 
-** Find and replace
+*** =anzu=                                                :jump:navigation:
 
 Besides the =ISearch= from Emacs itself or the search function from
 =evil=, I also like to use =anzu=.
@@ -1599,6 +1627,8 @@ Besides the =ISearch= from Emacs itself or the search function from
 I use only the =anzu-replace-at-cursor-thing=, which is a very useful to
 replace multiple occurrences of a word fast.
 
+*** =deadgrep=                                               :files:search:
+
 I enjoy using =ripgrep= to search for stuff using =grep= syntax without
 the slowness of it. So, I use =deadgrep=!
 
@@ -1613,6 +1643,8 @@ the slowness of it. So, I use =deadgrep=!
   (evil-collection-deadgrep-setup))
 #+end_src
 
+*** =link-hint=                                           :jump:navigation:
+
 =link-hint= replicates the hinting mechanic from trydactil and such.
 
 #+begin_src emacs-lisp :tangle yes
@@ -1624,6 +1656,8 @@ the slowness of it. So, I use =deadgrep=!
   (:keymaps 'hcps/leader-map
    "h" 'link-hint-open-link))
 #+end_src
+
+*** =avy=                                                 :jump:navigation:
 
 As I love some overkill, here's =avy=.
 
@@ -1641,7 +1675,7 @@ As I love some overkill, here's =avy=.
    "S" 'avy-goto-line))
 #+end_src
 
-** Completion
+*** =which-key=                                        :helper:keybindings:
 
 The package called =which-key= shows you possible completions to the
 command you're typing in the mode-line.
@@ -1658,7 +1692,7 @@ command you're typing in the mode-line.
   (which-key-mode +1))
 #+end_src
 
-** Language Server Protocol
+*** =lsp-mode=                                                        :ide:
 
 I imagine anyone knows what is LSP, but oh well. Basically, it is one of
 the best features of other famous editors, such as Visual Studio Code.
@@ -1708,9 +1742,9 @@ This package does have an extra sister package: =lsp-ui=.
   (lsp-ui-peek-enable nil))
 #+end_src
 
-** Syntax and Highlighting
+*** =flycheck=                                                     :syntax:
 
-=Flycheck= provides a reliable source to syntax checking in Emacs.
+=flycheck= provides a reliable source to syntax checking in Emacs.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package flycheck
@@ -1736,6 +1770,8 @@ This package does have an extra sister package: =lsp-ui=.
   (add-to-list 'flycheck-checkers 'proselint))
 #+end_src
 
+*** =highlight-numbers=                                  :syntax:highlight:
+
 This highlights numbers in =prog-mode=:
 
 #+begin_src emacs-lisp :tangle yes
@@ -1745,6 +1781,8 @@ This highlights numbers in =prog-mode=:
   :hook
   (prog-mode-hook . highlight-numbers-mode))
 #+end_src
+
+*** =highlight-escape-sequences=                                :highlight:
 
 And this is to highlight escape sequences in some common modes:
 
@@ -1760,6 +1798,8 @@ And this is to highlight escape sequences in some common modes:
   :config
   (add-to-list 'hes-mode-alist `(sh-mode . ,hes-shell-escape-sequence-re)))
 #+end_src
+
+*** =flyspell=                                         :spelling:highlight:
 
 Of course, =flyspell= corrects your writing!
 
@@ -1781,6 +1821,7 @@ Of course, =flyspell= corrects your writing!
    "m d" 'ispell-change-dictionary))
 #+end_src
 
+*** =diff-hl=                                                        :diff:
 
 =diff-hl= to highlight any diffs!
 
@@ -1790,7 +1831,7 @@ Of course, =flyspell= corrects your writing!
   :commands (diff-hl-mode turn-on-diff-hl-mode diff-hl-magit-post-refresh))
 #+end_src
 
-** Hydra
+*** =hydra=                                                   :keybindings:
 
 =hydra= is a package that allows keybindings to be activated under the
 pressing of a specific combination of keys. These will then be active as
@@ -1798,7 +1839,7 @@ long as only them are being pressed, as on the moment a key which isn't
 part of the hydra is pressed the hydra is killed and the keybindings
 deactivated.
 
-#+begin_src emacs-lisp :tangle yes
+#+begin_src emacs-lisp :tangle no
 (use-package hydra
   :disabled
   :defer t
@@ -1813,8 +1854,13 @@ deactivated.
   ("C-c e" 'hydra-eyebrowse/body
    "C-c f" 'hydra-flycheck/body)
   :custom
-  (hydra-default-hint nil)
-  :config
+  (hydra-default-hint nil))
+#+end_src
+
+**** Eyebrowse
+
+#+begin_src emacs-lisp :tangle no
+(with-eval-after-load "hydra"
   (defhydra hydra-eyebrowse (:color blue)
     "
 ^
@@ -1834,6 +1880,16 @@ _q_ quit            _c_ create          _<_ previous
     ("k" eyebrowse-close-window-config :color red)
     ("r" eyebrowse-rename-window-config)
     ("s" eyebrowse-switch-to-window-config))
+
+  (with-eval-after-load "general"
+    (general-def '(global-map special-mode-map)
+      "C-c e" 'hydra-eyebrowse/body)))
+#+end_src
+
+**** Flycheck
+
+#+begin_src emacs-lisp :tangle no
+(with-eval-after-load "hydra"
   (defhydra hydra-flycheck (:color pink)
     "
 ^
@@ -1854,10 +1910,14 @@ _v_ verify setup    _f_ check           _s_ select
     ("l" flycheck-list-errors :color blue)
     ("m" flycheck-manual :color blue)
     ("s" flycheck-select-checker :color blue)
-    ("v" flycheck-verify-setup :color blue)))
+    ("v" flycheck-verify-setup :color blue))
+
+  (with-eval-after-load "general"
+    (general-def '(global-map special-mode-map)
+      "C-c f" 'hydra-flycheck/body)))
 #+end_src
 
-** Buffers and windows
+*** =ace-window=                                                  :windows:
 
 =ace-window= creates labels so we can jump windows with precision:
 
@@ -1870,6 +1930,8 @@ _v_ verify setup    _f_ check           _s_ select
   (:keymaps 'hcps/leader-map
    "w o" 'ace-window))
 #+end_src
+
+*** =super-save=                                          :buffers:history:
 
 =super-save= auto-saves buffers when you switch or close buffers or when
 Emacs loses focus, etc.
@@ -1890,7 +1952,7 @@ Emacs loses focus, etc.
   (super-save-mode +1))
 #+end_src
 
-** Templates and snippets
+*** =yasnippet=                                                  :snippets:
 
 I use =yasnippet= to handle my snippet needs.
 
@@ -1912,7 +1974,7 @@ I use =yasnippet= to handle my snippet needs.
   (yas-reload-all))
 #+end_src
 
-** Folding
+*** =vimish-fold=                                                 :folding:
 
 Enables vim-like folding of regions.
 
@@ -1930,7 +1992,7 @@ Enables vim-like folding of regions.
   (vimish-fold-global-mode 1))
 #+end_src
 
-** Project management
+*** =projectile=                                                  :project:
 
 For project management in Emacs, there's no better choice than
 =projectile=, which is widely loved by the community.
@@ -1967,9 +2029,8 @@ buffers or searching the whole project and replacing something.
      ".tox" ".svn" ".stack-work"))
   :general
   ([remap compile] 'projectile-compile-project)
-  (:states '(normal visual)
-   :prefix hcps/leader-key
-   "f p" '(:keymap projectile-command-map :wk "projectile"))
+  (:keymaps '(global-map special-mode-map)
+   "M-p" '(:keymap projectile-command-map :wk "projectile"))
   :config
   (require 'counsel)
   ;; clean dead projects when Emacs is idle
@@ -1987,7 +2048,7 @@ completion and ordering of results.
   (counsel-projectile-mode))
 #+end_src
 
-** Versioning
+*** =magit=                                                    :versioning:
 
 Obviously, any configuration file that says it deserves *any* respect
 should feature =magit=, as it is, hands down, the best =git= front-end
@@ -2051,6 +2112,8 @@ in the visible universe, nay, in the whole multiverse.
   (evil-set-initial-state 'git-commit-mode 'emacs))
 #+end_src
 
+*** =git-timemachine=                                          :versioning:
+
 Also, =git-timemachine= is a beautiful way to walk through git history:
 
 #+begin_src emacs-lisp :tangle yes
@@ -2073,7 +2136,7 @@ Also, =git-timemachine= is a beautiful way to walk through git history:
   (evil-make-overriding-map git-timemachine-mode-map 'normal))
 #+end_src
 
-** Regions, pointers and pairs
+*** =expand-region=                                             :selection:
 
 Increase region by semantic units. It tries to be smart about it and
 adapt to the structure of the current major mode.
@@ -2085,6 +2148,8 @@ adapt to the structure of the current major mode.
   ("C-+" 'er/contract-region
    "C-=" 'er/expand-region))
 #+end_src
+
+*** =smartparens=                                             :parentheses:
 
 When in need of smart pairing, look no further than =smartparens=!
 
@@ -2103,6 +2168,8 @@ When in need of smart pairing, look no further than =smartparens=!
   (show-smartparens-global-mode +1))
 #+end_src
 
+*** =rainbow-delimiters=                                      :parentheses:
+
 With that, =rainbow-delimiters= is a great match:
 
 #+begin_src emacs-lisp :tangle yes
@@ -2110,6 +2177,8 @@ With that, =rainbow-delimiters= is a great match:
   :defer t
   :commands rainbow-delimiters-mode)
 #+end_src
+
+*** =beacon=                                                       :cursor:
 
 This little add-on will highlight big cursor movements.
 
@@ -2123,7 +2192,7 @@ This little add-on will highlight big cursor movements.
   (beacon-mode +1))
 #+end_src
 
-** Indentation
+*** =aggressive-indent=                                :syntax:indentation:
 
 I use =aggressive-indent= to keep my code indented as I type.
 
@@ -2140,15 +2209,16 @@ I use =aggressive-indent= to keep my code indented as I type.
   (add-to-list 'aggressive-indent-protected-commands 'comment-dwim))
 #+end_src
 
+*** =highligh-indent-guides=                        :highlight:indentation:
+
 Also =highligh-indent-guides= is very useful, as Emacs doesn't come with
 it out of the box.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package highlight-indent-guides
   :defer t
-  :disabled
   :custom
-  (highlight-indent-guides-method 'character)
+  (highlight-indent-guides-method 'bitmap)
   (highlight-indent-guides-responsive 'stack)
   (highlight-indent-guides-delay 0.05)
   (highlight-indent-guides-auto-odd-face-perc 5)
@@ -2158,23 +2228,7 @@ it out of the box.
   (prog-mode-hook . highlight-indent-guides-mode))
 #+end_src
 
-** Command evaluation
-
-Some basic configuration to enhance the =eval-expression= command.
-
-#+begin_src emacs-lisp :tangle yes
-(defun sane-eval-expr-defaults ()
-  "Enable some sane modes for `eval-expression'."
-  (smartparens-mode +1))
-
-(add-hook 'eval-expression-minibuffer-setup-hook 'sane-eval-expr-defaults)
-#+end_src
-
-** Utilities
-
-Random utilities that don't fit anywhere else.
-
-*** =helpful=
+*** =helpful=                                                      :helper:
 
 =helpful= is a package that is overall an improvement over the default
 =help= windows.
@@ -2182,7 +2236,8 @@ Random utilities that don't fit anywhere else.
 #+begin_src emacs-lisp :tangle yes
 (use-package helpful
   :general
-  ([remap describe-function] 'helpful-callable
+  (:keymaps '(global-map special-mode-map)
+   [remap describe-function] 'helpful-callable
    [remap describe-variable] 'helpful-variable
    [remap describe-key] 'helpful-key
    "C-h F" 'helpful-function
@@ -2195,21 +2250,7 @@ Random utilities that don't fit anywhere else.
   (require 'counsel))
 #+end_src
 
-*** =dumb-jump=
-
-=dumb-jump= is a package that allows you to jump to definition with
-minimal setup (i.e. no TAG or RTAGS or etc.).
-
-#+begin_src emacs-lisp :tangle yes
-(use-package dumb-jump
-  :defer t
-  :disabled                             ; deprecated on the xref backend
-  :general
-  ("M-g o" 'dumb-jump-go-other-window
-   "M-g j" 'dumb-jump-go))
-#+end_src
-
-*** =engine-mode=
+*** =engine-mode=                                                  :search:
 
 =engine-mode= is a minor mode that allow you to easily make queries to
 the web without leaving Emacs.
@@ -2225,7 +2266,7 @@ the web without leaving Emacs.
   )
 #+end_src
 
-*** =openwith=
+*** =openwith=                                               :files:helper:
 
 =openwith= is a small and useful tool to set how you want to open your
 files with Emacs. I use it to set the opener of pdfs in my Emacs, as
@@ -2253,7 +2294,7 @@ well to other diverse media files.
   (openwith-mode +1))
 #+end_src
 
-*** =crux=
+*** =crux=                                              :enhancement:elisp:
 
 Which stands for...
 
@@ -2268,8 +2309,11 @@ A Collection of Ridiculously Useful eXtensions for Emacs.
   :defer t
   :commands crux-with-region-or-buffer
   :init
-  (advise-once 'indent-region :before (lambda (&rest _) (require 'crux)))
-  (advise-once 'untabify :before (lambda (&rest _) (require 'crux)))
+  ;; supposedly get expanded at compile time
+  ;; also don't need to be here, but where else should i put them?
+  (crux-with-region-or-buffer indent-region)
+  (crux-with-region-or-buffer eval-region)
+  (crux-with-region-or-buffer untabify)
   :general
   (:keymaps 'hcps/leader-map
    ;; file stuff
@@ -2278,13 +2322,10 @@ A Collection of Ridiculously Useful eXtensions for Emacs.
    "f d" 'crux-delete-buffer-and-file
    "f c" 'crux-find-user-custom-file
    "f n" 'crux-create-scratch-buffer
-   "f i" 'crux-find-user-init-file)
-  :config
-  (crux-with-region-or-buffer indent-region)
-  (crux-with-region-or-buffer untabify))
+   "f i" 'crux-find-user-init-file))
 #+end_src
 
-*** =page-break-lines=
+*** =page-break-lines=                                          :highlight:
 
 To make pretty page breaks in your Emacs buffers:
 
@@ -2303,7 +2344,7 @@ To make pretty page breaks in your Emacs buffers:
   (page-break-lines ((t :inherit font-lock-comment-face :bold t :italic nil))))
 #+end_src
 
-*** =writeroom-mode=
+*** =writeroom-mode=                                          :environment:
 
 A nice writing environment for Emacs in a minor-mode.
 
