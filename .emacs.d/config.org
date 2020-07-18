@@ -34,7 +34,7 @@ Cool Emacs configs from cool people:
     - [[#automatic-byte-compile][Automatic byte-compile]]
     - [[#auto-removing-hook][Auto-removing hook]]
   - [[#keybindings][Keybindings]]
-- [[#the-editor][The editor]]
+- [[#setting-up][Setting-up]]
   - [[#definitions-and-preferences][Definitions and preferences]]
     - [[#default-org-mode][Default =org-mode=]]
     - [[#paths-and-defconst][Paths and =defconst=]]
@@ -50,32 +50,49 @@ Cool Emacs configs from cool people:
     - [[#load-path][Load path]]
     - [[#use-package-setup][Use-package setup]]
     - [[#additional-support-packages][Additional support packages]]
-  - [[#extensions][Extensions]]
-    - [[#keybindings-1][Keybindings]]
-    - [[#mode-line-1][Mode line]]
-    - [[#completion-framework][Completion framework]]
-    - [[#history][History]]
-    - [[#splash-screen][Splash screen]]
-    - [[#file-management][File management]]
-    - [[#environment-variables][Environment variables]]
-    - [[#find-and-replace][Find and replace]]
-    - [[#lines-and-characters][Lines and characters]]
-    - [[#compilation][Compilation]]
-    - [[#remote-editing][Remote editing]]
-    - [[#completion][Completion]]
-    - [[#language-server-protocol][Language Server Protocol]]
-    - [[#syntax-and-highlighting][Syntax and Highlighting]]
-    - [[#hydra][Hydra]]
-    - [[#buffers-and-windows][Buffers and windows]]
-    - [[#templates-and-snippets][Templates and snippets]]
-    - [[#folding][Folding]]
-    - [[#project-management][Project management]]
-    - [[#versioning][Versioning]]
-    - [[#regions-pointers-and-pairs][Regions, pointers and pairs]]
-    - [[#indentation][Indentation]]
-    - [[#command-evaluation][Command evaluation]]
+- [[#built-in-packages][Built-in packages]]
+  - [[#package][=package=]]
+  - [[#whitespace][=whitespace=]]
+  - [[#compile][=compile=]]
+  - [[#tramp][=tramp=]]
+  - [[#ssh][=ssh=]]
+  - [[#ansi-color][=ansi-color=]]
+  - [[#windmove][=windmove=]]
+  - [[#midnight][=midnight=]]
+  - [[#uniquify][=uniquify=]]
+- [[#extensions][Extensions]]
+  - [[#keybindings-1][Keybindings]]
+    - [[#cursors][Cursors]]
+    - [[#pairs][Pairs]]
     - [[#utilities][Utilities]]
-  - [[#theme][Theme]]
+  - [[#mode-line-1][Mode line]]
+  - [[#completion-framework][Completion framework]]
+  - [[#history][History]]
+  - [[#splash-screen][Splash screen]]
+  - [[#file-management][File management]]
+  - [[#environment-variables][Environment variables]]
+  - [[#find-and-replace][Find and replace]]
+  - [[#completion][Completion]]
+  - [[#language-server-protocol][Language Server Protocol]]
+  - [[#syntax-and-highlighting][Syntax and Highlighting]]
+  - [[#hydra][Hydra]]
+  - [[#buffers-and-windows][Buffers and windows]]
+  - [[#templates-and-snippets][Templates and snippets]]
+  - [[#folding][Folding]]
+  - [[#project-management][Project management]]
+  - [[#versioning][Versioning]]
+  - [[#regions-pointers-and-pairs][Regions, pointers and pairs]]
+  - [[#indentation][Indentation]]
+  - [[#command-evaluation][Command evaluation]]
+  - [[#utilities-1][Utilities]]
+    - [[#helpful][=helpful=]]
+    - [[#dumb-jump][=dumb-jump=]]
+    - [[#engine-mode][=engine-mode=]]
+    - [[#openwith][=openwith=]]
+    - [[#crux][=crux=]]
+    - [[#page-break-lines][=page-break-lines=]]
+    - [[#writeroom-mode][=writeroom-mode=]]
+- [[#theme][Theme]]
 - [[#file-modes][File modes]]
   - [[#org][Org]]
     - [[#add-ons][Add-ons]]
@@ -143,7 +160,6 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - anzu
 - auctex
 - auctex-latexmk
-- auto-compile
 - avy
 - bash-completion
 - beacon
@@ -164,7 +180,7 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - dashboard
 - deadgrep
 - delight
-- docker-compose-mode
+- diff-hl
 - dockerfile-mode
 - docker-tramp
 - dumb-jump
@@ -173,6 +189,7 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - elpy
 - engine-mode
 - ess
+- ess-r-mode
 - evil
 - evil-collection
 - evil-matchit
@@ -225,6 +242,7 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - ox-hugo
 - ox-latex
 - ox-twbs
+- package
 - page-break-lines
 - plantuml-mode
 - projectile
@@ -245,7 +263,6 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - treemacs-projectile
 - undo-tree
 - uniquify
-- use-package-ensure
 - vimish-fold
 - visual-fill-column
 - websocket
@@ -465,14 +482,14 @@ Sometimes it's cool to have a single-use hook.
 
 #+begin_src emacs-lisp :tangle yes
 (eval-and-compile
-  (defmacro hcps/hook-require-and-quit (package)
-    "Add a hook to `pre-command-hook' which requires the given package."
-    (let ((func (intern (concat "hcps/" (symbol-name package) "-require-and-quit"))))
+  (defmacro hcps/hook-require-once (hook package)
+    "Add a hook to `pre-command-hook' which requires the given package once."
+    (let ((func (intern (concat "hcps/" (symbol-name hook) "-require-" (symbol-name package)))))
       `(progn
          (defun ,func ()
-           (remove-hook 'pre-command-hook #',func)
+           (remove-hook ',hook #',func)
            (require ',package))
-         (add-hook 'pre-command-hook #',func)))))
+         (add-hook ',hook #',func)))))
 #+end_src
 
 ** Keybindings
@@ -514,12 +531,9 @@ above"!
     "m" '(:ignore t :wk "misc")))
 #+end_src
 
-* The editor
+* Setting-up
 
-Everything related to Emacs as the editor and platform.
-
-*TODO*:
-- Use [[https://gitlab.com/jjzmajic/ewal][this]].
+Some setting up before we start configuring the packages themselves.
 
 ** Definitions and preferences
 
@@ -530,8 +544,6 @@ Defaults that are better if defined /other/ way.
 To ensure ELPA =org= is prioritized above built-in org.
 
 #+begin_src emacs-lisp :tangle yes
-;; (require 'cl)
-;; (setq load-path (remove-if (lambda (x) (string-match-p "org$" x)) load-path))
 (setq load-path
       (delete (car (file-expand-wildcards "/usr/share/emacs/*/lisp/org")) load-path))
 #+end_src
@@ -832,20 +844,201 @@ history files the packages might set.
   :demand)
 #+end_src
 
-** Extensions
+* Built-in packages
+
+The ones that /really/ don't require =use-package :ensure=.
+
+- [ ] bookmark
+- [ ] dired
+- [ ] hippie-expand
+- [ ] eshell
+- [ ] save-place
+
+** =package=
+
+Same as above but with keybindings and =package-initialize=.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package package
+  :defer t
+  :custom
+  (package-archives
+   '(("melpa" . "https://melpa.org/packages/")
+     ("org" . "https://orgmode.org/elpa/")
+     ("gnu" . "https://elpa.gnu.org/packages/")))
+  :general
+  (:keymaps 'hcps/leader-map
+   "p l" 'package-list-packages
+   "p d" 'package-delete
+   "p i" 'package-install
+   "p r" 'package-reinstall)
+  :config
+  (package-initialize))
+#+end_src
+
+** =whitespace=
+
+Let's monitor ourselves with =whitespace=.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package whitespace
+  :defer t
+  :ensure nil
+  :commands (whitespace-mode whitespace-cleanup delete-trailing-whitespace)
+  :hook
+  ((before-save-hook . whitespace-cleanup)
+   (before-save-hook . delete-trailing-whitespace)
+   (text-mode-hook . whitespace-mode)
+   (conf-mode-hook . whitespace-mode)
+   (prog-mode-hook . whitespace-mode))
+  :custom
+  (whitespace-line-column 85)
+  (whitespace-style '(face tabs empty trailing lines-tail)))
+#+end_src
+
+** =compile=
+
+This compilation helper mode facilitates the navigation of error outputs
+on compilations.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package compile
+  :defer t
+  :ensure nil
+  :commands compile-mode
+  :custom
+  (compilation-ask-about-save nil)
+  (compilation-always-kill t)
+  (compilation-scroll-output 'first-error))
+#+end_src
+
+** =tramp=
+
+=tramp= is very useful when it comes to editing remote files and to
+editing as super-user.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package tramp
+  :defer t
+  :ensure nil
+  :custom
+  (tramp-default-method "ssh")
+  (tramp-terminal-type "xterm-mono"))
+#+end_src
+
+** =ssh=
+
+Here's a small package that allows remotely opening sessions.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package ssh
+  :defer t
+  :after shell
+  :ensure nil
+  :preface
+  (defcustom ssh-remote-user-server nil
+    "Dummy variable that holds a server name."
+    :type 'string
+    :safe #'stringp
+    :group 'ssh)
+  (defun hcps/get-user-server ()
+    "Call to set and print the user server."
+    (interactive)
+    (if (equal ssh-remote-user-server nil)
+        (setq ssh-remote-user-server
+              (read-from-minibuffer "What server to store: ")))
+    (concat "/ssh:" ssh-remote-user-server ":"))
+  (defun hcps/store-user-remote ()
+    "Store a server name to the desired target."
+    (interactive)
+    (let* ((read-server (read-from-minibuffer
+                         (format "What server to store (current: %s): " ssh-remote-user-server)))
+           (server-to-connect (if (equal read-server "") ssh-remote-user-server read-server)))
+      (setq ssh-remote-user-server server-to-connect)))
+  :custom
+  (shell-command-dont-erase-buffer t)
+  (ssh-directory-tracking-mode t)
+  :general
+  (:keymaps 'hcps/leader-map
+   "m s" 'hcps/ssh-user-connect
+   "m S" 'hcps/store-user-remote)
+  :config
+  (shell-dirtrack-mode t))
+#+end_src
+
+** =ansi-color=
+
+To have pretty colors on ansi output.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package ansi-color
+  :defer t
+  :ensure nil
+  :commands
+  (ansi-color-for-comint-mode-on ansi-color-filter-apply ansi-color-process-output)
+  :hook
+  ((shell-mode-hook . ansi-color-for-comint-mode-on)
+   (eshell-preoutput-filter-functions . ansi-color-filter-apply)
+   (comint-output-filter-functions . ansi-color-process-output)))
+#+end_src
+
+** =windmove=
+
+A package that creates commands to move around windows.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package windmove
+  :defer t
+  :ensure nil
+  :general
+  ("C-M-h" 'windmove-left
+   "C-M-l" 'windmove-right
+   "C-M-k" 'windmove-up
+   "C-M-j" 'windmove-down))
+#+end_src
+
+** =midnight=
+
+Originally, =midnight= is used to /run something at midnight/. I use its
+feature that kills old buffers.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package midnight
+  :defer 60
+  :ensure nil
+  :custom
+  (clean-buffer-list-delay-general 0.5)
+  (clean-buffer-list-delay-special (* 1 3600))
+  (clean-buffer-list-kill-buffer-names
+   '("*Help*" "*Apropos*" "*Buffer List*" "*Compile-Log*" "*info*" "*vc*"
+     "*vc-diff*" "*diff*" "*IBuffer*" "*Finder*")))
+#+end_src
+
+** =uniquify=
+
+=uniquify= creates automatic meaningful names for buffers with the same
+name:
+
+#+begin_src emacs-lisp :tangle yes
+(use-package uniquify
+  :defer 10
+  :ensure nil
+  :custom
+  (uniquify-buffer-name-style 'forward)
+  (uniquify-separator "/")
+  (uniquify-after-kill-buffer-p t)
+  (uniquify-ignore-buffers-re "^\\*"))
+#+end_src
+
+* Extensions
 
 These are Emacs-behaviour related! In other words, these extend the
 capabilities of Emacs as a text editor, and do NOT add support to other
 languages or etc.
 
-- [ ] save-place
-- [ ] bookmark
-- [ ] dired
 - [ ] vterm
-- [ ] hippie-expand
-- [ ] eshell
 
-*** Keybindings
+** Keybindings
 
 =evil=, or /Extensible vi Layer/, is a minor mode that changes Emacs
 text editing keybindings to match the modal edit modes of vi and vim.
@@ -887,12 +1080,11 @@ Yes, you can have the best of both worlds!
     (setq-local evil-motion-state-tag nil)
     (setq-local evil-visual-state-tag nil)
     (setq-local evil-operator-state-tag nil))
-  ;; require and then remove the hook (it hooks to pre-command-hook)
-  (hcps/hook-require-and-quit evil)
   :init
   (setq evil-want-keybinding nil)
   (advice-add 'org-babel-do-key-sequence-in-edit-buffer
               :around #'dzop/evil-org-insert-state-in-edit-buffer)
+  (hcps/hook-require-once pre-command-hook evil)
   :general
   (:states '(normal visual)
    hcps/leader-key '(:wk "leader" :keymap hcps/leader-map :package general))
@@ -936,7 +1128,7 @@ Yes, you can have the best of both worlds!
   (evil-mode +1))
 #+end_src
 
-**** Cursors
+*** Cursors
 
 Here we have both =evil-matchit=, which allows you to jump between tags
 automatically,
@@ -967,7 +1159,7 @@ and =evil-mc= implements the =multiple-cursors= functionality to
   (global-evil-mc-mode +1))
 #+end_src
 
-**** Pairs
+*** Pairs
 
 On pairs (and regions really) we have =evil-smartparens=, to use better
 bindings to =smartparens=,
@@ -1017,7 +1209,7 @@ expressing actions.
   (global-evil-surround-mode +1))
 #+end_src
 
-**** Utilities
+*** Utilities
 
 As it gets impossible to not use vim keybindings everywhere,
 =evil-collection= adds a bunch of cool =evil= keybindings to other
@@ -1042,7 +1234,7 @@ decrease numbers.
    "C-S-a" 'evil-numbers/dec-at-pt))
 #+end_src
 
-*** Mode line
+** Mode line
 
 I use =smart-mode-line= as it is very minimalist and informative (and it
 looks very pretty on =gruvbox=).
@@ -1084,7 +1276,7 @@ for this, but eh.
   :commands hide-mode-line-mode)
 #+end_src
 
-*** Completion framework
+** Completion framework
 
 =ivy= is like =ido= but better, I guess. It does fuzzy matching of
 searches to open files and such. =flx= is required here in order to have
@@ -1184,7 +1376,7 @@ a list with possible =ssh= connections AND docker containers (thanks to
    "m t" 'counsel-tramp))
 #+end_src
 
-*** History
+** History
 
 Undo and redo and kools with =undo-tree=!
 
@@ -1254,7 +1446,7 @@ Keep a list of recent files with =recentf=
   (recentf-mode +1))
 #+end_src
 
-*** Splash screen
+** Splash screen
 
 There's some utility in having a cool initial screen actually. And
 there's a cool extension that provides such functionality.
@@ -1285,7 +1477,7 @@ there's a cool extension that provides such functionality.
   (dashboard-setup-startup-hook))
 #+end_src
 
-*** File management
+** File management
 
 I use =ranger.el= to use a file explorer like =ranger= inside Emacs
 instead of the default =dired=.
@@ -1355,7 +1547,7 @@ integrating packages and is overall more popular than the former.
   (treemacs-fringe-indicator-mode -1))
 #+end_src
 
-*** Environment variables
+** Environment variables
 
 To ensure that Emacs uses the same path and environment as =shell= uses,
 I use =exec-path-from-shell=. That way commands that work on the =shell=
@@ -1374,7 +1566,7 @@ will certainly work on Emacs!
   (exec-path-from-shell-initialize))
 #+end_src
 
-*** Find and replace
+** Find and replace
 
 Besides the =ISearch= from Emacs itself or the search function from
 =evil=, I also like to use =anzu=.
@@ -1449,117 +1641,7 @@ As I love some overkill, here's =avy=.
    "S" 'avy-goto-line))
 #+end_src
 
-*** Lines and characters
-
-Let's monitor ourselves with =whitespace=.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package whitespace
-  :defer t
-  :commands (whitespace-mode whitespace-cleanup delete-trailing-whitespace)
-  :hook
-  ((before-save-hook . whitespace-cleanup)
-   (before-save-hook . delete-trailing-whitespace)
-   (text-mode-hook . whitespace-mode)
-   (conf-mode-hook . whitespace-mode)
-   (prog-mode-hook . whitespace-mode))
-  :custom
-  (whitespace-line-column 85)
-  (whitespace-style '(face tabs empty trailing lines-tail)))
-#+end_src
-
-*** Compilation
-
-Emacs has a default compile command, and it tries its best. Here's some
-extra configuration about it:
-
-#+begin_src emacs-lisp :tangle yes
-(use-package compile
-  :defer t
-  :ensure nil
-  :commands compile-mode
-  :custom
-  (compilation-ask-about-save nil)
-  (compilation-always-kill t)
-  (compilation-scroll-output 'first-error))
-#+end_src
-
-*** Remote editing
-
-=tramp=, which is included by default in Emacs, is very useful when it
-comes to editing remote files and to editing as super-user.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package tramp
-  :defer t
-  :ensure nil
-  :custom
-  (tramp-default-method "ssh")
-  (tramp-terminal-type "xterm-mono"))
-#+end_src
-
-Here's a small package that allows remotely opening sessions.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package ssh
-  :defer t
-  :after shell
-  :ensure nil
-  :preface
-  (defcustom ssh-current-server nil
-    "Last remote server created by SSH."
-    :type 'string
-    :safe #'stringp
-    :group 'ssh)
-  (defcustom ssh-defaut-server nil
-    "Default remote server to be used when remotely using server with SSH (e.g. bolsa.inf)."
-    :type 'string
-    :safe #'stringp
-    :group 'ssh)
-  (defcustom ssh-remote-user-server nil
-    "Dummy variable that holds a server name."
-    :type 'string
-    :safe #'stringp
-    :group 'ssh)
-  ;; (defun ssh-connect-remote (SERVER)
-  ;;   "Open a SSH session buffer to the desired target."
-  ;;   (interactive (list (read-from-minibuffer
-  ;;                       (format "What server to connect to (default: %s): "
-  ;;                               ssh-default-server))))
-  ;;   (let* ((server-to-connect (if (equal SERVER "") ssh-default-server SERVER)))
-  ;;     (setq ssh-current-server (buffer-name (ssh server-to-connect))))
-  ;;   (get-buffer-create ssh-current-server))
-  ;; (defun hcps/ssh-user-connect ()
-  ;;   "Calls interactively the ssh-connect-remote function."
-  ;;   (interactive)
-  ;;   (call-interactively 'ssh-connect-remote))
-  (defun hcps/get-user-server ()
-    "Call to set and print the user server."
-    (interactive)
-    (if (equal ssh-remote-user-server nil)
-        (setq ssh-remote-user-server
-              (read-from-minibuffer "What server to store: ")))
-    (concat "/ssh:" ssh-remote-user-server ":"))
-  (defun hcps/store-user-remote ()
-    "Store a server name to the desired target."
-    (interactive)
-    (let* ((read-server (read-from-minibuffer
-                         (format "What server to store (current: %s): " ssh-remote-user-server)))
-           (server-to-connect (if (equal read-server "") ssh-remote-user-server read-server)))
-      (setq ssh-remote-user-server server-to-connect)))
-  :custom
-  (shell-command-dont-erase-buffer t)
-  (ssh-default-server "aeon.inf")
-  (ssh-directory-tracking-mode t)
-  :general
-  (:keymaps 'hcps/leader-map
-   "m s" 'hcps/ssh-user-connect
-   "m S" 'hcps/store-user-remote)
-  :config
-  (shell-dirtrack-mode t))
-#+end_src
-
-*** Completion
+** Completion
 
 The package called =which-key= shows you possible completions to the
 command you're typing in the mode-line.
@@ -1568,15 +1650,15 @@ command you're typing in the mode-line.
 (use-package which-key
   :defer t
   :delight
-  :preface
-  (hcps/hook-require-and-quit which-key)
+  :init
+  (hcps/hook-require-once pre-command-hook which-key)
   :custom
   (which-key-allow-evil-operators t)
   :config
   (which-key-mode +1))
 #+end_src
 
-*** Language Server Protocol
+** Language Server Protocol
 
 I imagine anyone knows what is LSP, but oh well. Basically, it is one of
 the best features of other famous editors, such as Visual Studio Code.
@@ -1626,7 +1708,7 @@ This package does have an extra sister package: =lsp-ui=.
   (lsp-ui-peek-enable nil))
 #+end_src
 
-*** Syntax and Highlighting
+** Syntax and Highlighting
 
 =Flycheck= provides a reliable source to syntax checking in Emacs.
 
@@ -1699,19 +1781,6 @@ Of course, =flyspell= corrects your writing!
    "m d" 'ispell-change-dictionary))
 #+end_src
 
-Last minute addition: =ansi-color=!
-
-#+begin_src emacs-lisp :tangle yes
-(use-package ansi-color
-  :defer t
-  :ensure nil
-  :commands (ansi-color-for-comint-mode-on ansi-color-filter-apply)
-  :hook
-  ((shell-mode-hook . ansi-color-for-comint-mode-on)
-   (eshell-preoutput-filter-functions . ansi-color-filter-apply))
-  :config
-  (add-to-list 'comint-output-filter-functions 'ansi-color-process-output))
-#+end_src
 
 =diff-hl= to highlight any diffs!
 
@@ -1721,7 +1790,7 @@ Last minute addition: =ansi-color=!
   :commands (diff-hl-mode turn-on-diff-hl-mode diff-hl-magit-post-refresh))
 #+end_src
 
-*** Hydra
+** Hydra
 
 =hydra= is a package that allows keybindings to be activated under the
 pressing of a specific combination of keys. These will then be active as
@@ -1788,48 +1857,7 @@ _v_ verify setup    _f_ check           _s_ select
     ("v" flycheck-verify-setup :color blue)))
 #+end_src
 
-*** Buffers and windows
-
-=windmove= is a package that creates commands to move around windows.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package windmove
-  :defer t
-  :general
-  ("C-M-h" 'windmove-left
-   "C-M-l" 'windmove-right
-   "C-M-k" 'windmove-up
-   "C-M-j" 'windmove-down))
-#+end_src
-
-Originally, =midnight= is used to /run something at midnight/. I use its
-feature that kills old buffers.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package midnight
-  :defer 60
-  :ensure nil
-  :custom
-  (clean-buffer-list-delay-general 0.5)
-  (clean-buffer-list-delay-special (* 1 3600))
-  (clean-buffer-list-kill-buffer-names
-   '("*Help*" "*Apropos*" "*Buffer List*" "*Compile-Log*" "*info*" "*vc*"
-     "*vc-diff*" "*diff*" "*IBuffer*" "*Finder*")))
-#+end_src
-
-=uniquify= creates automatic meaningful names for buffers with the same
-name:
-
-#+begin_src emacs-lisp :tangle yes
-(use-package uniquify
-  :defer 10
-  :ensure nil
-  :custom
-  (uniquify-buffer-name-style 'forward)
-  (uniquify-separator "/")
-  (uniquify-after-kill-buffer-p t)
-  (uniquify-ignore-buffers-re "^\\*"))
-#+end_src
+** Buffers and windows
 
 =ace-window= creates labels so we can jump windows with precision:
 
@@ -1848,7 +1876,11 @@ Emacs loses focus, etc.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package super-save
+  :defer t
   :delight
+  :init
+  (hcps/hook-require-once before-save-hook super-save)
+  (hcps/hook-require-once focus-out-hook super-save)
   :custom
   (super-save-auto-save-when-idle t)
   (super-save-remote-files nil)
@@ -1858,7 +1890,7 @@ Emacs loses focus, etc.
   (super-save-mode +1))
 #+end_src
 
-*** Templates and snippets
+** Templates and snippets
 
 I use =yasnippet= to handle my snippet needs.
 
@@ -1880,7 +1912,7 @@ I use =yasnippet= to handle my snippet needs.
   (yas-reload-all))
 #+end_src
 
-*** Folding
+** Folding
 
 Enables vim-like folding of regions.
 
@@ -1898,7 +1930,7 @@ Enables vim-like folding of regions.
   (vimish-fold-global-mode 1))
 #+end_src
 
-*** Project management
+** Project management
 
 For project management in Emacs, there's no better choice than
 =projectile=, which is widely loved by the community.
@@ -1912,12 +1944,9 @@ buffers or searching the whole project and replacing something.
   :preface
   (defun hcps/projectile-custom-mode-line ()
     "Report project name and type in the modeline."
-    (let ((project-name (projectile-project-name))
-          (project-type (projectile-project-type)))
-      (unless (string-empty-p project-name)
-        (format "%s:%s"
-                projectile-mode-line-prefix
-                project-name))))
+    (let ((project (projectile-project-name)))
+      (unless (or (string-equal project "-") (string-empty-p project))
+        projectile-mode-line-prefix)))
   :custom
   (projectile-completion-system 'ivy)
   (projectile-mode-line-prefix " proj")
@@ -1940,7 +1969,7 @@ buffers or searching the whole project and replacing something.
   ([remap compile] 'projectile-compile-project)
   (:states '(normal visual)
    :prefix hcps/leader-key
-   "p" '(:keymap projectile-command-map :wk "projectile"))
+   "f p" '(:keymap projectile-command-map :wk "projectile"))
   :config
   (require 'counsel)
   ;; clean dead projects when Emacs is idle
@@ -1958,7 +1987,7 @@ completion and ordering of results.
   (counsel-projectile-mode))
 #+end_src
 
-*** Versioning
+** Versioning
 
 Obviously, any configuration file that says it deserves *any* respect
 should feature =magit=, as it is, hands down, the best =git= front-end
@@ -2044,7 +2073,7 @@ Also, =git-timemachine= is a beautiful way to walk through git history:
   (evil-make-overriding-map git-timemachine-mode-map 'normal))
 #+end_src
 
-*** Regions, pointers and pairs
+** Regions, pointers and pairs
 
 Increase region by semantic units. It tries to be smart about it and
 adapt to the structure of the current major mode.
@@ -2087,14 +2116,14 @@ This little add-on will highlight big cursor movements.
 #+begin_src emacs-lisp :tangle yes
 (use-package beacon
   :defer t
-  :preface
-  (hcps/hook-require-and-quit beacon)
+  :init
+  (hcps/hook-require-once pre-command-hook beacon)
   :delight
   :config
   (beacon-mode +1))
 #+end_src
 
-*** Indentation
+** Indentation
 
 I use =aggressive-indent= to keep my code indented as I type.
 
@@ -2129,23 +2158,23 @@ it out of the box.
   (prog-mode-hook . highlight-indent-guides-mode))
 #+end_src
 
-*** Command evaluation
+** Command evaluation
 
 Some basic configuration to enhance the =eval-expression= command.
 
 #+begin_src emacs-lisp :tangle yes
 (defun sane-eval-expr-defaults ()
   "Enable some sane modes for `eval-expression'."
-  (smartparens-strict-mode +1))
+  (smartparens-mode +1))
 
 (add-hook 'eval-expression-minibuffer-setup-hook 'sane-eval-expr-defaults)
 #+end_src
 
-*** Utilities
+** Utilities
 
 Random utilities that don't fit anywhere else.
 
-**** =helpful=
+*** =helpful=
 
 =helpful= is a package that is overall an improvement over the default
 =help= windows.
@@ -2166,7 +2195,7 @@ Random utilities that don't fit anywhere else.
   (require 'counsel))
 #+end_src
 
-**** =dumb-jump=
+*** =dumb-jump=
 
 =dumb-jump= is a package that allows you to jump to definition with
 minimal setup (i.e. no TAG or RTAGS or etc.).
@@ -2180,7 +2209,7 @@ minimal setup (i.e. no TAG or RTAGS or etc.).
    "M-g j" 'dumb-jump-go))
 #+end_src
 
-**** =engine-mode=
+*** =engine-mode=
 
 =engine-mode= is a minor mode that allow you to easily make queries to
 the web without leaving Emacs.
@@ -2196,7 +2225,7 @@ the web without leaving Emacs.
   )
 #+end_src
 
-**** =openwith=
+*** =openwith=
 
 =openwith= is a small and useful tool to set how you want to open your
 files with Emacs. I use it to set the opener of pdfs in my Emacs, as
@@ -2205,8 +2234,8 @@ well to other diverse media files.
 #+begin_src emacs-lisp :tangle yes
 (use-package openwith
   :defer t
-  :preface
-  (hcps/hook-require-and-quit openwith)
+  :init
+  (hcps/hook-require-once pre-command-hook openwith)
   :custom
   (openwith-associations
    '(("\\.pdf$" "zathura" (file))
@@ -2224,7 +2253,7 @@ well to other diverse media files.
   (openwith-mode +1))
 #+end_src
 
-**** =crux=
+*** =crux=
 
 Which stands for...
 
@@ -2255,7 +2284,7 @@ A Collection of Ridiculously Useful eXtensions for Emacs.
   (crux-with-region-or-buffer untabify))
 #+end_src
 
-**** =page-break-lines=
+*** =page-break-lines=
 
 To make pretty page breaks in your Emacs buffers:
 
@@ -2274,7 +2303,7 @@ To make pretty page breaks in your Emacs buffers:
   (page-break-lines ((t :inherit font-lock-comment-face :bold t :italic nil))))
 #+end_src
 
-**** =writeroom-mode=
+*** =writeroom-mode=
 
 A nice writing environment for Emacs in a minor-mode.
 
@@ -2290,10 +2319,12 @@ A nice writing environment for Emacs in a minor-mode.
    "m w" 'writeroom-mode))
 #+end_src
 
-** Theme
+* Theme
 
 Here I define the theme that I use, which is =gruvbox=, as it provides
 nice support for a lot of packages and is very pleasant for the eyes.
+
+- [ ] Use [[https://gitlab.com/jjzmajic/ewal][this]].
 
 #+begin_src emacs-lisp :tangle yes
 (use-package gruvbox-theme
@@ -2308,30 +2339,10 @@ and file types.
 
 I still need to add packages relating to these languages:
 
-- [X] Org
-- [X] C/C++
-- [X] Python
 - [ ] Scala
-- [X] LaTeX (use-package-ensure-system-package texlive-most)
-- [X] R
-- [X] Shell
-- [X] Makefile
 - [ ] Dot (using Graphviz)
-- [X] Lisp (duh)
-- [X] PlantUML
 - [ ] English (as in literal english)
-- [X] CMake
-- [X] Dockerfile
-- [X] GMPL
-- [X] Julia
-- [X] Jupyter
 - [ ] Coq (yes, I'm slowly turning into what I most hate)
-- [X] CUDA (subset of C, yeah, but /still/)
-- [X] Meson (the build system)
-- [X] bspwm/sxhkd
-- [X] systemd services/units
-- [X] Rust
-- [X] Perl
 - [ ] PKGBUILD
 - [ ] Markdown
 
@@ -2365,7 +2376,7 @@ your =.org= file.
   (org-log-done 'note)
   (org-directory "~/org/")
   (org-cycle-emulate-tab 'exc-hl-bol)
-  (org-use-property-inheritance t)
+  (org-use-property-inheritance nil)
   (org-attach-use-inheritance t)
   (org-attach-dir-relative t)
   (org-startup-indented t)
@@ -2598,6 +2609,7 @@ Now, some configurations relating org-babel and its magic source blocks.
      (:exports . "code")
      (:cache . "none")
      (:noweb . "no")
+     (:eval . "never-export")
      (:hlines . "no")
      (:tangle . "no")))
   (org-babel-load-languages
@@ -3030,7 +3042,8 @@ Emacs version!
    (emacs-lisp-mode-hook . (lambda () (run-hooks 'lisp-mode-hook)))
    (emacs-lisp-mode-hook . yas-minor-mode))
   :config
-  (require 'lisp-mode))
+  ;; to have the macro definitions
+  (require 'use-package))
 #+end_src
 
 ** English
