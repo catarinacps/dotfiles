@@ -46,11 +46,14 @@ Cool Emacs configs from cool people:
     - [[#randoms][Randoms]]
     - [[#custom-file][Custom file]]
     - [[#better-eval-expression][Better =eval-expression=]]
-- [[#setting-up][Setting-up]]
-  - [[#load-path][Load path]]
-  - [[#use-package-setup][Use-package setup]]
-  - [[#additional-support-packages][Additional support packages]]
-- [[#package-configurations][Package configurations]]
+- [[#package-configuration][Package configuration]]
+  - [[#setting-up][Setting-up]]
+    - [[#load-path][Load path]]
+    - [[#use-package-setup][Use-package setup]]
+  - [[#support][Support]]
+    - [[#general][=general=]]
+    - [[#delight][=delight=]]
+    - [[#no-littering][=no-littering=]]
   - [[#built-in][Built-in]]
     - [[#package][=package=]]
     - [[#whitespace][=whitespace=]]
@@ -104,7 +107,7 @@ Cool Emacs configs from cool people:
     - [[#crux][=crux=]]
     - [[#page-break-lines][=page-break-lines=]]
     - [[#writeroom-mode][=writeroom-mode=]]
-- [[#theme][Theme]]
+  - [[#theme][Theme]]
 - [[#file-modes][File modes]]
   - [[#org][Org]]
     - [[#add-ons][Add-ons]]
@@ -762,7 +765,11 @@ Some basic configuration to enhance the =eval-expression= command.
 (add-hook 'eval-expression-minibuffer-setup-hook #'sane-eval-expr-defaults)
 #+end_src
 
-* Setting-up
+* Package configuration
+
+Everything that isn't a language-related package.
+
+** Setting-up
 
 Some setting up before we start configuring the packages themselves.
 
@@ -777,7 +784,7 @@ Some setting up before we start configuring the packages themselves.
     (make-directory package-user-dir t)))
 #+end_src
 
-** Load path
+*** Load path
 
 And then let's initialize the load path:
 
@@ -786,7 +793,7 @@ And then let's initialize the load path:
   (setq load-path (append load-path (directory-files package-user-dir t "^[^.]" t))))
 #+end_src
 
-** Use-package setup
+*** Use-package setup
 
 I use =use-package= to load my packages and to organize them neatly in
 this org file.
@@ -818,7 +825,12 @@ this org file.
 (add-hook 'emacs-startup-hook (lambda () (require 'use-package)))
 #+end_src
 
-** Additional support packages
+** Support
+
+All these packages just help on the configuration of the rest of the
+other packages.
+
+*** =general=                                                 :keybindings:
 
 To facilitate my keybinding issues, I also use =general.el=. It adds
 some very welcome keywords to =use-package=, in which I'll use
@@ -837,14 +849,18 @@ extensively throughout this file.
    (concat "C-" hcps/leader-key) '(:wk "leader" :keymap hcps/leader-map :package general)
    (concat "ESC " hcps/leader-key) '(:wk "leader" :keymap hcps/leader-map :package general))
   (:keymaps 'special-mode-map
-   hcps/leader-key '(:wk "leader" :keymap hcps/leader-map :package general)))
+   hcps/leader-key '(:wk "leader" :keymap hcps/leader-map :package general))
+  :config
+  (general-unbind 'global-map
+    hcps/leader-key))
 #+end_src
+
+*** =delight=                                                    :modeline:
 
 And we'll use =delight= to hide minor-modes names and such.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package delight
-  :commands delight
   :delight
   (auto-fill-function " af")
   (eldoc-mode " eldoc")
@@ -853,6 +869,8 @@ And we'll use =delight= to hide minor-modes names and such.
   (abbrev-mode))
 #+end_src
 
+*** =no-littering=                                               :cleaning:
+
 =no-littering= will help us by setting sane paths to all cache and
 history files the packages might set.
 
@@ -860,10 +878,6 @@ history files the packages might set.
 (use-package no-littering
   :demand)
 #+end_src
-
-* Package configurations
-
-Everything that isn't a language-related package.
 
 ** Built-in
 
@@ -2360,7 +2374,7 @@ A nice writing environment for Emacs in a minor-mode.
    "m w" 'writeroom-mode))
 #+end_src
 
-* Theme
+** Theme
 
 Here I define the theme that I use, which is =gruvbox=, as it provides
 nice support for a lot of packages and is very pleasant for the eyes.
@@ -2456,6 +2470,7 @@ your =.org= file.
    "l w" 'widen
    "l t" 'org-set-tags-command
    "l l" 'org-toggle-link-display
+   "l s" 'org-match-sparse-tree
    "l a" 'org-attach)
   (:states 'insert
    :keymaps 'org-mode-map
