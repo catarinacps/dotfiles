@@ -3212,34 +3212,29 @@ Packages to write Julia source code in Emacs.
 #+begin_src emacs-lisp :tangle yes
 (use-package julia-mode
   :defer t
-  :ensure julia-repl
-  :mode "\\.jl$"
+  :ensure ess
+  :mode
+  ("\\.jl$" . julia-mode)
+  :preface
+  (defun hcps/insert-julia-pipe ()
+    "Lets us insert the piping operator |> in Julia"
+    (interactive)
+    (just-one-space 1)
+    (insert "|>")
+    (reindent-then-newline-and-indent))
+  :init
+  (setq inferior-julia-program (hcps/s-trim-right (shell-command-to-string "which julia")))
+  (defvaralias 'inferior-julia-program-name 'inferior-julia-program
+    "Because jupyter still uses this symbol.")
+  (advice-add 'julia :around (lambda (func &rest args) (set-buffer (apply func args))))
   :hook
-  ((julia-mode-hook . julia-repl-mode)
-   (julia-mode-hook . lsp)
-   (julia-mode-hook . highlight-numbers-mode))
-  :custom
-  (inferior-julia-program-name "/usr/bin/julia"))
-#+end_src
-
-** Jupyter
-
-An interface to communicate with Jupyter kernels in Emacs.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package jupyter
-  :defer t
-  :ensure zmq
-  :ensure websocket
-  :custom
-  (org-babel-default-header-args:jupyter-julia
-   '((:eval . "no-export")
-     (:exports . "both")
-     (:kernel . "julia-1.2")))
-  (org-babel-default-header-args:jupyter-python
-   '((:eval . "no-export")
-     (:exports . "both")
-     (:kernel . "python3"))))
+  ((julia-mode-hook . lsp)
+   (julia-mode-hook . smartparens-strict-mode)
+   (julia-mode-hook . rainbow-delimiters-mode))
+  :general
+  (:states 'insert
+   :keymaps 'julia-mode-map
+   "M-RET" 'hcps/insert-julia-pipe))
 #+end_src
 
 ** LaTeX
