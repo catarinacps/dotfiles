@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: julia-jupy
+# name: julia-src
 # key: <j
 # --
 #+begin_src jupyter-julia
