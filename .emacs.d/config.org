@@ -2490,6 +2490,37 @@ For now only =toc-org=. You should probably [[https://github.com/snosov1/toc-org
   (org-mode-hook . toc-org-mode))
 #+end_src
 
+**** =org-ref=
+
+[[https://github.com/jkitchin/org-ref][org-ref]] is the de-facto way to cite inside Emacs, as it supports
+multiple export backends and such
+
+#+begin_src emacs-lisp :tangle yes
+(use-package org-ref
+  :defer t
+  :preface
+  (defconst hcps/user-org-ref-path
+    (expand-file-name "Documentos/Papers" onedrive-user-dir))
+  :custom
+  (org-ref-bibliography-notes (expand-file-name "notes.org" hcps/user-org-ref-path))
+  (org-ref-default-bibliography `(,(expand-file-name "references.bib" hcps/user-org-ref-path)))
+  (reftex-default-bibliography `(,(expand-file-name "references.bib" hcps/user-org-ref-path)))
+  (org-ref-pdf-directory hcps/user-org-ref-path)
+  (org-ref-completion-library 'org-ref-ivy-cite)
+  (org-ref-insert-cite-function 'org-ref-ivy-insert-cite-link)
+  (org-ref-insert-label-function 'org-ref-ivy-insert-label-link)
+  (org-ref-insert-ref-function 'org-ref-ivy-insert-ref-link)
+  (org-ref-show-broken-links nil)
+  :general
+  (:states '(normal visual)
+   :keymaps 'org-mode-map
+   :prefix hcps/leader-key
+   "l r" 'org-ref-cite-hydra/body
+   "l c" 'org-ref-insert-link)
+  :config
+  (require 'doi-utils))
+#+end_src
+
 *** Export
 
 Configurations relating all the numerous org exporters.
