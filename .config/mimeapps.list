@@ -23,10 +23,9 @@ x-scheme-handler/tg=telegramdesktop.desktop
 
 [Added Associations]
 image/jpeg=viewnior.desktop;gpicview.desktop;
-image/png=viewnior.desktop;gpicview.desktop;
+image/png=sxiv.desktop;viewnior.desktop;gpicview.desktop;
 text/plain=mousepad.desktop;
 message/rfc822=userapp-Thunderbird.desktop;userapp-Thunderbird-BW27ZZ.desktop;
 application/pdf=org.pwmt.zathura.desktop;epdfview.desktop;
 application/x-bittorrent=deluge.desktop;
 application/epub+zip=org.pwmt.zathura-pdf-mupdf.desktop;
-
