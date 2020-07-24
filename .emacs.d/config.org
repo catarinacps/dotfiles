@@ -33,6 +33,7 @@ Cool Emacs configs from cool people:
     - [[#one-time-advice][One-time advice]]
     - [[#automatic-byte-compile][Automatic byte-compile]]
     - [[#auto-removing-hook][Auto-removing hook]]
+    - [[#trim-functions][Trim functions]]
   - [[#keybindings][Keybindings]]
   - [[#definitions-and-preferences][Definitions and preferences]]
     - [[#default-org-mode][Default =org-mode=]]
@@ -49,7 +50,7 @@ Cool Emacs configs from cool people:
 - [[#package-configuration][Package configuration]]
   - [[#setting-up][Setting-up]]
     - [[#load-path][Load path]]
-    - [[#use-package-setup][Use-package setup]]
+    - [[#byte-compile-setup][Byte-compile setup]]
   - [[#support][Support]]
     - [[#general][=general=]]
     - [[#delight][=delight=]]
@@ -73,7 +74,6 @@ Cool Emacs configs from cool people:
     - [[#counsel][=counsel=]]
     - [[#undo-tree][=undo-tree=]]
     - [[#dashboard][=dashboard=]]
-    - [[#ranger][=ranger=]]
     - [[#treemacs][=treemacs=]]
     - [[#exec-path-from-shell][=exec-path-from-shell=]]
     - [[#anzu][=anzu=]]
@@ -113,28 +113,24 @@ Cool Emacs configs from cool people:
     - [[#add-ons][Add-ons]]
     - [[#export][Export]]
     - [[#babel][Babel]]
-    - [[#journal][Journal]]
-  - [[#cc-mode][CC-Mode]]
+  - [[#c-like-languages][C-like languages]]
     - [[#cc][C/C++]]
     - [[#cuda][CUDA]]
   - [[#r][R]]
-  - [[#shell][Shell]]
+  - [[#shell-script][Shell script]]
   - [[#makefile][Makefile]]
   - [[#plantuml][PlantUML]]
   - [[#lisp][Lisp]]
   - [[#elisp][Elisp]]
-  - [[#english][English]]
   - [[#python][Python]]
   - [[#cmake][CMake]]
   - [[#dockerfile][Dockerfile]]
   - [[#gmpl][GMPL]]
   - [[#julia][Julia]]
-  - [[#jupyter][Jupyter]]
   - [[#latex][LaTeX]]
-  - [[#coq][Coq]]
   - [[#meson][Meson]]
-  - [[#bspwmsxhkd][bspwm/sxhkd]]
-  - [[#configurations][Configurations]]
+  - [[#bspwmsxhkdrc][{bspwm,sxhkd}rc]]
+  - [[#configuration-files][Configuration files]]
   - [[#rust][Rust]]
   - [[#perl][Perl]]
 - [[#post-init][Post-init]]
@@ -198,11 +194,11 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - diff-hl
 - dockerfile-mode
 - docker-tramp
-- dumb-jump
 - elisp-mode
 - elisp-slime-nav
 - elpy
 - engine-mode
+- ess
 - ess
 - ess-r-mode
 - evil
@@ -216,7 +212,6 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - expand-region
 - flx
 - flycheck
-- flycheck-rust
 - flyspell
 - general
 - git-timemachine
@@ -229,11 +224,9 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - highlight-indent-guides
 - highlight-numbers
 - htmlize
-- hydra
 - ivy
 - ivy-rich
 - julia-mode
-- julia-repl
 - jupyter
 - link-hint
 - lisp-mode
@@ -244,13 +237,13 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - meson-mode
 - midnight
 - modern-cpp-font-lock
-- mw-thesaurus
 - no-littering
 - ob
 - openwith
 - org
 - org-journal
 - org-plus-contrib
+- org-ref
 - ox
 - ox-dnd
 - ox-extra
@@ -262,7 +255,6 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - plantuml-mode
 - projectile
 - rainbow-delimiters
-- ranger
 - recentf
 - rust-mode
 - sh-script
@@ -486,9 +478,6 @@ To use with this configuration file.
       (let ((tangled-file (car (org-babel-tangle-file config-file-name))))
         (byte-compile-file tangled-file)
         (delete-file tangled-file))))
-
-(add-hook 'compilation-finish-functions
-          (lambda (buffer &rest _) (delete-windows-on buffer 0)))
 #+end_src
 
 *** Auto-removing hook
@@ -507,6 +496,31 @@ Sometimes it's cool to have a single-use hook.
          (add-hook ',hook #',func)))))
 #+end_src
 
+*** Trim functions
+
+Directly from Magnar Sveen's =s.el=
+
+#+begin_src emacs-lisp :tangle yes
+(defun hcps/s-trim-left (s)
+  "Remove whitespace at the beginning of S."
+  (declare (pure t) (side-effect-free t))
+  (if (string-match "\\`[ \t\n\r]+" s)
+      (replace-match "" t t s)
+    s))
+
+(defun hcps/s-trim-right (s)
+  "Remove whitespace at the end of S."
+  (declare (pure t) (side-effect-free t))
+  (if (string-match "[ \t\n\r]+\\'" s)
+      (replace-match "" t t s)
+    s))
+
+(defun hcps/s-trim (s)
+  "Remove whitespace at the beginning and end of S."
+  (declare (pure t) (side-effect-free t))
+  (s-trim-left (s-trim-right s)))
+#+end_src
+
 ** Keybindings
 
 Here I'll define some of my personal keybindings, which means
@@ -514,8 +528,9 @@ Here I'll define some of my personal keybindings, which means
 above"!
 
 #+begin_src emacs-lisp :tangle yes
-(with-eval-after-load "general"
+(with-eval-after-load 'general
   (general-def '(global-map special-mode-map)
+    "C-x C-b" 'ibuffer
     "C-x k" 'kill-this-buffer
     "C-c x" 'hcps/date-iso
     "<f9>" 'hcps/get-selected-text
@@ -526,13 +541,7 @@ above"!
     "<f12>" 'menu-bar-mode)
 
   (general-def 'hcps/leader-map
-    ;; some interesting names for the future prefixes
-    "f" '(:ignore t :wk "file")
-    "w" '(:ignore t :wk "window")
-    "r" '(:ignore t :wk "replace")
-    "l" '(:ignore t :wk "language")
-    "m" '(:ignore t :wk "misc")
-    "B" 'ibuffer
+    "C-b" 'ibuffer
     "s" 'save-buffer
     "k" 'kill-this-buffer
     "i" 'indent-region
@@ -540,7 +549,24 @@ above"!
     "c" 'comment-dwim
     "w k" 'delete-window
     "w v" 'split-window-vertically
-    "w h" 'split-window-horizontally))
+    "w h" 'split-window-horizontally
+    "v n p" 'narrow-to-page
+    "v n f" 'narrow-to-defun
+    "v n r" 'narrow-to-region
+    "v n w" 'widen)
+
+  (general-def '(normal visual insert emacs special-mode-map)
+    :prefix hcps/leader-key
+    :non-normal-prefix (concat "M-" hcps/leader-key)
+    "g" '(:ignore t :wk "git")
+    "f" '(:ignore t :wk "file")
+    "w" '(:ignore t :wk "window")
+    "r" '(:ignore t :wk "replace")
+    "p" '(:ignore t :wk "package")
+    "n" '(:ignore t :wk "navigate")
+    "m" '(:ignore t :wk "mode")
+    "v" '(:ignore t :wk "view")
+    "v n" '(:ignore t :wk "narrow")))
 #+end_src
 
 ** Definitions and preferences
@@ -561,11 +587,14 @@ To ensure ELPA =org= is prioritized above built-in org.
 Silly names for easier path usage.
 
 #+begin_src emacs-lisp :tangle yes
-(defconst current-user (getenv "USER") "The current user.")
+(eval-and-compile
+  (defconst current-user (getenv "USER") "The current user.")
+  (defconst home-dir (expand-file-name current-user "/home/") "The user home dir.")
 
-(defconst root-dir (expand-file-name user-emacs-directory) "The root dir of Emacs.")
-(defconst var-user-dir (expand-file-name "var" root-dir) "The temporaries directory.")
-(defconst vendor-user-dir (expand-file-name "vendor" root-dir) "The random .el directory.")
+  (defconst root-dir (expand-file-name user-emacs-directory) "The root dir of Emacs.")
+  (defconst var-user-dir (expand-file-name "var" root-dir) "The temporaries directory.")
+  (defconst vendor-user-dir (expand-file-name "vendor" root-dir) "The random .el directory.")
+  (defconst onedrive-user-dir (expand-file-name "OneDrive" home-dir) "Default OneDrive path."))
 #+end_src
 
 *** Garbage collection
@@ -586,9 +615,7 @@ space. Those are turned off in my =xresources= config.
 To be fair, some stuff is really personal preference of mine.
 
 #+begin_src emacs-lisp :tangle yes
-(setq inhibit-startup-screen t
-      initial-scratch-message nil
-      initial-major-mode 'text-mode)
+(setq inhibit-startup-screen t)
 #+end_src
 
 And then there's the title question. I for one like Emacs capitalized,
@@ -632,8 +659,9 @@ any further.
               sentence-end-double-space nil
               tab-width 4
               line-spacing 0
+              truncate-lines t
               require-final-newline t
-              x-stretch-cursor nil
+              x-stretch-cursor t
               cursor-in-non-selected-windows nil)
 #+end_src
 
@@ -669,16 +697,37 @@ grew tired of it.
 
 ;; I used to do this globally, but now let's only do selectively
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
-(add-hook 'conf-mode-hook 'display-line-numbers-mode)
 #+end_src
 
 And I also like the vim style of scrolling better.
 
 #+begin_src emacs-lisp :tangle yes
-(setq-default auto-window-vscroll nil
-              scroll-step 1
-              scroll-conservatively most-positive-fixnum
+(setq-default auto-window-vscroll t
+              ;; line-move-visual nil
+              scroll-preserve-screen-position t
+              scroll-conservatively 101
               scroll-margin 10)
+#+end_src
+
+Small fix for =scroll-margin=
+
+#+begin_src emacs-lisp :tangle yes
+(defun get-lines-from-top ()
+  (save-excursion
+    (beginning-of-line)
+    (count-screen-lines (point) (window-start))))
+
+(defun scroll-margin-fix (func &rest args)
+  (apply func args)
+  (if (> scroll-margin 0)
+      (let ((diff (- (min scroll-margin (floor (* maximum-scroll-margin (window-screen-lines))))
+                     (get-lines-from-top))))
+        (when (> diff 0)
+          (scroll-down 1)))))
+
+(advice-add 'previous-line :around 'scroll-margin-fix)
+
+(add-hook 'prog-mode-hook #'visual-line-mode)
 #+end_src
 
 Highlighting the current line is also very useful.
@@ -767,7 +816,7 @@ Some basic configuration to enhance the =eval-expression= command.
 
 * Package configuration
 
-Everything that isn't a language-related package.
+Everything that isn't an specific file-mode =.el=.
 
 ** Setting-up
 
@@ -793,7 +842,7 @@ And then let's initialize the load path:
   (setq load-path (append load-path (directory-files package-user-dir t "^[^.]" t))))
 #+end_src
 
-*** Use-package setup
+*** Byte-compile setup
 
 I use =use-package= to load my packages and to organize them neatly in
 this org file.
@@ -845,9 +894,8 @@ extensively throughout this file.
   (defvar hcps/leader-map (make-sparse-keymap)
     "Keymap for all my leader bindings.")
   :general
-  (:keymaps 'global-map
-   (concat "C-" hcps/leader-key) '(:wk "leader" :keymap hcps/leader-map :package general)
-   (concat "ESC " hcps/leader-key) '(:wk "leader" :keymap hcps/leader-map :package general))
+  (:keymaps '(global-map special-mode-map)
+   (concat "M-" hcps/leader-key) '(:wk "leader" :keymap hcps/leader-map :package general))
   (:keymaps 'special-mode-map
    hcps/leader-key '(:wk "leader" :keymap hcps/leader-map :package general))
   :config
@@ -861,11 +909,13 @@ And we'll use =delight= to hide minor-modes names and such.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package delight
+  :commands delight
   :delight
   (auto-fill-function " af")
   (eldoc-mode " eldoc")
   (editorconfig-mode)
   (flymake-mode " flymk" flymake)
+  (visual-line-mode " vl")
   (abbrev-mode))
 #+end_src
 
@@ -888,6 +938,8 @@ The ones that /really/ don't require =use-package :ensure=.
 - [ ] hippie-expand
 - [ ] eshell
 - [ ] save-place
+- [ ] prog-mode
+- [ ] text-mode
 
 *** =package=                                                     :package:
 
@@ -909,7 +961,8 @@ Same as above but with keybindings and =package-initialize=.
    "p i" 'package-install
    "p r" 'package-reinstall)
   :config
-  (package-initialize))
+  (package-initialize)
+  (require 'counsel))
 #+end_src
 
 *** =whitespace=                                               :faces:fill:
@@ -925,7 +978,6 @@ Let's monitor ourselves with =whitespace=.
   ((before-save-hook . whitespace-cleanup)
    (before-save-hook . delete-trailing-whitespace)
    (text-mode-hook . whitespace-mode)
-   (conf-mode-hook . whitespace-mode)
    (prog-mode-hook . whitespace-mode))
   :custom
   (whitespace-line-column 85)
@@ -945,7 +997,8 @@ on compilations.
   :custom
   (compilation-ask-about-save nil)
   (compilation-always-kill t)
-  (compilation-scroll-output 'first-error))
+  (compilation-scroll-output 'first-error)
+  (compilation-finish-functions (lambda (buffer &rest _) (delete-windows-on buffer 0))))
 #+end_src
 
 *** =tramp=                                                        :remote:
@@ -994,10 +1047,6 @@ Here's a small package that allows remotely opening sessions.
   :custom
   (shell-command-dont-erase-buffer t)
   (ssh-directory-tracking-mode t)
-  :general
-  (:keymaps 'hcps/leader-map
-   "m s" 'hcps/ssh-user-connect
-   "m S" 'hcps/store-user-remote)
   :config
   (shell-dirtrack-mode t))
 #+end_src
@@ -1059,10 +1108,10 @@ name:
 (use-package uniquify
   :ensure nil
   :custom
-  (uniquify-buffer-name-style 'forward)
-  (uniquify-separator "/")
+  (uniquify-buffer-name-style 'post-forward)
+  (uniquify-separator ":")
   (uniquify-after-kill-buffer-p t)
-  (uniquify-ignore-buffers-re "^\\*"))
+  (uniquify-ignore-buffers-re "^[*[:space:]]"))
 #+end_src
 
 *** =recentf=                                                       :files:
@@ -1173,6 +1222,7 @@ Yes, you can have the best of both worlds!
   (evil-want-C-u-scroll t)
   (evil-want-C-d-scroll t)
   (evil-want-Y-yank-to-eol t)
+  (evil-respect-visual-line-mode t)
   (evil-emacs-state-cursor  '("red" box))
   (evil-normal-state-cursor '("gray" box))
   (evil-visual-state-cursor '("gray" hollow))
@@ -1363,7 +1413,7 @@ fuzzy matching and whatnot.
   :custom
   (ivy-count-format "(%d/%d) ")
   (ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
-  (ivy-height 8)
+  (ivy-height 9)
   (ivy-extra-directories nil)
   (ivy-wrap t)
   (ivy-do-completion-in-region t)
@@ -1412,12 +1462,13 @@ to make sure that =counsel-M-x= has decent candidate sorting.
   (:keymaps 'hcps/leader-map
    "f f" 'counsel-find-file
    "f r" 'counsel-recentf
+   "f b" 'counsel-bookmark
+   "p p" 'counsel-package
    "b" 'counsel-switch-buffer
    "y" 'counsel-yank-pop
-   "o" 'counsel-outline
-   "m p" 'counsel-package
-   "m b" 'counsel-bookmark)
-  ([remap execute-extended-command] 'counsel-M-x
+   "o" 'counsel-outline)
+  (:keymaps '(global-map special-mode-map)
+   [remap execute-extended-command] 'counsel-M-x
    [remap find-file] 'counsel-find-file
    [remap switch-buffer] 'counsel-switch-buffer)
   :config
@@ -1440,7 +1491,7 @@ a list with possible =ssh= connections AND docker containers (thanks to
   :ensure docker-tramp
   :general
   (:keymaps 'hcps/leader-map
-   "m t" 'counsel-tramp))
+   "f t" 'counsel-tramp))
 #+end_src
 
 *** =undo-tree=                                                   :history:
@@ -1547,6 +1598,10 @@ integrating packages and is overall more popular than the former.
    "M-t" 'treemacs)
   (:keymaps 'hcps/leader-map
    "t" 'treemacs)
+  (:states '(normal visual)
+   :keymaps 'treemacs-mode-map
+   "l" 'treemacs-RET-action
+   "h" nil)
   :config
   (treemacs-follow-mode +1)
   (treemacs-filewatch-mode +1)
@@ -1563,11 +1618,12 @@ will certainly work on Emacs!
 (setenv "SHELL" "/bin/bash")
 
 (use-package exec-path-from-shell
-  :defer .1
   :disabled
   :custom
   (exec-path-from-shell-arguments '("-l"))
   (exec-path-from-shell-variables '("PATH" "MANPATH"))
+  :init
+  (setenv "SHELL" "/bin/bash")
   :config
   (exec-path-from-shell-initialize))
 #+end_src
@@ -1616,7 +1672,7 @@ the slowness of it. So, I use =deadgrep=!
   :after evil-collection
   :general
   (:keymaps 'hcps/leader-map
-   "m g" 'deadgrep)
+   "f g" 'deadgrep)
   :config
   (evil-collection-deadgrep-setup))
 #+end_src
@@ -1684,7 +1740,7 @@ By using =lsp-mode=, we'll be able to have it too!
   (lsp-mode " lsp")
   :hook
   ((lsp-mode-hook . lsp-enable-which-key-integration)
-   (lsp-managed-mode-hook . lsp-diagnostics-modeline-mode)
+   (lsp-managed-mode-hook . lsp-modeline-diagnostics-mode)
    (lsp-mode-hook . lsp-headerline-breadcrumb-mode))
   :custom
   (lsp-log-io t)
@@ -1695,8 +1751,9 @@ By using =lsp-mode=, we'll be able to have it too!
   (lsp-semantic-highlighting t)
   (lsp-diagnostics-modeline-scope :project)
   :general
-  (:keymaps 'hcps/leader-map
-   "L" '(:keymap lsp-command-map :package lsp-mode))
+  (:states '(normal visual)
+   :prefix hcps/leader-key
+   "l" '(:wk "lsp-mode" :keymap lsp-command-map :package lsp-mode))
   :config
   (add-to-list 'lsp-language-id-configuration '(cuda-mode . "cuda"))
   (add-to-list 'lsp-language-id-configuration '(".*\\.cu$" . "cuda")))
@@ -1711,7 +1768,7 @@ This package does have an extra sister package: =lsp-ui=.
   :custom
   (lsp-ui-doc-enable t)
   (lsp-ui-doc-position 'at-point)
-  (lsp-ui-doc-delay 1)
+  (lsp-ui-doc-delay 2.0)
   (lsp-ui-sideline-enable t)
   (lsp-ui-sideline-delay 1)
   (lsp-ui-sideline-show-diagnostics t)
@@ -1735,7 +1792,7 @@ This package does have an extra sister package: =lsp-ui=.
   :custom
   (flycheck-check-syntax-automatically '(save mode-enabled))
   (flycheck-disabled-checkers '(emacs-lisp-checkdoc))
-  (flycheck-display-errors-delay .3)
+  (flycheck-display-errors-delay 1.0)
   :config
   (flycheck-define-checker proselint
     "A linter for prose."
@@ -1784,7 +1841,7 @@ Of course, =flyspell= corrects your writing!
 #+begin_src emacs-lisp :tangle yes
 (use-package flyspell
   :defer t
-  :commands (flyspell-prog-mode flyspell-mode ispell-change-dictionary)
+  :commands (flyspell-prog-mode flyspell-mode)
   :delight
   (flyspell-mode " flysp")
   (flyspell-prog-mode " flysp")
@@ -1838,7 +1895,7 @@ deactivated.
 **** Eyebrowse
 
 #+begin_src emacs-lisp :tangle no
-(with-eval-after-load "hydra"
+(with-eval-after-load 'hydra
   (defhydra hydra-eyebrowse (:color blue)
     "
 ^
@@ -1859,7 +1916,7 @@ _q_ quit            _c_ create          _<_ previous
     ("r" eyebrowse-rename-window-config)
     ("s" eyebrowse-switch-to-window-config))
 
-  (with-eval-after-load "general"
+  (with-eval-after-load 'general
     (general-def '(global-map special-mode-map)
       "C-c e" 'hydra-eyebrowse/body)))
 #+end_src
@@ -1867,7 +1924,7 @@ _q_ quit            _c_ create          _<_ previous
 **** Flycheck
 
 #+begin_src emacs-lisp :tangle no
-(with-eval-after-load "hydra"
+(with-eval-after-load 'hydra
   (defhydra hydra-flycheck (:color pink)
     "
 ^
@@ -1890,7 +1947,7 @@ _v_ verify setup    _f_ check           _s_ select
     ("s" flycheck-select-checker :color blue)
     ("v" flycheck-verify-setup :color blue))
 
-  (with-eval-after-load "general"
+  (with-eval-after-load 'general
     (general-def '(global-map special-mode-map)
       "C-c f" 'hydra-flycheck/body)))
 #+end_src
@@ -2069,7 +2126,6 @@ in the visible universe, nay, in the whole multiverse.
   (magit-bury-buffer-function 'magit-mode-quit-window)
   :general
   (:keymaps 'hcps/leader-map
-   "g" '(:ignore t :wk "git")
    "g p" 'magit-list-repositories
    "g g" 'magit-status
    "g d" 'magit-dispatch
@@ -2195,15 +2251,25 @@ it out of the box.
 #+begin_src emacs-lisp :tangle yes
 (use-package highlight-indent-guides
   :defer t
+  :delight
+  (highlight-indent-guides-mode)
+  :commands
+  (highlight-indent-guides-auto-set-faces highlight-indent-guides-mode)
+  :preface
+  (defun highlight-indent-guides-auto-set-faces-with-frame (frame)
+    (with-selected-frame frame
+      (highlight-indent-guides-auto-set-faces)))
   :custom
   (highlight-indent-guides-method 'bitmap)
   (highlight-indent-guides-responsive 'stack)
+  (highlight-indent-guides-character ?|)
   (highlight-indent-guides-delay 0.05)
   (highlight-indent-guides-auto-odd-face-perc 5)
   (highlight-indent-guides-auto-even-face-perc 5)
   (highlight-indent-guides-auto-character-face-perc 10)
   :hook
-  (prog-mode-hook . highlight-indent-guides-mode))
+  ((prog-mode-hook . highlight-indent-guides-mode)
+   (after-make-frame-functions . highlight-indent-guides-auto-set-faces-with-frame)))
 #+end_src
 
 *** =helpful=                                                      :helper:
@@ -2319,7 +2385,7 @@ To make pretty page breaks in your Emacs buffers:
   (page-break-lines-max-width (+ fill-column 10))
   (page-break-lines-char ?-)
   :custom-face
-  (page-break-lines ((t :inherit font-lock-comment-face :bold t :italic nil))))
+  (page-break-lines ((t :inherit font-lock-comment-face :bold nil :italic nil))))
 #+end_src
 
 *** =writeroom-mode=                                          :environment:
@@ -2335,7 +2401,7 @@ A nice writing environment for Emacs in a minor-mode.
   (writeroom-width (+ 3 fill-column))
   :general
   (:keymaps 'hcps/leader-map
-   "m w" 'writeroom-mode))
+   "v w" 'writeroom-mode))
 #+end_src
 
 ** Theme
@@ -2361,7 +2427,7 @@ I still need to add packages relating to these languages:
 - [ ] Scala
 - [ ] Dot (using Graphviz)
 - [ ] English (as in literal english)
-- [ ] Coq (yes, I'm slowly turning into what I most hate)
+- [ ] Coq (yes, I'm slowly turning into what I most hate (check the hrs config!))
 - [ ] PKGBUILD
 - [ ] Markdown
 
@@ -2381,9 +2447,11 @@ your =.org= file.
   :delight
   (org-indent-mode nil org-indent)
   :hook
-  ((org-mode-hook . turn-on-auto-fill)
+  ((org-mode-hook . auto-fill-mode)
+   (org-mode-hook . hes-mode)
    (org-mode-hook . yas-minor-mode)
    (org-mode-hook . eldoc-mode)
+   (org-mode-hook . visual-line-mode)
    (org-mode-hook . (lambda () (whitespace-toggle-options 'lines-tail))))
   :custom
   (org-return-follows-link t)
@@ -2414,6 +2482,7 @@ your =.org= file.
    "<" 'org-metaleft ; outdent
    ">" 'org-metaright ; indent
    "C-i" 'org-toggle-inline-images
+   "C-l" 'org-toggle-link-display
    "C-j" 'outline-next-visible-heading
    "C-k" 'outline-previous-visible-heading
    "C-S-k" 'outline-up-heading
@@ -2427,15 +2496,11 @@ your =.org= file.
   (:states '(normal visual)
    :keymaps 'org-mode-map
    :prefix hcps/leader-key
-   "l n" '(:ignore t :wk "narrow")
-   "l n s" 'org-narrow-to-subtree
-   "l n p" 'narrow-to-page
-   "l n b" 'org-narrow-to-block
-   "l w" 'widen
-   "l t" 'org-set-tags-command
-   "l l" 'org-toggle-link-display
-   "l s" 'org-match-sparse-tree
-   "l a" 'org-attach)
+   "v n s" 'org-narrow-to-subtree
+   "v n b" 'org-narrow-to-block
+   "m t" 'org-set-tags-command
+   "m s" 'org-match-sparse-tree
+   "m a" 'org-attach)
   (:states 'insert
    :keymaps 'org-mode-map
    "<tab>" 'org-cycle)
@@ -2445,7 +2510,11 @@ your =.org= file.
 
 *** Add-ons
 
-For now only =toc-org=. You should probably [[https://github.com/snosov1/toc-org][check it out]].
+Stuff that increases the capabilities of =org-mode=
+
+**** =toc-org=
+
+You should probably [[https://github.com/snosov1/toc-org][check toc-org out]]
 
 #+begin_src emacs-lisp :tangle yes
 (use-package toc-org
@@ -2479,10 +2548,28 @@ multiple export backends and such
   (:states '(normal visual)
    :keymaps 'org-mode-map
    :prefix hcps/leader-key
-   "l r" 'org-ref-cite-hydra/body
-   "l c" 'org-ref-insert-link)
+   "m r" 'org-ref-cite-hydra/body
+   "m c" 'org-ref-insert-link)
   :config
   (require 'doi-utils))
+#+end_src
+
+**** =org-journal=
+
+=org-journal= is a powerful tool to journal your day.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package org-journal
+  :defer t
+  :custom
+  (org-journal-dir (format-time-string "~/OneDrive/Documentos/Journal/%Y/"))
+  (org-journal-file-type 'monthly)
+  (org-journal-file-format "%Y%m")
+  (org-journal-date-format "%e %b %Y (%A)")
+  (org-journal-time-format "")
+  :general
+  (:keymaps 'hcps/leader-map
+   "f j" 'org-journal-new-entry))
 #+end_src
 
 *** Export
@@ -2519,10 +2606,10 @@ Configurations relating all the numerous org exporters.
   (:states '(normal visual)
    :keymaps 'org-mode-map
    :prefix hcps/leader-key
-   "l e" 'org-export-dispatch))
+   "m e" 'org-export-dispatch))
 #+end_src
 
-**** Extras
+**** =ox-extra=
 
 =ox-extra= defines a couple of cool extras, like =ignore-headlines=!
 
@@ -2534,7 +2621,7 @@ Configurations relating all the numerous org exporters.
   (org-export-filter-parse-tree-functions . org-export-ignore-headlines))
 #+end_src
 
-**** LaTeX
+**** =ox-latex=
 
 Configurations to the LaTeX org exporter.
 
@@ -2583,7 +2670,7 @@ Configurations to the LaTeX org exporter.
                  ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
 #+end_src
 
-**** Hugo
+**** =ox-hugo=
 
 To the oh-so-pretty Hugo markdown format!
 
@@ -2592,16 +2679,16 @@ To the oh-so-pretty Hugo markdown format!
   :after ox)
 #+end_src
 
-**** Twitter Bootstrap HTML
+**** =ox-twbs=
 
-It's very pretty oh-kay?
+Twitter bootstrap htmls!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ox-twbs
   :after ox)
 #+end_src
 
-**** D&D
+**** =ox-dnd=
 
 Yeah. That's right.
 
@@ -2665,8 +2752,10 @@ Now, some configurations relating org-babel and its magic source blocks.
      (:hlines . "no")
      (:tangle . "no")))
   (org-babel-load-languages
-   '((shell . t)
+   '((emacs-lisp . t)
+     (shell . t)
      (python . t)
+     (julia . t)
      (makefile . t)
      (R . t)
      (C . t)
@@ -2678,45 +2767,52 @@ Now, some configurations relating org-babel and its magic source blocks.
      (perl . t)
      (screen . t)
      (plantuml . t)
-     ;; (julia . t)
-     (latex . t)
-     (jupyter . t)
      (lilypond . t)
-     (emacs-lisp . t)))
+     (latex . t)
+     (jupyter . t)))
   :general
   (:states '(normal visual)
    :keymaps 'org-mode-map
    :prefix hcps/leader-key
-   "l x" 'org-babel-execute-buffer
-   "l z" 'org-babel-tangle-block
-   "l Z" 'org-babel-tangle)
+   "m x" 'org-babel-execute-buffer
+   "m z" 'org-babel-tangle-block
+   "m Z" 'org-babel-tangle)
   (:keymaps 'org-mode-map
    "C-c SPC" 'org-edit-special)
   (:keymaps 'org-src-mode-map
    "C-c SPC" 'org-edit-src-exit))
 #+end_src
 
-*** Journal
+**** =jupyter=
 
-=org-journal= is a powerful tool to journal your day.
+As a great way to run Python and Julia source blocks inside =org-mode=
 
 #+begin_src emacs-lisp :tangle yes
-(use-package org-journal
-  :defer t
+(use-package jupyter
+  :after ob
+  :ensure zmq
+  :ensure websocket
+  :commands jupyter-org-interaction-mode
   :custom
-  (org-journal-dir (format-time-string "~/OneDrive/Documentos/Journal/%Y/"))
-  (org-journal-file-type 'monthly)
-  (org-journal-file-format "%Y%m")
-  (org-journal-date-format "%e %b %Y (%A)")
-  (org-journal-time-format "")
-  :general
-  (:keymaps 'hcps/leader-map
-   "m j" 'org-journal-new-entry))
+  (org-babel-default-header-args:jupyter-julia
+   '((:eval . "no-export")
+     (:async . "yes")
+     (:session . "*Julia*")
+     (:results . "value")
+     (:exports . "both")
+     (:kernel . "julia-1.4")))
+  (org-babel-default-header-args:jupyter-python
+   '((:eval . "no-export")
+     (:async . "yes")
+     (:session . "*Python*")
+     (:results . "value")
+     (:exports . "both")
+     (:kernel . "python3"))))
 #+end_src
 
-** CC-Mode
+** C-like languages
 
-Here I set some defaults I appreciate for cc-mode (the mode for all
+Here I set some defaults I appreciate for =cc-mode= (the mode for all
 c-like languages):
 
 #+begin_src emacs-lisp :tangle yes
@@ -2731,7 +2827,6 @@ c-like languages):
    ("\\.java$" . java-mode))
   :hook
   ((c-mode-common-hook . lsp)
-   (c-mode-common-hook . highlight-doxygen-mode)
    (c-mode-common-hook . rainbow-delimiters-mode)
    (c-mode-common-hook . smartparens-strict-mode))
   :custom
@@ -2760,7 +2855,8 @@ Better C++ font lock:
 #+begin_src emacs-lisp :tangle yes
 (use-package modern-cpp-font-lock
   :defer t
-  :delight modern-c++-font-lock-mode
+  :delight
+  (modern-c++-font-lock-mode)
   :hook
   (c++-mode-hook . modern-c++-font-lock-mode))
 #+end_src
@@ -2799,8 +2895,7 @@ special keywords and types that CUDA introduces. So, let's install
   :mode "\\.cu$"
   :commands cuda
   :hook
-  ((cuda-mode-hook . (lambda () (run-hooks 'prog-mode-hook)))
-   (cuda-mode-hook . modern-c++-font-lock-mode))
+  (cuda-mode-hook . (lambda () (dolist (func c++-mode-hook nil) (funcall func))))
   :custom
   (cuda-font-lock-keywords 'cuda-font-lock-keywords-3))
 #+end_src
@@ -2829,6 +2924,7 @@ Statistics/. It provides you with everything you need from R.
   ((ess-r-mode-hook . yas-minor-mode)
    (ess-r-mode-hook . aggressive-indent-mode)
    (ess-r-mode-hook . smartparens-strict-mode)
+   (ess-r-mode-hook . eldoc-mode)
    ;; (ess-r-mode-hook . lsp)
    (ess-r-mode-hook . rainbow-delimiters-mode))
   :general
@@ -2840,7 +2936,7 @@ Statistics/. It provides you with everything you need from R.
   (ess-style 'RStudio))
 #+end_src
 
-** Shell
+** Shell script
 
 As for shell-scripting:
 
@@ -2943,7 +3039,7 @@ For =shell= completion I use =bash-complete=, which auto completes several
   :hook
   (shell-dynamic-complete-functions . bash-completion-dynamic-complete)
   :custom
-  (bash-completion-use-separate-processes nil))
+  (bash-completion-use-separate-processes t))
 #+end_src
 
 ** Makefile
@@ -2990,6 +3086,7 @@ Fix for the annoying keyword default indentation:
   :ensure nil
   :mode
   (("\\.lsp$" . lisp-mode)
+   ("\\.lisp$" . lisp-mode)
    ("\\.cl$" . lisp-mode))
   :preface
   (defun fuco1/lisp-indent-function (indent-point state)
@@ -3062,14 +3159,11 @@ Lisp function does not specify a special indentation."
                 (method
                  (funcall method indent-point state))))))))
   :hook
-  ((lisp-mode-hook . highlight-numbers-mode)
-   (lisp-mode-hook . smartparens-strict-mode)
+  ((lisp-mode-hook . smartparens-strict-mode)
    (lisp-mode-hook . aggressive-indent-mode)
    (lisp-mode-hook . rainbow-delimiters-mode))
   :custom
-  (lisp-indent-function #'fuco1/lisp-indent-function)
-  :config
-  (require 'use-package))
+  (lisp-indent-function #'fuco1/lisp-indent-function))
 #+end_src
 
 ** Elisp
@@ -3091,25 +3185,13 @@ Emacs version!
       (emacs-lisp-byte-compile)))
   :hook
   ((after-save-hook . recompile-elc-on-save)
-   (emacs-lisp-mode-hook . (lambda () (run-hooks 'lisp-mode-hook)))
+   (emacs-lisp-mode-hook . smartparens-strict-mode)
+   (emacs-lisp-mode-hook . aggressive-indent-mode)
+   (emacs-lisp-mode-hook . rainbow-delimiters-mode)
    (emacs-lisp-mode-hook . yas-minor-mode))
   :config
   ;; to have the macro definitions
   (require 'use-package))
-#+end_src
-
-** English
-
-Something I found out while scrolling /Github/ is the =mw-thesaurus=
-package, which provides a nice interface for the Merriam-Webster
-thesaurus.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package mw-thesaurus
-  :defer t
-  :general
-  (:keymaps 'hcps/leader-map
-   "T" 'mw-thesaurus-lookup-at-point))
 #+end_src
 
 ** Python
@@ -3124,28 +3206,30 @@ Emacs Lisp as well as Python.
 (use-package elpy
   :defer t
   :commands elpy-enable
-  :init
-  (advice-add 'python-mode :after 'elpy-enable))
+  :hook
+  (python-mode-hook . elpy-enable))
 #+end_src
 
 ** CMake
 
-Just as a bonus, this package helps me to read CMake code. As CMake is
-very simple, each word carries a load of meaning and importance. This
-little mode colors them accordingly.
+As CMake is very simple, each word carries a load of meaning and
+importance. This little mode colors them accordingly.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package cmake-mode
   :defer t
   :ensure nil
   :ensure cmake-font-lock
-  :mode "^CMakeLists\\.txt$"
+  :load-path (lambda () (car (file-expand-wildcards "/usr/share/cmake-3.*/editors/emacs")))
+  :mode
+  (("^CMakeLists\\.txt$" . cmake-mode)
+   ("\\.cmake" . cmake-mode))
+  :init
+  (autoload 'cmake-font-lock-activate "cmake-font-lock" nil t)
   :hook
   ((cmake-mode-hook . smartparens-strict-mode)
    (cmake-mode-hook . rainbow-delimiters-mode)
-   (cmake-mode-hook . highlight-numbers-mode))
-  :init
-  (advice-add 'cmake-mode :after 'cmake-font-lock-activate))
+   (cmake-mode-hook . cmake-font-lock-activate)))
 #+end_src
 
 ** Dockerfile
@@ -3214,7 +3298,7 @@ Let's start with some basic =auctex= editing so it starts the way I want
   ((latex-mode-hook . turn-on-reftex)
    (latex-mode-hook . turn-on-auto-fill)
    (latex-mode-hook . rainbow-delimiters-mode)
-   (latex-mode-hook . turn-on-smartparens-mode))
+   (latex-mode-hook . smartparens-mode))
   :custom
   (TeX-auto-save t)
   (TeX-parse-self t)
@@ -3230,26 +3314,7 @@ use.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package auctex-latexmk
-  :after (tex auctex)
-  :preface
-  (defun hcps/set-latexmk-as-default ()
-    (add-to-list
-     'TeX-expand-list
-     '("%(-PDF)"
-       (lambda ()
-         (cond ((string-match "TeX-engine: pdftex" (buffer-string)) "-pdf")
-               ((string-match "TeX-engine: luatex" (buffer-string)) "-pdflatex=lualatex -pdf")
-               ((string-match "TeX-engine: xetex" (buffer-string)) "-pdflatex=xelatex -pdf")
-               (t "-dvi -pdfps")))))
-    (add-to-list
-     'TeX-command-list
-     '("Latexmk" "latexmk %(-PDF) -synctex=1 %s"
-       TeX-run-TeX nil t
-       :help "Run Latexmk on file to build everything."))
-    (setq TeX-command-default "Latexmk"))
-  :hook
-  ((tex-mode-hook . hcps/set-latexmk-as-default)
-   (latex-mode-hook . hcps/set-latexmk-as-default))
+  :after auctex
   :custom
   (auctex-latexmk-inherit-TeX-PDF-mode t)
   :config
@@ -3258,13 +3323,6 @@ use.
 
 The hook stuff is because all =TeX= get defined when the mode starts, so
 we need to redefine them then.
-
-** Coq
-
-Not set up, but when I get to it:
-
-- proof-general
-- hrs config!
 
 ** Meson
 
@@ -3280,7 +3338,7 @@ Python).
   (meson-mode-hook . (lambda () (run-hooks 'prog-mode-hook))))
 #+end_src
 
-** bspwm/sxhkd
+** {bspwm,sxhkd}rc
 
 Derives from =conf-mode[space]=. Got it from [[https://notabug.org/arkhan/emacs-bspwm][here]].
 
@@ -3296,7 +3354,7 @@ Derives from =conf-mode[space]=. Got it from [[https://notabug.org/arkhan/emacs-
   (bspwm-config-mode-hook . page-break-lines-mode))
 #+end_src
 
-** Configurations
+** Configuration files
 
 Just a little hook to start the desired =conf-mode= when we open these
 files.
@@ -3319,11 +3377,10 @@ The newest greatest compiled language!
 (use-package rust-mode
   :defer t
   :ensure cargo
-  :ensure flycheck-rust
+  ;; :ensure flycheck-rust
   :hook
   ((rust-mode-hook . lsp)
    (rust-mode-hook . cargo-minor-mode)
-   (rust-mode-hook . subword-mode)
    (rust-mode-hook . smartparens-strict-mode)
    (rust-mode-hook . rainbow-delimiters-mode))
   :custom
