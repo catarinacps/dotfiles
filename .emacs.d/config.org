@@ -1517,42 +1517,6 @@ there's a cool extension that provides such functionality.
   (dashboard-setup-startup-hook))
 #+end_src
 
-*** =ranger=                                             :files:navigation:
-
-I use =ranger.el= to use a file explorer like =ranger= inside Emacs
-instead of the default =dired=.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package ranger
-  :defer t
-  :disabled
-  :hook
-  ((ranger-mode-hook . hide-mode-line-mode)
-   (ranger-parent-dir-hook . hide-mode-line-mode)
-   (ranger-parent-dir-hook . ranger-hide-details)
-   (ranger-parent-dir-hook . ranger-sort)
-   (ranger-parent-dir-hook . ranger-filter-files)
-   (ranger-parent-dir-hook . ranger-sub-window-setup)
-   (ranger-preview-dir-hook . hide-mode-line-mode)
-   (ranger-preview-dir-hook . ranger-sort)
-   (ranger-preview-dir-hook . ranger-filter-files)
-   (ranger-preview-dir-hook . ranger-truncate)
-   (ranger-preview-dir-hook . ranger-show-details))
-  :general
-  (:keymaps 'hcps/leader-map
-   "d" 'ranger)
-  :custom
-  (ranger-excluded-extensions '("mkv" "iso" "mp4" "bin" "exe" "msi" "pdf"))
-  (ranger-cleanup-on-disable t)
-  (ranger-modify-header nil)
-  (ranger-preview-file t)
-  (ranger-show-literal nil)
-  (ranger-dont-show-binary t)
-  (ranger-max-preview-size 10)
-  :config
-  (ranger-override-dired-mode t))
-#+end_src
-
 *** =treemacs=                                           :files:navigation:
 
 While I've somewhat used =neotree.el=, I believe that =treemacs= is
