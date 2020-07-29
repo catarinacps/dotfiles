@@ -2615,6 +2615,32 @@ The ultimate journaling tool of the ultimate note-taking tool.
    "f j" 'org-journal-new-entry))
 #+end_src
 
+**** =org-capture=
+
+It is built-in and it is beautiful.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package org-capture
+  :ensure nil
+  :defer t
+  :commands (org-capture org-capture-upgrade-templates)
+  :preface
+  (defconst org-main-notes-file (expand-file-name "Org/organizer.org" onedrive-user-dir)
+    "File that I use to store notes before reviewing them.")
+  :custom
+  (org-default-notes-file org-main-notes-file)
+  (org-capture-templates
+   `(("t" "todo" entry (file ,org-main-notes-file)
+      "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
+     ("n" "note" entry (file ,org-main-notes-file)
+      "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)))
+  :general
+  (:keymaps 'hcps/leader-map
+   "o c" 'org-capture))
+#+end_src
+
+#+end_src
+
 *** Export
 
 Configurations relating all the numerous org exporters.
