@@ -2579,6 +2579,24 @@ multiple export backends and such
   (require 'doi-utils))
 #+end_src
 
+**** =org-agenda=
+
+The ultimate journaling tool of the ultimate note-taking tool.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package org-agenda
+  :ensure nil
+  :defer t
+  :custom
+  (org-agenda-files
+   (directory-files-recursively (expand-file-name "Org/" onedrive-user-dir) "\\.org$"))
+  (org-agenda-use-tag-inheritance t)
+  (org-agenda-show-log t)
+  :general
+  (:keymaps 'hcps/leader-map
+   "o a" 'org-agenda))
+#+end_src
+
 **** =org-journal=
 
 =org-journal= is a powerful tool to journal your day.
