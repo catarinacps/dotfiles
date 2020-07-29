@@ -34,6 +34,8 @@ Cool Emacs configs from cool people:
     - [[#automatic-byte-compile][Automatic byte-compile]]
     - [[#auto-removing-hook][Auto-removing hook]]
     - [[#trim-functions][Trim functions]]
+    - [[#fontification-of-sub-blocks][Fontification of sub-blocks]]
+    - [[#modeline][Modeline]]
   - [[#keybindings][Keybindings]]
   - [[#definitions-and-preferences][Definitions and preferences]]
     - [[#default-org-mode][Default =org-mode=]]
@@ -55,6 +57,7 @@ Cool Emacs configs from cool people:
     - [[#general][=general=]]
     - [[#delight][=delight=]]
     - [[#no-littering][=no-littering=]]
+    - [[#hide-mode-line][=hide-mode-line=]]
   - [[#built-in][Built-in]]
     - [[#package][=package=]]
     - [[#whitespace][=whitespace=]]
@@ -66,10 +69,10 @@ Cool Emacs configs from cool people:
     - [[#midnight][=midnight=]]
     - [[#uniquify][=uniquify=]]
     - [[#recentf][=recentf=]]
+    - [[#ibuffer][=ibuffer=]]
   - [[#extension][Extension]]
     - [[#evil][=evil=]]
     - [[#smart-mode-line][=smart-mode-line=]]
-    - [[#hide-mode-line][=hide-mode-line=]]
     - [[#ivy][=ivy=]]
     - [[#counsel][=counsel=]]
     - [[#undo-tree][=undo-tree=]]
@@ -157,10 +160,14 @@ beneath all sugar syntax.
 You can find the following packages in this configuration file:
 
 #+begin_src shell :exports results :results value org list
+[ ! -f 'config.el' ] && emacs --batch --eval "(require 'org)" --eval '(org-babel-tangle-file "config.org")'
+
 grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
     tr -d '()' |
     awk '!/\<nil\>/ {print $2}' |
     sort
+
+rm 'config.el'
 #+end_src
 
 #+RESULTS:
@@ -224,6 +231,7 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - highlight-indent-guides
 - highlight-numbers
 - htmlize
+- ibuffer
 - ivy
 - ivy-rich
 - julia-mode
@@ -241,9 +249,12 @@ grep -E '(^\(use-package .*|^ *:ensure .*)' config.el |
 - ob
 - openwith
 - org
+- org-agenda
+- org-capture
 - org-journal
 - org-plus-contrib
 - org-ref
+- org-refile
 - ox
 - ox-dnd
 - ox-extra
@@ -521,6 +532,23 @@ Directly from Magnar Sveen's =s.el=
   (s-trim-left (s-trim-right s)))
 #+end_src
 
+*** Fontification of sub-blocks
+
+Inside other languages or strings, like in shell-scripts and such.
+
+- [ ] =org-src-font-lock-fontify-block=
+  - =org-fontify-meta-lines-and-blocks=
+
+*** Modeline
+
+A clear modeline is prettier sometimes.
+
+#+begin_src emacs-lisp :tangle yes
+(defun hcps/clean-mode-line ()
+  "Clean mode-line format."
+  (setq-local mode-line-format ""))
+#+end_src
+
 ** Keybindings
 
 Here I'll define some of my personal keybindings, which means
@@ -564,6 +592,7 @@ above"!
     "r" '(:ignore t :wk "replace")
     "p" '(:ignore t :wk "package")
     "n" '(:ignore t :wk "navigate")
+    "o" '(:ignore t :wk "org")
     "m" '(:ignore t :wk "mode")
     "v" '(:ignore t :wk "view")
     "v n" '(:ignore t :wk "narrow")))
@@ -704,7 +733,6 @@ And I also like the vim style of scrolling better.
 #+begin_src emacs-lisp :tangle yes
 (setq-default auto-window-vscroll t
               ;; line-move-visual nil
-              scroll-preserve-screen-position t
               scroll-conservatively 101
               scroll-margin 10)
 #+end_src
@@ -894,7 +922,7 @@ extensively throughout this file.
   (defvar hcps/leader-map (make-sparse-keymap)
     "Keymap for all my leader bindings.")
   :general
-  (:keymaps '(global-map special-mode-map)
+  (:keymaps 'override
    (concat "M-" hcps/leader-key) '(:wk "leader" :keymap hcps/leader-map :package general))
   (:keymaps 'special-mode-map
    hcps/leader-key '(:wk "leader" :keymap hcps/leader-map :package general))
@@ -929,6 +957,17 @@ history files the packages might set.
   :demand)
 #+end_src
 
+*** =hide-mode-line=                                             :modeline:
+
+Made by the doom-emacs guy. Yeah I know I could just write a function
+for this, but eh.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package hide-mode-line
+  :defer t
+  :commands hide-mode-line-mode)
+#+end_src
+
 ** Built-in
 
 The ones that /really/ don't require =use-package :ensure=.
@@ -938,8 +977,7 @@ The ones that /really/ don't require =use-package :ensure=.
 - [ ] hippie-expand
 - [ ] eshell
 - [ ] save-place
-- [ ] prog-mode
-- [ ] text-mode
+- [X] ibuffer
 
 *** =package=                                                     :package:
 
@@ -1183,6 +1221,7 @@ Yes, you can have the best of both worlds!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package evil
+  :commands evil-set-initial-state
   :preface
   (defun hcps/shift-left-region ()
     "Shift left and restore visual selection."
@@ -1357,6 +1396,7 @@ popular packages,
 (use-package evil-collection
   :after evil
   :config
+  (setq evil-collection-mode-list (remq 'ibuffer evil-collection-mode-list))
   (evil-collection-init))
 #+end_src
 
@@ -1380,9 +1420,6 @@ looks very pretty on =gruvbox=).
 #+begin_src emacs-lisp :tangle yes
 (use-package smart-mode-line
   :preface
-  (defun hcps/clean-mode-line ()
-    "Clean mode-line format."
-    (setq-local mode-line-format ""))
   :custom
   (sml/size-indication-format " %I ")
   (sml/line-number-format "%4l")
@@ -1403,17 +1440,6 @@ looks very pretty on =gruvbox=).
      ("^~/OneDrive/" ":OD:")))
   :config
   (sml/setup))
-#+end_src
-
-*** =hide-mode-line=                                             :modeline:
-
-Made by the doom-emacs guy. Yeah I know I could just write a function
-for this, but eh.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package hide-mode-line
-  :defer t
-  :commands hide-mode-line-mode)
 #+end_src
 
 *** =ivy=                                                      :completion:
@@ -1485,17 +1511,21 @@ to make sure that =counsel-M-x= has decent candidate sorting.
   (advice-add 'counsel-yank-pop :before #'hcps/override-yank-pop)
   :general
   (:keymaps 'hcps/leader-map
+   ;; file stuff
    "f f" 'counsel-find-file
    "f r" 'counsel-recentf
    "f b" 'counsel-bookmark
+   ;; package stuff
    "p p" 'counsel-package
+   ;; other stuff
    "b" 'counsel-switch-buffer
-   "y" 'counsel-yank-pop
-   "o" 'counsel-outline)
+   "y" 'counsel-yank-pop)
   (:keymaps '(global-map special-mode-map)
    [remap execute-extended-command] 'counsel-M-x
    [remap find-file] 'counsel-find-file
    [remap switch-buffer] 'counsel-switch-buffer)
+  :custom
+  (ivy-initial-inputs-alist nil)        ; here again as counsel resets it
   :config
   (require 'smex))
 #+end_src
@@ -1760,7 +1790,7 @@ By using =lsp-mode=, we'll be able to have it too!
 #+begin_src emacs-lisp :tangle yes
 (use-package lsp-mode
   :defer t
-  :commands lsp
+  :commands (lsp lsp-mode)
   :delight
   (lsp-mode " lsp")
   :hook
@@ -1780,6 +1810,7 @@ By using =lsp-mode=, we'll be able to have it too!
    :prefix hcps/leader-key
    "l" '(:wk "lsp-mode" :keymap lsp-command-map :package lsp-mode))
   :config
+  (require 'projectile)
   (add-to-list 'lsp-language-id-configuration '(cuda-mode . "cuda"))
   (add-to-list 'lsp-language-id-configuration '(".*\\.cu$" . "cuda")))
 #+end_src
@@ -1788,11 +1819,10 @@ This package does have an extra sister package: =lsp-ui=.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package lsp-ui
-  :defer t
   :after lsp-mode
   :custom
-  (lsp-ui-doc-enable t)
-  (lsp-ui-doc-position 'at-point)
+  (lsp-ui-doc-enable nil)
+  (lsp-ui-doc-position 'bottom)
   (lsp-ui-doc-delay 2.0)
   (lsp-ui-sideline-enable t)
   (lsp-ui-sideline-delay 1)
@@ -2455,13 +2485,13 @@ I still need to add packages relating to these languages:
 - [ ] Coq (yes, I'm slowly turning into what I most hate (check the hrs config!))
 - [ ] PKGBUILD
 - [ ] Markdown
+- [ ] prog-mode
+- [ ] text-mode
 
 ** Org
 
-=org-mode= is probably *the* killer mode and one of the main reasons as
-to why anyone should try Emacs. With it I also use =toc-org=, which is
-an useful way to automatically maintain an updated table of contents of
-your =.org= file.
+=org-mode= is probably *the* killer mode and one of the main reasons as to
+why anyone should try Emacs.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package org
@@ -2483,10 +2513,11 @@ your =.org= file.
   ;; the following used to be '(latex script entities)
   (org-highlight-latex-and-related nil)
   (org-hide-leading-stars t)
+  (org-hide-emphasis-markers t)
   (org-support-shift-select nil)
   (org-link-descriptive t)
   (org-log-done 'note)
-  (org-directory "~/org/")
+  (org-directory (expand-file-name "Org/" onedrive-user-dir))
   (org-cycle-emulate-tab 'exc-hl-bol)
   (org-use-property-inheritance nil)
   (org-attach-use-inheritance t)
@@ -2523,9 +2554,12 @@ your =.org= file.
    :prefix hcps/leader-key
    "v n s" 'org-narrow-to-subtree
    "v n b" 'org-narrow-to-block
+   "m o" 'counsel-org-goto
    "m t" 'org-set-tags-command
    "m s" 'org-match-sparse-tree
    "m a" 'org-attach)
+  (:keymaps 'hcps/leader-map
+   "o b" 'org-switchb)
   (:states 'insert
    :keymaps 'org-mode-map
    "<tab>" 'org-cycle)
@@ -2539,7 +2573,8 @@ Stuff that increases the capabilities of =org-mode=
 
 **** =toc-org=
 
-You should probably [[https://github.com/snosov1/toc-org][check toc-org out]]
+With it I also use =toc-org=, which is an useful way to automatically
+maintain an updated table of contents of your =.org= file. [[https://github.com/snosov1/toc-org][Check it out!]]
 
 #+begin_src emacs-lisp :tangle yes
 (use-package toc-org
@@ -2605,14 +2640,14 @@ The ultimate journaling tool of the ultimate note-taking tool.
 (use-package org-journal
   :defer t
   :custom
-  (org-journal-dir (format-time-string "~/OneDrive/Documentos/Journal/%Y/"))
+  (org-journal-dir (format-time-string (expand-file-name "Org/Journal/%Y/" onedrive-user-dir)))
   (org-journal-file-type 'monthly)
   (org-journal-file-format "%Y%m")
   (org-journal-date-format "%e %b %Y (%A)")
   (org-journal-time-format "")
   :general
   (:keymaps 'hcps/leader-map
-   "f j" 'org-journal-new-entry))
+   "o j" 'org-journal-new-entry))
 #+end_src
 
 **** =org-capture=
@@ -3052,7 +3087,7 @@ As for shell-scripting:
   :defer t
   :ensure nil
   :commands shell-script-mode
-  :mode ("\\.zsh" . shell-script-mode)
+  :mode ("\\.zsh$" . shell-script-mode)
   :preface
   (defconst more-sh-utilities
     '("addbib" "apropos" "ar" "at" "awk" "banner" "basename" "batch" "biff"
@@ -3084,6 +3119,9 @@ As for shell-scripting:
       "return" "set" "shift" "shopt" "source" "suspend" "test" "times" "trap"
       "true" "type" "typeset" "ulimit" "umask" "unalias" "unset" "wait")
     "Actual list of common keywords and builtins in `sh-mode'.")
+  (defconst prezto-files
+    '(".zlogin" ".zlogin" ".zlogout" ".zpreztorc" ".zprofile" ".zshenv" ".zshrc")
+    "Files that are too zsh-style files.")
   (defun zsh-prezto-files ()
     "Function to ease switching to zsh when dealing with a zsh file."
     (if (and buffer-file-name
@@ -3109,8 +3147,6 @@ As for shell-scripting:
                            limit t))
                 (not (eq (nth 3 (syntax-ppss)) ?\"))))
         res)))
-  :custom
-  (prezto-files '(".zlogin" ".zlogin" ".zlogout" ".zpreztorc" ".zprofile" ".zshenv" ".zshrc"))
   :hook
   ((sh-mode-hook . zsh-prezto-files)
    (sh-mode-hook . aggressive-indent-mode)
@@ -3207,7 +3243,7 @@ If the current line is in a call to a Lisp function that has a non-nil
 property `lisp-indent-function' (or the deprecated `lisp-indent-hook'),
 it specifies how to indent.  The property value can be:
 ,* `defun', meaning indent `defun'-style
-  \(this is also the case if there is no property and the function
+  (this is also the case if there is no property and the function
   has a name that begins with \"def\", and three or more arguments);
 ,* an integer N, meaning indent the first N arguments specially
   (like ordinary function arguments), and then indent any further
@@ -3385,7 +3421,8 @@ Packages to write Julia source code in Emacs.
   :hook
   ((julia-mode-hook . lsp)
    (julia-mode-hook . smartparens-strict-mode)
-   (julia-mode-hook . rainbow-delimiters-mode))
+   (julia-mode-hook . rainbow-delimiters-mode)
+   (julia-mode-hook . aggressive-indent-mode))
   :general
   (:states 'insert
    :keymaps 'julia-mode-map
@@ -3403,7 +3440,7 @@ Let's start with some basic =auctex= editing so it starts the way I want
   :mode ("\\.tex$" . latex-mode)
   :hook
   ((latex-mode-hook . turn-on-reftex)
-   (latex-mode-hook . turn-on-auto-fill)
+   (latex-mode-hook . auto-fill-mode)
    (latex-mode-hook . rainbow-delimiters-mode)
    (latex-mode-hook . smartparens-mode))
   :custom
