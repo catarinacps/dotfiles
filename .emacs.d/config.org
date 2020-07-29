@@ -3012,13 +3012,33 @@ Statistics/. It provides you with everything you need from R.
    (ess-r-mode-hook . aggressive-indent-mode)
    (ess-r-mode-hook . smartparens-strict-mode)
    (ess-r-mode-hook . eldoc-mode)
-   ;; (ess-r-mode-hook . lsp)
+   (ess-r-mode-hook . lsp)
    (ess-r-mode-hook . rainbow-delimiters-mode))
   :general
   (:states 'insert
    :keymaps 'ess-r-mode-map
-   "M-RET" 'hcps/insert-r-pipe)
+   "M-RET" 'hcps/insert-r-pipe
+   "<tab>" 'ess-indent-or-complete)
+  (:states '(normal visual)
+   :keymaps 'ess-r-mode-map
+   :prefix hcps/leader-key
+   "m c"  'ess-eval-region-or-function-or-paragraph-and-step
+   "m r"  'ess-eval-region)
+  (:states 'normal
+   :keymaps 'ess-r-mode-map
+   :prefix hcps/leader-key
+   "m e"  'Rd-mode-insert-skeleton
+   "m f"  'Rd-font
+   "m j"  'Rd-mode-insert-item
+   "m n"  'ess-eval-line-visibly-and-step
+   "m p"  'Rd-preview-help
+   "m s"  'Rd-mode-insert-section
+   "m v"  'ess-display-help-on-object
+   "m w"  'ess-switch-process
+   "m y"  'ess-switch-to-ESS
+   "m z"  'ess-switch-to-end-of-ESS)
   :custom
+  (ido-enable-flex-matching t)
   (ess-auto-width 'frame)
   (ess-style 'RStudio))
 #+end_src
