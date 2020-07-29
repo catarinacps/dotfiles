@@ -2639,6 +2639,24 @@ It is built-in and it is beautiful.
    "o c" 'org-capture))
 #+end_src
 
+**** =org-refile=
+
+Also built-in. Moves headings around FAST.
+
+#+begin_src emacs-lisp :tangle yes
+(use-package org-refile
+  :ensure nil
+  :defer t
+  :custom
+  (org-refile-use-outline-path t)
+  (org-refile-allow-creating-parent-nodes 'confirm)
+  (org-refile-targets '((nil :maxlevel . 9)
+                        (org-agenda-files :maxlevel . 9)))
+  :general
+  (:states '(normal visual)
+   :keymaps 'org-mode-map
+   :prefix hcps/leader-key
+   "m r" 'org-refile))
 #+end_src
 
 *** Export
