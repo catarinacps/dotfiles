@@ -1144,6 +1144,31 @@ Keep a list of recent files with =recentf=
   (recentf-mode +1))
 #+end_src
 
+*** =ibuffer=                                                     :buffers:
+
+Way better than the default one (and is built-in!)
+
+#+begin_src emacs-lisp :tangle yes
+(use-package ibuffer
+  :ensure nil
+  :hook
+  (ibuffer-mode-hook . hcps/clean-mode-line)
+  :general
+  (:keymaps 'ibuffer-mode-map
+   "q" 'kill-this-buffer
+   "j" 'ibuffer-forward-line
+   "k" 'ibuffer-backward-line
+   "K" 'ibuffer-do-kill-lines
+   "J" 'ibuffer-jump-to-buffer
+   hcps/leader-key '(:wk "leader" :keymap hcps/leader-map :package general))
+  (:keymaps 'hcps/leader-map
+   "C-b" 'ibuffer)
+  (:keymaps 'override
+   "C-x C-b" 'ibuffer)
+  :config
+  (evil-set-initial-state 'ibuffer-mode 'emacs))
+#+end_src
+
 ** Extension
 
 The ones from MELPA and ELPA and whatever.
