@@ -2493,6 +2493,12 @@ I still need to add packages relating to these languages:
 =org-mode= is probably *the* killer mode and one of the main reasons as to
 why anyone should try Emacs.
 
+*Important links*:
+- [[https://sachachua.com/blog/2015/02/learn-take-notes-efficiently-org-mode/]]
+- [[http://doc.norang.ca/org-mode.html#AgendaSetup]]
+- [[https://joshrollinswrites.com/help-desk-head-desk/2020-07-16/]]
+- [[https://blog.jethro.dev/posts/capturing_inbox/]]
+
 #+begin_src emacs-lisp :tangle yes
 (use-package org
   :defer t
