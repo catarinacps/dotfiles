@@ -541,12 +541,26 @@ Inside other languages or strings, like in shell-scripts and such.
 
 *** Modeline
 
-A clear modeline is prettier sometimes.
+A clear modeline is prettier sometimes
 
 #+begin_src emacs-lisp :tangle yes
 (defun hcps/clean-mode-line ()
   "Clean mode-line format."
   (setq-local mode-line-format ""))
+#+end_src
+
+And sometimes there's no need in having an evil tag
+
+#+begin_src emacs-lisp :tangle yes
+(defun hcps/hide-evil-tag ()
+  "Some buffers don't need it."
+  (setq-local evil-normal-state-tag nil)
+  (setq-local evil-emacs-state-tag nil)
+  (setq-local evil-insert-state-tag nil)
+  (setq-local evil-replace-state-tag nil)
+  (setq-local evil-motion-state-tag nil)
+  (setq-local evil-visual-state-tag nil)
+  (setq-local evil-operator-state-tag nil))
 #+end_src
 
 ** Keybindings
@@ -623,6 +637,7 @@ Silly names for easier path usage.
   (defconst root-dir (expand-file-name user-emacs-directory) "The root dir of Emacs.")
   (defconst var-user-dir (expand-file-name "var" root-dir) "The temporaries directory.")
   (defconst vendor-user-dir (expand-file-name "vendor" root-dir) "The random .el directory.")
+  (defconst proj-user-dir (expand-file-name "Repositories" home-dir) "Default projects directory.")
   (defconst onedrive-user-dir (expand-file-name "OneDrive" home-dir) "Default OneDrive path."))
 #+end_src
 
@@ -1190,7 +1205,7 @@ Way better than the default one (and is built-in!)
 (use-package ibuffer
   :ensure nil
   :hook
-  (ibuffer-mode-hook . hcps/clean-mode-line)
+  (ibuffer-mode-hook . hcps/hide-evil-tag)
   :general
   (:keymaps 'ibuffer-mode-map
    "q" 'kill-this-buffer
@@ -1247,15 +1262,6 @@ Yes, you can have the best of both worlds!
           evil-replace-state-modes)
       (apply fun args)
       (evil-refresh-cursor)))
-  (defun hcps/hide-evil-tag ()
-    "Some buffers don't need it."
-    (setq-local evil-normal-state-tag nil)
-    (setq-local evil-emacs-state-tag nil)
-    (setq-local evil-insert-state-tag nil)
-    (setq-local evil-replace-state-tag nil)
-    (setq-local evil-motion-state-tag nil)
-    (setq-local evil-visual-state-tag nil)
-    (setq-local evil-operator-state-tag nil))
   :init
   (setq evil-want-keybinding nil)
   (advice-add 'org-babel-do-key-sequence-in-edit-buffer
@@ -1396,7 +1402,7 @@ popular packages,
 (use-package evil-collection
   :after evil
   :config
-  (setq evil-collection-mode-list (remq 'ibuffer evil-collection-mode-list))
+  (setq evil-collection-mode-list (cl-set-difference evil-collection-mode-list '(dashboard ibuffer)))
   (evil-collection-init))
 #+end_src
 
@@ -1606,10 +1612,8 @@ there's a cool extension that provides such functionality.
       (dashboard-mode)
       buffer))
   (setq-default initial-buffer-choice #'hcps/open-dashboard)
-  :general
-  (:states '(normal visual)
-   :keymaps 'dashboard-mode-map
-   hcps/leader-key nil)
+  :hook
+  (dashboard-mode-hook . (lambda () (setq-local scroll-margin 0)))
   :custom
   (dashboard-banner-logo-title (format "Welcome to Emacs, %s!" current-user))
   (dashboard-set-heading-icons nil)
@@ -1619,6 +1623,10 @@ there's a cool extension that provides such functionality.
   (dashboard-startup-banner 'logo)
   (dashboard-items '((recents  . 10)
                      (bookmarks . 5)))
+  :general
+  (:states '(normal visual)
+   :keymaps 'dashboard-mode-map
+   hcps/leader-key nil)
   :config
   (dashboard-setup-startup-hook))
 #+end_src
@@ -1908,7 +1916,7 @@ Of course, =flyspell= corrects your writing!
   (ispell-extra-args '("--sug-mode=ultra"))
   :general
   (:keymaps 'hcps/leader-map
-   "m d" 'ispell-change-dictionary))
+   "d" 'ispell-change-dictionary))
 #+end_src
 
 *** =diff-hl=                                                        :diff:
@@ -2188,13 +2196,23 @@ in the visible universe, nay, in the whole multiverse.
    "g l" 'magit-log
    "g b" 'magit-blame)
   :config
-  (evil-add-hjkl-bindings magit-log-mode-map 'emacs)
-  (evil-add-hjkl-bindings magit-diff-mode-map 'emacs)
-  (evil-add-hjkl-bindings magit-commit-mode-map 'emacs)
+  (evil-add-hjkl-bindings magit-log-mode-map 'emacs
+    "j" 'magit-next-line
+    "k" 'magit-previous-line)
+  (evil-add-hjkl-bindings magit-diff-mode-map 'emacs
+    "j" 'magit-next-line
+    "k" 'magit-previous-line)
+  (evil-add-hjkl-bindings magit-commit-mode-map 'emacs
+    "j" 'magit-next-line
+    "k" 'magit-previous-line)
   (evil-add-hjkl-bindings magit-branch-manager-mode-map 'emacs
+    "j" 'magit-next-line
+    "k" 'magit-previous-line
     "K" 'magit-discard
     "L" 'magit-log)
   (evil-add-hjkl-bindings magit-status-mode-map 'emacs
+    "j" 'magit-next-line
+    "k" 'magit-previous-line
     "K" 'magit-discard
     "l" 'magit-log
     "h" 'magit-diff-toggle-refine-hunk)
@@ -2513,7 +2531,9 @@ why anyone should try Emacs.
    (org-mode-hook . yas-minor-mode)
    (org-mode-hook . eldoc-mode)
    (org-mode-hook . visual-line-mode)
-   (org-mode-hook . (lambda () (whitespace-toggle-options 'lines-tail))))
+   (org-mode-hook . (lambda () (whitespace-toggle-options 'lines-tail)))
+   (org-log-buffer-setup-hook . evil-emacs-state)
+   (org-log-buffer-setup-hook . hcps/hide-evil-tag))
   :custom
   (org-return-follows-link t)
   ;; the following used to be '(latex script entities)
@@ -2532,8 +2552,21 @@ why anyone should try Emacs.
   ;; 10 pixels because default-font-width doesn't work with daemon mode
   (org-image-actual-width (round (* 10 fill-column 0.85)))
   (org-modules '(ol-w3m ol-bbdb ol-bibtex ol-docview ol-gnus
-                        ol-info ol-irc ol-mhe ol-rmail ol-eww org-tempo
-                        org-inlinetask))
+                        ol-info ol-irc ol-mhe ol-rmail ol-eww
+                        org-tempo org-inlinetask))
+  ;; logging stuff
+  (org-tag-alist
+   '(("DEPRECATED" . ?d) ("NOTE" . ?n) ("REFILE" . ?r) ("UNI" . ?u) ("WORK" . ?w) ("URGENT" . ?a)))
+  (org-todo-keywords '((sequence "TODO(t)" "STARTED(s!)" "|" "DONE(d!)")
+                       (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c!)")))
+  (org-log-into-drawer t)
+  (org-effort-property "EFFORT")
+  (org-global-properties
+   `((,(concat org-effort-property "_ALL") . "0 1 2 3 4 5 6 7 8 9 10")))
+  ;; refiling stuff
+  (org-refile-use-outline-path t)
+  (org-refile-allow-creating-parent-nodes 'confirm)
+  (org-refile-targets '((org-agenda-files :maxlevel . 1)))
   :general
   (:states '(normal visual)
    :keymaps 'org-mode-map
@@ -2562,7 +2595,11 @@ why anyone should try Emacs.
    "v n b" 'org-narrow-to-block
    "m o" 'counsel-org-goto
    "m t" 'org-set-tags-command
+   "m f" 'org-set-effort
+   "m d" 'org-deadline
+   "m p" 'org-priority
    "m s" 'org-match-sparse-tree
+   "m r" 'org-refile
    "m a" 'org-attach)
   (:keymaps 'hcps/leader-map
    "o b" 'org-switchb)
@@ -2614,8 +2651,7 @@ multiple export backends and such
   (:states '(normal visual)
    :keymaps 'org-mode-map
    :prefix hcps/leader-key
-   "m r" 'org-ref-cite-hydra/body
-   "m c" 'org-ref-insert-link)
+   "m c" 'org-ref-cite-hydra/body)
   :config
   (require 'doi-utils))
 #+end_src
@@ -2628,14 +2664,46 @@ The ultimate journaling tool of the ultimate note-taking tool.
 (use-package org-agenda
   :ensure nil
   :defer t
+  :preface
+  (defun hcps/open-agenda ()
+    "Opens my custom org-agenda command."
+    (interactive)
+    (org-agenda nil " "))
+  (defun hcps/goto-inbox ()
+    "Open the organizer file."
+    (interactive)
+    (find-file (expand-file-name "organizer.org" org-directory)))
+  :hook
+  (org-agenda-mode-hook . hcps/hide-evil-tag)
   :custom
+  (org-columns-default-format
+   "%20CATEGORY(FILE) %35ITEM(TASK) %PRIORITY(P) %EFFORT(E) %DEADLINE(D) %TAGS(T)")
   (org-agenda-files
-   (directory-files-recursively (expand-file-name "Org/" onedrive-user-dir) "\\.org$"))
+   (append (directory-files-recursively (expand-file-name "Org/" onedrive-user-dir) "\\.org$")
+           (directory-files-recursively proj-user-dir "^hcps[[:alnum:]-]*\\.org$")))
+  (org-agenda-start-with-log-mode t)
   (org-agenda-use-tag-inheritance t)
-  (org-agenda-show-log t)
+  (org-agenda-block-separator nil)
+  (org-agenda-view-columns-initially t)
+  (org-agenda-custom-commands
+   `((" " "Agenda"
+      ((agenda ""
+               ((org-agenda-span 'week)
+                (org-deadline-warning-days 365)))
+       (todo "STARTED"
+             ((org-agenda-overriding-header "IN PROGRESS")))
+       (tags "URGENT"
+             ((org-agenda-overriding-header "URGENT TASKS")))
+       (todo "TODO"
+             ((org-agenda-overriding-header "PROJECTS")
+              (org-agenda-files ',(directory-files-recursively proj-user-dir "^hcps[[:alnum:]-]*\\.org$"))))
+       (tags "REFILE"
+             ((org-agenda-overriding-header "TO REFILE")
+              (org-agenda-files '(,(expand-file-name "Org/organizer.org" onedrive-user-dir)))))))))
   :general
   (:keymaps 'hcps/leader-map
-   "o a" 'org-agenda))
+   "o a" 'hcps/open-agenda
+   "o i" 'hcps/goto-inbox))
 #+end_src
 
 **** =org-journal=
@@ -2653,7 +2721,9 @@ The ultimate journaling tool of the ultimate note-taking tool.
   (org-journal-time-format "")
   :general
   (:keymaps 'hcps/leader-map
-   "o j" 'org-journal-new-entry))
+   "o j" 'org-journal-new-entry)
+  :config
+  (evil-initial-state 'org-journal-mode 'insert))
 #+end_src
 
 **** =org-capture=
@@ -2664,40 +2734,22 @@ It is built-in and it is beautiful.
 (use-package org-capture
   :ensure nil
   :defer t
-  :commands (org-capture org-capture-upgrade-templates)
+  :commands (org-capture-mode org-capture-upgrade-templates)
   :preface
   (defconst org-main-notes-file (expand-file-name "Org/organizer.org" onedrive-user-dir)
     "File that I use to store notes before reviewing them.")
   :custom
   (org-default-notes-file org-main-notes-file)
   (org-capture-templates
-   `(("t" "todo" entry (file ,org-main-notes-file)
-      "* TODO %?\n%U\n%a\n" :clock-in t :clock-resume t)
-     ("n" "note" entry (file ,org-main-notes-file)
-      "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)))
+   `(("t" "todo" entry (file+headline ,org-main-notes-file "Inbox")
+      "* TODO %? :REFILE:\n%U\n" :empty-lines 1 :kill-buffer t)
+     ("n" "note" entry (file+headline ,org-main-notes-file "Inbox")
+      "* %? :NOTE:REFILE:\n%U\n" :empty-lines 1 :kill-buffer t)))
   :general
   (:keymaps 'hcps/leader-map
-   "o c" 'org-capture))
-#+end_src
-
-**** =org-refile=
-
-Also built-in. Moves headings around FAST.
-
-#+begin_src emacs-lisp :tangle yes
-(use-package org-refile
-  :ensure nil
-  :defer t
-  :custom
-  (org-refile-use-outline-path t)
-  (org-refile-allow-creating-parent-nodes 'confirm)
-  (org-refile-targets '((nil :maxlevel . 9)
-                        (org-agenda-files :maxlevel . 9)))
-  :general
-  (:states '(normal visual)
-   :keymaps 'org-mode-map
-   :prefix hcps/leader-key
-   "m r" 'org-refile))
+   "o c" 'org-capture)
+  :config
+  (evil-initial-state 'org-capture-mode 'insert))
 #+end_src
 
 *** Export
