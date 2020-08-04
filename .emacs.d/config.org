@@ -136,6 +136,7 @@ Cool Emacs configs from cool people:
   - [[#configuration-files][Configuration files]]
   - [[#rust][Rust]]
   - [[#perl][Perl]]
+  - [[#dot-graphviz][Dot (Graphviz)]]
 - [[#post-init][Post-init]]
 
 * Introduction
@@ -1441,7 +1442,7 @@ looks very pretty on =gruvbox=).
      ("^~/\\.emacs\\.d/" ":ED:")
      ("^/sudo:.*:" ":SU:")
      ("^~/Documents/" ":DOC:")
-     ("^~/Repositories/" ":GIT:")
+     ("^~/Repositories/" ":VCS:")
      ("^~/OneDrive/CIC/" ":UNI:")
      ("^~/OneDrive/" ":OD:")))
   :config
@@ -2498,7 +2499,7 @@ and file types.
 I still need to add packages relating to these languages:
 
 - [ ] Scala
-- [ ] Dot (using Graphviz)
+- [X] Dot (using Graphviz)
 - [ ] English (as in literal english)
 - [ ] Coq (yes, I'm slowly turning into what I most hate (check the hrs config!))
 - [ ] PKGBUILD
@@ -2556,9 +2557,18 @@ why anyone should try Emacs.
                         org-tempo org-inlinetask))
   ;; logging stuff
   (org-tag-alist
-   '(("DEPRECATED" . ?d) ("NOTE" . ?n) ("REFILE" . ?r) ("UNI" . ?u) ("WORK" . ?w) ("URGENT" . ?a)))
+   '(("noexport" . ?e)
+     ("ignore" . ?i)
+     ("DEPRECATED" . ?d)
+     ("NOTE" . ?n)
+     ("WIP" . ?p)
+     ("MEETING" . ?m)
+     ("REFILE" . ?r)
+     ("UNI" . ?u)
+     ("WORK" . ?w)
+     ("URGENT" . ?a)))
   (org-todo-keywords '((sequence "TODO(t)" "STARTED(s!)" "|" "DONE(d!)")
-                       (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c!)")))
+                       (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")))
   (org-log-into-drawer t)
   (org-effort-property "EFFORT")
   (org-global-properties
@@ -2593,11 +2603,12 @@ why anyone should try Emacs.
    :prefix hcps/leader-key
    "v n s" 'org-narrow-to-subtree
    "v n b" 'org-narrow-to-block
-   "m o" 'counsel-org-goto
+   "m g" 'counsel-org-goto
    "m t" 'org-set-tags-command
    "m f" 'org-set-effort
    "m d" 'org-deadline
-   "m p" 'org-priority
+   "m o" 'org-priority
+   "m p" 'org-set-property
    "m s" 'org-match-sparse-tree
    "m r" 'org-refile
    "m a" 'org-attach)
@@ -2685,15 +2696,21 @@ The ultimate journaling tool of the ultimate note-taking tool.
   (org-agenda-use-tag-inheritance t)
   (org-agenda-block-separator nil)
   (org-agenda-view-columns-initially t)
+  (org-agenda-skip-deadline-if-done t)
+  (org-agenda-skip-scheduled-if-done t)
+  (org-agenda-log-mode-items '(clock closed))
   (org-agenda-custom-commands
    `((" " "Agenda"
       ((agenda ""
                ((org-agenda-span 'week)
-                (org-deadline-warning-days 365)))
+                (org-deadline-warning-days 0)))
        (todo "STARTED"
-             ((org-agenda-overriding-header "IN PROGRESS")))
+             ((org-agenda-overriding-header "IN PROGRESS")
+              (org-agenda-block-separator ?-)))
        (tags "URGENT"
              ((org-agenda-overriding-header "URGENT TASKS")))
+       (tags "UNI"
+             ((org-agenda-overriding-header "UNI STUFF")))
        (todo "TODO"
              ((org-agenda-overriding-header "PROJECTS")
               (org-agenda-files ',(directory-files-recursively proj-user-dir "^hcps[[:alnum:]-]*\\.org$"))))
@@ -2742,7 +2759,7 @@ It is built-in and it is beautiful.
   (org-default-notes-file org-main-notes-file)
   (org-capture-templates
    `(("t" "todo" entry (file+headline ,org-main-notes-file "Inbox")
-      "* TODO %? :REFILE:\n%U\n" :empty-lines 1 :kill-buffer t)
+      "* TODO %? :REFILE:\n" :empty-lines 1 :kill-buffer t)
      ("n" "note" entry (file+headline ,org-main-notes-file "Inbox")
       "* %? :NOTE:REFILE:\n%U\n" :empty-lines 1 :kill-buffer t)))
   :general
@@ -2778,6 +2795,7 @@ Configurations relating all the numerous org exporters.
   (advice-add 'org-export-dispatch :around #'org-export-disable-scroll-margin)
   :custom
   (org-export-backends '(latex html ascii))
+  (org-export-exclude-tags '("noexport" "NOEXPORT"))
   (org-export-allow-bind-keywords t)
   (org-export-with-latex t)
   (org-export-babel-evaluate t)
@@ -2798,7 +2816,8 @@ Configurations relating all the numerous org exporters.
   :after ox
   :ensure nil
   :hook
-  (org-export-filter-parse-tree-functions . org-export-ignore-headlines))
+  ((org-export-filter-parse-tree-functions . org-export-ignore-headlines)
+   (org-export-before-parsing-hook . org-latex-header-blocks-filter)))
 #+end_src
 
 **** =ox-latex=
