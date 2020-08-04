@@ -3673,6 +3673,30 @@ Old language, still great for doing admin stuff in few lines.
                   (1 'font-lock-keyword-face prepend)))))
 #+end_src
 
+** Dot (Graphviz)
+
+Diagrams are cool
+
+#+begin_src emacs-lisp :tangle yes
+(use-package graphviz-dot-mode
+  :defer t
+  :mode "\\.gv$\\|\\.dot$"
+  :commands (graphviz-dot-mode)
+  :hook
+  ((graphviz-dot-mode-hook . smartparens-mode)
+   (graphviz-dot-mode-hook . rainbow-delimiters-mode)
+   (graphviz-dot-mode-hook . aggressive-indent-mode))
+  :general
+  (:states '(normal visual)
+   :keymaps 'graphviz-dot-mode-map
+   :prefix hcps/leader-key
+   "i" 'graphviz-dot-indent-graph
+   "m p" 'graphviz-dot-preview
+   "m v" 'graphviz-dot-preview)
+  :custom
+  (graphviz-dot-indent-width 4))
+#+end_src
+
 * Post-init
 
 Lets lower a bit our GC threshold:
