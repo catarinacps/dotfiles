@@ -2882,6 +2882,25 @@ that nerdy, is it?
   :load-path (lambda () (expand-file-name "emacs-org-dnd" vendor-user-dir)))
 #+end_src
 
+**** =ox-beamer=
+
+To export pretty slide presentations
+
+#+begin_src emacs-lisp :tangle yes
+(use-package ox-beamer
+  :after ox
+  :ensure nil
+  :delight
+  (org-beamer-mode nil)
+  :general
+  (:states '(normal visual)
+   :keymaps 'org-beamer-mode-map
+   :prefix hcps/leader-key
+   "m b" '(:ignore t :wk "beamer")
+   "m b e" 'org-beamer-select-environment
+   "m b p" 'org-beamer-export-to-pdf ))
+#+end_src
+
 *** Babel
 
 Now, some configurations relating org-babel and its magic source blocks.
