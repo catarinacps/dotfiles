@@ -79,13 +79,12 @@ HYPHEN_INSENSITIVE='true'
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-    git
-    cp
     pass
     colored-man-pages
     zsh-syntax-highlighting
     zsh-completions
-    command-not-found
+    zsh-autopair
+    ripgrep
     extract
 )
 
@@ -140,3 +139,7 @@ alias abooko='abook --datafile $HOME/OneDrive/Documentos/Addresses/addressbook'
 alias ll='ls -Xlah'
 alias l='ls -Xlh'
 alias scp='noglob scp'
+alias vim='nvim'
+
+# Welcome banner
+bash "$HOME/.scripts/banner_card.sh"

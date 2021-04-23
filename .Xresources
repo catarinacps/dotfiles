@@ -35,6 +35,10 @@ XTerm*selectToClipboard: true
 
 !!! Emacs configs
 !! Theyre better defined here instead of inside the config
+Emacs.fontBackend: xft
+Emacs.font: Fira Code:size=16
+! Emacs.font: Ttyp0:size=17
+
 Emacs.cursorBlink: off
 Emacs.horizontalScrollBars: off
 Emacs.menuBar: off
@@ -51,22 +55,22 @@ Emacs.verticalScrollBars: off
 Xcursor.theme:                    xcursor-breeze
 Xcursor.size:                     0
 !xft:Hack:style=Regular:size=10, xft:Input Mono Compressed Light:pixelsize=18
-URxvt*font:                       xft:Inconsolata:size=12,\
-                                  xft:FontAwesome:size=16,\
-                                  xft:TerminessTTFNerdFontMono:size=16:minspace=False,\
-                                  xft:DejaVu Sans Mono:size=16:minspace=False
-terminal*font:                    xft:TerminessTTFNerdFontMono:size=16:minspace=False,\
-                                  xft:FontAwesome:size=16:minspace=False
-URxvt.letterSpace:                0
+URxvt*font:                       xft:Ttyp0:size=14:style=Medium,\
+                                  xft:Unifont:size=16:minspace=False
+terminal*font:                    xft:UW Ttyp0:size=14:minspace=False,\
+                                  xft:Unifont:size=16:minspace=False
 
-URxvt.depth:                      32
-URxvt.background:                 [93]#1e1e1e
-URxvt*scrollBar:                  false
-URxvt*mouseWheelScrollPage:       false
-URxvt*cursorBlink:                true
-URxvt*background:                 black
-URxvt*foreground:                 grey
-URxvt*saveLines:                  5000
+URxvt*depth:                32
+URxvt*scrollBar:            false
+URxvt*mouseWheelScrollPage: false
+URxvt*cursorBlink:          true
+! URxvt*background:           black
+URxvt*background:           [93]#1e1e1e
+URxvt*foreground:           grey
+URxvt*skipBuiltinGlyphs:    true
+URxvt*letterSpace:          -1
+URxvt*lineSpace:            0
+URxvt*saveLines:            8192
 
 ! for 'fake' transparency (without Compton) uncomment the following three lines
 ! URxvt*inheritPixmap:            true
@@ -75,6 +79,8 @@ URxvt*saveLines:                  5000
 
 ! Normal copy-paste keybindings without perls
 URxvt.iso14755:                   false
+URxvt.iso14755_52:                false
+URxvt.perl-ext-common:            resize-font
 URxvt.keysym.Shift-Control-V:     eval:paste_clipboard
 URxvt.keysym.Shift-Control-C:     eval:selection_to_clipboard
 !Xterm escape codes, word by word movement

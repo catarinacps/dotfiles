@@ -8,8 +8,8 @@ for color in $(xrdb -q | grep 'color' | sort -V | awk '{print $2}' | xargs); do
     true $((i=i+1))
 done
 
-MONITORS="$(xrandr -q | grep -w 'connected' | cut -d' ' -f1 | xargs)"
-NUM_MONITORS="$(echo "$MONITORS" | wc -w)"
+MONITORS=$(xrandr -q | grep -w 'connected' | cut -d' ' -f1 | xargs)
+NUM_MONITORS=$(echo "$MONITORS" | wc -w)
 WSPS=9
 WSP_2_MON=$((WSPS/NUM_MONITORS))
 WSP_REM=$((WSPS%NUM_MONITORS))
@@ -17,17 +17,20 @@ WSP_REM=$((WSPS%NUM_MONITORS))
 i=1
 
 for mon in $MONITORS; do
-    for k in $(seq $WSP_2_MON); do
+    # concatenate the numbers
+    for _ in $(seq $WSP_2_MON); do
         numbers="$numbers $i"
         true $((i=i+1))
     done
 
-    [ $((i+WSP_REM)) -eq $((WSPS+1)) ] && while [ $i -lt $((WSPS+1)) ]; do
+    # if on the last mon and we have a remainder, concat it
+    # black magic ensues
+    [ $((i+WSP_REM)) -eq $((WSPS+1)) ] && while [ "$i" -lt $((WSPS+1)) ]; do
         numbers="$numbers $i"
         true $((i=i+1))
     done
 
-    echo "bspc monitor $mon -d $numbers"
+    bspc monitor "$mon" -d "$numbers"
     unset numbers
 done
 
@@ -43,8 +46,8 @@ bspc config gapless_monocle      true
 
 bspc config active_border_color  "$COLOR1"
 
-bspc rule -a Gimp desktop='^8' state=floating follow=on
-bspc rule -a Chromium desktop='^2'
-bspc rule -a mplayer2 state=floating
-bspc rule -a Kupfer.py focus=on
-bspc rule -a Screenkey manage=off
+bspc rule -a Emacs desktop='^1'
+bspc rule -a firefox desktop='^2'
+bspc rule -a TelegramDesktop desktop='^2'
+bspc rule -a Gimp desktop='^8' follow=on
+bspc rule -a Steam desktop='^8'

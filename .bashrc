@@ -148,4 +148,4 @@ if [[ -z "$TMUX" ]] && [ "$SSH_CONNECTION" != "" ]; then
     tmux attach-session -t ssh_s || tmux new-session -s ssh_s
 fi
 
-alias clang-format='clang-format -fallback-style=WebKit'
+alias clang-format='clang-format --fallback-style=WebKit'

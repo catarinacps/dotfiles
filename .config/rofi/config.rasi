@@ -2,10 +2,10 @@
 
 configuration {
     modi: "window,run,drun,calc";
-    width: 30;
+    width: 25;
     lines: 12;
 /*  columns: 1;*/
-    font: "Inconsolata 16";
+    font: "Unifont 12";
     bw: 4;
 /*  location: 0;*/
     padding: 2;

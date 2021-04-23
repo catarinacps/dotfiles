@@ -12,9 +12,9 @@ FIFO_PIPE="$1"
 
 CONFIG_FILE="$HOME/.config/sxhkd/sxhkdrc"
 
-NAMES_FILE="$(mktemp)"
-KEYBINDINGS_FILE="$(mktemp)"
-PAIRS_FILE="$(mktemp)"
+NAMES_FILE=$(mktemp)
+KEYBINDINGS_FILE=$(mktemp)
+PAIRS_FILE=$(mktemp)
 
 # quit if sxhkd isn't running
 pgrep -x sxhkd > /dev/null || exit 1
@@ -33,7 +33,7 @@ paste -d ' ' "$NAMES_FILE" "$KEYBINDINGS_FILE" > "$PAIRS_FILE"
 rm -f "$NAMES_FILE" "$KEYBINDINGS_FILE"
 
 # while we read events
-cat "$FIFO_PIPE" | while read line; do
+while read -r line; do
     # check what kind of event happened
     case "$line" in
         H*)
@@ -44,11 +44,11 @@ cat "$FIFO_PIPE" | while read line; do
             while read -r name key; do
                 # if we found our match, lets put it in the bar
                 [ "$clean" = "$key" ] && i3-msg mode "$name" && break
-            done < "$PAIRS_FILE"
+            done <"$PAIRS_FILE"
             ;;
         EEnd*)
             # if we are ending a chain, back to the default mode
             i3-msg mode 'default'
             ;;
     esac
-done
+done <"$FIFO_PIPE"

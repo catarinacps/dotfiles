@@ -1,21 +1,19 @@
 #!/bin/sh
 
-THEME=/usr/share/icons/$(gsettings get org.gnome.desktop.interface icon-theme | tr -d \')
+THEME="/usr/share/icons/$(gsettings get org.gnome.desktop.interface icon-theme | tr -d \')"
 
 ICON="$THEME/32x32/apps/system-software-update.svg"
 
 SHORT_SLEEP=300
-LONG_SLEEP=1800
+LONG_SLEEP=$((SHORT_SLEEP * 3))
 
 while true; do
-    UPDATES="$(checkupdates 2>/dev/null)"
+    if UPDATES="$(checkupdates 2>/dev/null)"; then
+        QTY="$(printf '%s\n' "$UPDATES" | wc -l)"
 
-    if [ $? -eq 0 ]; then
-        QTY=$(echo -e "$UPDATES" | wc -l)
+        [ "$QTY" -gt 50 ] && URGENCY='critical' || URGENCY='normal'
 
-        [ $QTY -gt 50 ] && URGENCY='critical' || URGENCY='normal'
-
-        [ $QTY -gt 1 ] && PLURAL='s'
+        [ "$QTY" -gt 1 ] && PLURAL='s'
 
         notify-send \
             -u "$URGENCY" \
@@ -23,12 +21,12 @@ while true; do
             "Update$PLURAL available" \
             "$QTY new package$PLURAL"
 
-        echo "$QTY update$PLURAL"  | tr [:lower:] [:upper:]
+        echo "$QTY update$PLURAL"  | tr '[:lower:]' '[:upper:]'
 
-        sleep $SHORT_SLEEP
+        sleep $LONG_SLEEP
     else
         echo
 
-        sleep $LONG_SLEEP
+        sleep $SHORT_SLEEP
     fi
 done

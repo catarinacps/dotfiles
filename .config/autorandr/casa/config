@@ -1,9 +1,15 @@
-output HDMI-1
-mode 2560x1080
+output DVI-D-0
+off
+output DVI-D-1
+off
+output HDMI-A-0
+crtc 1
+mode 4096x2160
 pos 0x0
-rate 59.98
-output eDP-1
-mode 1366x768
-pos 0x1080
+rate 30.00
+output DisplayPort-0
+crtc 0
+mode 2560x1080
+pos 4096x0
 primary
-rate 60.04
+rate 59.98

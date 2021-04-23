@@ -106,11 +106,11 @@ super + shift + {c,r}
 
 # opens a floating rofi window to either open new stuff or to change the current window
 super + {d,x,y,c}
-    rofi -show {drun,window,run,calc}
+    rofi -show {drun,window,run,calc -no-show-match -no-sort}
 
 # opens a simple terminal window running zsh
 super + Return
-    termite
+    terminal
 
 # kill the window in focus
 super + shift + q
@@ -152,7 +152,7 @@ super + {shift,ctrl} + F3
 
 # opens alsamixer
 super + ctrl + m
-    termite -e 'alsamixer'
+    terminal -e 'alsamixer'
 
 # hide / unhide polybar
 super + shift + p
@@ -175,7 +175,7 @@ super + 0
 #
 
 # prints either the current screen or a section of the screen
-super + {_,shift,ctrl} + @Print
+super + {_,shift,ctrl} + @XF86LaunchA
     i3_scrot.sh -{w,s,d}
 
 # for my notebook, toggles the touchpad

@@ -2,7 +2,7 @@
 Type=Application
 Name=vis
 Icon=sonic-visualiser
-Exec=termite -e vis --icon=sonic-visualiser --class=cli-vis
+Exec=terminal -e vis
 NoDisplay=false
 Categories=Audiovideo;X-Gnome-Other;
 StartupNotify=false

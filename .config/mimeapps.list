@@ -19,7 +19,7 @@ application/pdf=org.pwmt.zathura.desktop
 application/x-bittorrent=deluge.desktop
 x-scheme-handler/mailspring=mailspring.desktop
 x-scheme-handler/discord-413081698159296512=discord-413081698159296512.desktop
-x-scheme-handler/tg=telegramdesktop.desktop
+x-scheme-handler/tg=userapp-Telegram Desktop-3679T0.desktop
 
 [Added Associations]
 image/jpeg=viewnior.desktop;gpicview.desktop;
@@ -29,3 +29,4 @@ message/rfc822=userapp-Thunderbird.desktop;userapp-Thunderbird-BW27ZZ.desktop;
 application/pdf=org.pwmt.zathura.desktop;epdfview.desktop;
 application/x-bittorrent=deluge.desktop;
 application/epub+zip=org.pwmt.zathura-pdf-mupdf.desktop;
+x-scheme-handler/tg=userapp-Telegram Desktop-RITZT0.desktop;userapp-Telegram Desktop-3679T0.desktop;
