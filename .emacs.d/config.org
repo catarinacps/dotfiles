@@ -3,8 +3,8 @@
 #+author: Henrique Silva
 #+email: hcpsilva@inf.ufrgs.br
 
-These configurations represent  my preferred version of  Emacs, one that
-uses =evil= everywhere it can and one  that tries to be as minimalist as
+These configurations represent my preferred version of Emacs, one that
+uses =evil= everywhere it can and one that tries to be as minimalist as
 +I want+ possible.
 
 Cool Emacs configs from cool people:
@@ -38,7 +38,6 @@ Cool Emacs configs from cool people:
     - [[#fixes][Fixes]]
   - [[#keybindings][Keybindings]]
   - [[#definitions-and-preferences][Definitions and preferences]]
-    - [[#default-org-mode][Default =org-mode=]]
     - [[#paths-and-defconst][Paths and =defconst=]]
     - [[#gui-elements][GUI elements]]
     - [[#text][Text]]
@@ -483,14 +482,13 @@ To use with this configuration file.
 
 #+begin_src emacs-lisp :tangle yes
 (defconst config-file-name (expand-file-name "config.org" user-emacs-directory)
-  "The path to the configuration ")
+  "The path to the configuration")
 
 (defun hcps/byte-compile-org-config ()
   "To add as a hook when saving the config file."
   (if (y-or-n-p "Recompile config?")
-      (let ((tangled-file (car (org-babel-tangle-file config-file-name))))
-        (byte-compile-file tangled-file)
-        (delete-file tangled-file))))
+      (let* ((tangled-file (car (org-babel-tangle-file config-file-name))))
+        (byte-compile-file tangled-file))))
 #+end_src
 
 *** Auto-removing hook
@@ -666,67 +664,11 @@ Here I'll define some of my personal keybindings, which means
 above"!
 
 #+begin_src emacs-lisp :tangle yes
-(with-eval-after-load 'general
-  (general-def '(global-map special-mode-map)
-    "C-x C-b" 'ibuffer
-    "C-x k" 'kill-this-buffer
-    "C-c x" 'hcps/date-iso
-    "<f9>" 'hcps/get-selected-text
-    "M--" 'text-scale-decrease
-    "M-+" 'text-scale-increase
-    "C-S-h" 'tab-previous
-    "C-S-l" 'tab-next
-    "C-S-n" 'tab-new
-    "C-S-c" 'tab-close
-    "C-S-s" 'tab-select
-    "M-K" 'hcps/move-line-up
-    "M-J" 'hcps/move-line-down
-    "<f12>" 'menu-bar-mode)
-
-  (general-def 'hcps/leader-map
-    "C-b" 'ibuffer
-    "s" 'save-buffer
-    "k" 'kill-this-buffer
-    "a" 'align-current
-    "i" 'indent-region
-    "e" 'eval-region
-    "c" 'comment-dwim
-    "w k" 'delete-window
-    "w v" 'split-window-vertically
-    "w h" 'split-window-horizontally
-    "v n p" 'narrow-to-page
-    "v n f" 'narrow-to-defun
-    "v n r" 'narrow-to-region
-    "v n w" 'widen)
-
-  (general-def '(normal visual insert emacs special-mode-map)
-    :prefix hcps/leader-key
-    :non-normal-prefix hcps/alt-leader-key
-    "g" '(:ignore t :wk "git")
-    "f" '(:ignore t :wk "file")
-    "w" '(:ignore t :wk "window")
-    "r" '(:ignore t :wk "replace")
-    "p" '(:ignore t :wk "package")
-    "n" '(:ignore t :wk "navigate")
-    "o" '(:ignore t :wk "org")
-    "m" '(:ignore t :wk "mode")
-    "v" '(:ignore t :wk "view")
-    "v n" '(:ignore t :wk "narrow")))
 #+end_src
 
 ** Definitions and preferences
 
 Defaults that are better if defined /other/ way.
-
-*** Default =org-mode=
-
-To ensure ELPA =org-plus-contrib= is prioritized above built-in org.
-
-#+begin_src emacs-lisp :tangle yes
-;; remove built-in `org-mode' from path
-(setq load-path
-      (delete (car (file-expand-wildcards "/usr/share/emacs/*/lisp/org")) load-path))
-#+end_src
 
 *** Paths and =defconst=
 
@@ -970,8 +912,7 @@ Some setting up before we start configuring the packages themselves.
         (eval-print-last-sexp)))
     (load bootstrap-file nil 'nomessage))
 
-  (setq load-prefer-newer t
-        package-user-dir (expand-file-name "straight" user-emacs-directory))
+  (setq package-user-dir (expand-file-name "straight" user-emacs-directory))
 
   (unless (file-directory-p package-user-dir)
     (make-directory package-user-dir t)))
@@ -989,6 +930,12 @@ this org file.
   (setq use-package-verbose t
         use-package-hook-name-suffix nil
         byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local)))
+
+;; general requires this bit otherwise everything blows up when native
+;; compiling
+(eval-and-compile
+  (straight-use-package 'general)
+  (require 'general))
 #+end_src
 
 ** Support
@@ -1016,7 +963,7 @@ extensively throughout this file.
 #+begin_src emacs-lisp :tangle yes
 (use-package general
   :straight t
-  :commands (general-define-key general-def general-unbind)
+  :commands general-define-key
   :preface
   (defconst hcps/leader-key "SPC"
     "Leader key for some special commands.")
@@ -1032,7 +979,55 @@ extensively throughout this file.
     hcps/alt-leader-key '(:wk "leader" :keymap hcps/leader-map :package general))
   (general-def
     :keymaps 'special-mode-map
-    hcps/leader-key '(:wk "leader" :keymap hcps/leader-map :package general)))
+    hcps/leader-key '(:wk "leader" :keymap hcps/leader-map :package general))
+  :config
+  ;; common emacs styled keybindings
+  (general-def '(global-map special-mode-map)
+    "C-x C-b" 'ibuffer
+    "C-x k" 'kill-this-buffer
+    "C-c x" 'hcps/date-iso
+    "<f9>" 'hcps/get-selected-text
+    "M--" 'text-scale-decrease
+    "M-+" 'text-scale-increase
+    "C-S-h" 'tab-previous
+    "C-S-l" 'tab-next
+    "C-S-n" 'tab-new
+    "C-S-c" 'tab-close
+    "C-S-s" 'tab-select
+    "M-K" 'hcps/move-line-up
+    "M-J" 'hcps/move-line-down
+    "<f12>" 'menu-bar-mode)
+  ;; leader-map keybindings
+  (general-def 'hcps/leader-map
+    "C-b" 'ibuffer
+    "s" 'save-buffer
+    "k" 'kill-this-buffer
+    "a" 'align-current
+    "i" 'indent-region
+    "e" 'eval-region
+    "c" 'comment-dwim
+    "w k" 'delete-window
+    "w v" 'split-window-vertically
+    "w h" 'split-window-horizontally
+    "v n p" 'narrow-to-page
+    "v n f" 'narrow-to-defun
+    "v n r" 'narrow-to-region
+    "v n w" 'widen)
+  ;; cute names for the prefixes (some will only be defined further
+  ;; along)
+  (general-def '(normal visual insert emacs special-mode-map)
+    :prefix hcps/leader-key
+    :non-normal-prefix hcps/alt-leader-key
+    "g" '(:ignore t :wk "git")
+    "f" '(:ignore t :wk "file")
+    "w" '(:ignore t :wk "window")
+    "r" '(:ignore t :wk "replace")
+    "p" '(:ignore t :wk "package")
+    "n" '(:ignore t :wk "navigate")
+    "o" '(:ignore t :wk "org")
+    "m" '(:ignore t :wk "mode")
+    "v" '(:ignore t :wk "view")
+    "v n" '(:ignore t :wk "narrow")))
 #+end_src
 
 *** =delight=                                                      :modeline:
@@ -1549,22 +1544,6 @@ expressing actions.
 (use-package evil-surround
   :after evil
   :straight t
-  :commands
-  (evil-surround-edit
-   evil-Surround-edit
-   evil-surround-region
-   evil-Surround-region)
-  :preface
-  (defmacro define-and-bind-quoted-text-object (name key start-regex end-regex)
-    (let ((inner-name (make-symbol (concat "evil-inner-" name)))
-          (outer-name (make-symbol (concat "evil-a-" name))))
-      `(progn
-         (evil-define-text-object ,inner-name (count &optional beg end type)
-           (evil-select-paren ,start-regex ,end-regex beg end type count nil))
-         (evil-define-text-object ,outer-name (count &optional beg end type)
-           (evil-select-paren ,start-regex ,end-regex beg end type count t))
-         (define-key evil-inner-text-objects-map ,key #',inner-name)
-         (define-key evil-outer-text-objects-map ,key #',outer-name))))
   :general
   (:states 'operator
    "s" 'evil-surround-edit
@@ -1573,8 +1552,8 @@ expressing actions.
    "S" 'evil-surround-region
    "gS" 'evil-Surround-region)
   :config
-  (define-and-bind-quoted-text-object "slash" "/" "/" "/")
-  (define-and-bind-quoted-text-object "asterisk" "*" "*" "*")
+  (add-to-list 'evil-surround-pairs-alist '(?/ . ("/" . "/")))
+  (add-to-list 'evil-surround-pairs-alist '(?* . ("*" . "*")))
   (global-evil-surround-mode +1))
 #+end_src
 
@@ -1801,8 +1780,9 @@ there's a cool extension that provides such functionality.
 #+begin_src emacs-lisp :tangle yes
 (use-package dashboard
   :straight t
+  :functions dashboard-mode
   :commands (dashboard-mode dashboard-insert-startupify-lists)
-  :preface
+  :init
   (defun hcps/open-dashboard ()
     (let ((buffer (switch-to-buffer "*dashboard*")))
       (dashboard-mode)
@@ -2018,7 +1998,7 @@ By using =lsp-mode=, we'll be able to have it too!
   (lsp-auto-configure t)
   (lsp-enable-completion-at-point t)
   (lsp-completion-provider :capf)
-  (lsp-idle-delay 0.5)
+  (lsp-idle-delay 0.25)
   (lsp-enable-snippet nil)
   (lsp-enable-semantic-highlighting nil)
   (lsp-modeline-diagnostics-scope :project)
@@ -2663,9 +2643,38 @@ A Collection of Ridiculously Useful eXtensions for Emacs.
   :init
   ;; supposedly get expanded at compile time
   ;; also don't need to be here, but where else should i put them?
-  (crux-with-region-or-buffer indent-region)
-  (crux-with-region-or-buffer eval-region)
-  (crux-with-region-or-buffer untabify)
+  (defadvice indent-region
+      (before with-region-or-buffer activate compile)
+    (interactive
+     (if mark-active
+         (list
+          (region-beginning)
+          (region-end))
+       (list
+        (point-min)
+        (point-max)))))
+
+  (defadvice eval-region
+      (before with-region-or-buffer activate compile)
+    (interactive
+     (if mark-active
+         (list
+          (region-beginning)
+          (region-end))
+       (list
+        (point-min)
+        (point-max)))))
+
+  (defadvice untabify
+      (before with-region-or-buffer activate compile)
+    (interactive
+     (if mark-active
+         (list
+          (region-beginning)
+          (region-end))
+       (list
+        (point-min)
+        (point-max)))))
   :hook
   (find-file-hook . crux-reopen-as-root)
   :general
@@ -3526,7 +3535,17 @@ that can really be of great use while editing C and C++ code.
   :custom
   (clang-format-fallback-style "webkit")
   :config
-  (crux-with-region-or-buffer clang-format-region))
+  ;; crux-with-region-or-buffer ...
+  (defadvice clang-format-region
+      (before with-region-or-buffer activate compile)
+    (interactive
+     (if mark-active
+         (list
+          (region-beginning)
+          (region-end))
+       (list
+        (point-min)
+        (point-max))))))
 #+end_src
 
 *** CUDA
@@ -4170,7 +4189,17 @@ Old language, still great for doing admin stuff in few lines.
   (:keymaps 'cperl-mode-map
    "{" nil)
   :config
-  (crux-with-region-or-buffer cperl-indent-region)
+  ;; crux-with-region-or-buffer
+  (defadvice cperl-indent-region
+      (before with-region-or-buffer activate compile)
+    (interactive
+     (if mark-active
+         (list
+          (region-beginning)
+          (region-end))
+       (list
+        (point-min)
+        (point-max)))))
   (font-lock-add-keywords
    'cperl-mode `(("^#!\\/\\(?:\\w+\\/\\)*\\(\\w+\\)"
                   (1 'font-lock-keyword-face prepend)))))
