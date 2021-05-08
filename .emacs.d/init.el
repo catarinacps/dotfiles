@@ -5,8 +5,8 @@
        (org-config (concat config-file ".org"))
        (tangled-config (concat config-file ".el"))
        (compiled-config (concat config-file ".elc")))
-  (setq safe-local-variable-values
-        '((eval add-hook 'after-save-hook #'hcps/byte-compile-org-config nil t)))
+  (add-to-list 'safe-local-eval-forms
+               '(add-hook 'after-save-hook #'hcps/async-byte-compile-org-config nil t))
 
   ;; if there is no tangled config, tangle it
   (unless (file-exists-p tangled-config)
@@ -23,7 +23,7 @@
 
   ;; if we ended up loading the .el directly, byte-compile and also native compile
   (unless (file-exists-p compiled-config)
-    (byte-compile-file tangled-config)
+    (async-byte-compile-file tangled-config)
     (native-compile-async tangled-config)))
 
 ;; set a sane gc-threshold again

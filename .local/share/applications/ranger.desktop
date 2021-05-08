@@ -7,4 +7,4 @@ Terminal=false
 Categories=ConsoleOnly;System;FileTools;FileManager
 MimeType=inode/directory;
 Keywords=File;Manager;Browser;Explorer;Launcher;Vi;Vim;Python
-Exec=terminal -e ranger
+Exec=termite -e ranger

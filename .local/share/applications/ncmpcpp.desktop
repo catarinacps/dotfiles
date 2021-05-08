@@ -2,7 +2,7 @@
 Type=Application
 Name=ncmpcpp
 Icon=multimedia-audio-player
-Exec=terminal -e ncmpcpp
+Exec=termite -e ncmpcpp
 NoDisplay=false
 Categories=Audiovideo;X-Gnome-Other;
 StartupNotify=false

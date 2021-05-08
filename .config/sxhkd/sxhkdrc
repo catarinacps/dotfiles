@@ -14,7 +14,7 @@
 #
 # hey, have a look at the rest of my dotfiles also!
 #
-#  https://github.com/hcpsilva/dotfiles
+#  https://git.sr.ht/~hcpsilva/dotfiles
 #
 
 
@@ -110,7 +110,7 @@ super + {d,x,y,c}
 
 # opens a simple terminal window running zsh
 super + Return
-    terminal
+    $TERMINAL
 
 # kill the window in focus
 super + shift + q
@@ -152,7 +152,7 @@ super + {shift,ctrl} + F3
 
 # opens alsamixer
 super + ctrl + m
-    terminal -e 'alsamixer'
+    $TERMINAL -e 'alsamixer'
 
 # hide / unhide polybar
 super + shift + p
