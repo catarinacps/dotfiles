@@ -4,7 +4,7 @@ After=mopidy.service
 PartOf=mopidy.service
 
 [Service]
-Restart=on-failure
+Restart=always
 ExecStart=/usr/bin/mpDris2
 BusName=org.mpris.MediaPlayer2.mpd
 RestartSec=5s
