@@ -8,6 +8,4 @@
 #+infojs_opt:
 #+property: session *R*
 #+property: cache yes
-#+property: results graphics
-#+property: exports both
 #+property: tangle yes
