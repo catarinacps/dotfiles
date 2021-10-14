@@ -1,0 +1,21 @@
+# -*- mode: snippet -*-
+# name: header-template
+# key: cpphead_
+# --
+/** @file `(hcps/get-pretty-source-path (buffer-file-name))`
+ *
+ * @brief Brief description.
+ *
+ * More elaborate description.
+ *
+ * @copyright Copyright `(format-time-string "%Y")` `user-full-name`.
+ *
+ * @license This file is subject to  the terms and conditions defined in
+ * the file 'LICENSE', which is part of this source code package.
+ *
+ * @author `user-full-name` <`user-mail-address`>
+ */
+
+#pragma once
+
+$0

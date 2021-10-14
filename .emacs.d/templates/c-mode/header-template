@@ -1,0 +1,24 @@
+# -*- mode: snippet -*-
+# name: header-template
+# key: chead_
+# --
+/** @file `(hcps/get-pretty-source-path (buffer-file-name))`
+ *
+ * @brief Brief description.
+ *
+ * More elaborate description.
+ *
+ * @copyright Copyright `(format-time-string "%Y")` `user-full-name`.
+ *
+ * @license This file is subject to the terms and conditions defined in
+ * the file 'LICENSE', which is part of this source code package.
+ *
+ * @author `user-full-name` <`user-mail-address`>
+ */
+
+#ifndef ${1:`(hcps/get-pretty-include-guard (buffer-file-name))`}
+#define $1
+
+$0
+
+#endif /* $1 */

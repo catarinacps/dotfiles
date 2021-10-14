@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: simple-template
+# key: scmake_
+# --
+## `(file-name-nonfirectory (buffer-file-name))`
+#
+# @author `user-full-name` <`user-mail-address`>
+#
+# @license This file  is subject to the terms and  conditions defined in
+# the file 'LICENSE', which is part of this source code package.
+
+cmake_minimum_required(VERSION `cmake-mode-cmake-version`${1: FATAL_ERROR})
+
+$0

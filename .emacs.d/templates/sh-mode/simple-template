@@ -1,0 +1,55 @@
+# -*- mode: snippet -*-
+# name: simple-template
+# key: ssh_
+# --
+#!/usr/bin/bash
+
+## `(file-name-nondirectory (buffer-file-name))`
+#
+# Copyright: (C) `(format-time-string "%Y")` `user-full-name`
+#
+# Author: `user-full-name` <`user-mail-address`>
+#
+# License: GNU General Public License version 3, or any later version
+#
+# This program is free software; you can redistribute it and/or modify it under
+# the terms of the GNU General Public License as published by the Free Software
+# Foundation, either version 3 of the License, or (at your option) any later
+# version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+#
+## Commentary:
+#
+#
+#
+## Code:
+
+set -euo pipefail
+
+SCRIPT_NAME=$(basename "$0")
+
+ARGS=$(getopt -n "$SCRIPT_NAME" -o 'h' -l 'help' -- "$@")
+
+[ $? != 0 ] && exit 1
+
+eval set -- "$ARGS"
+
+for arg; do
+    case "$arg" in
+        --help | -h)
+            usage
+            exit 0
+            ;;
+        --)
+            shift; break
+            ;;
+    esac
+    shift
+done
+
+$0
+
+## `(file-name-nondirectory (buffer-file-name))` ends here
