@@ -19,6 +19,7 @@
   (load bootstrap-file nil 'nomessage))
 
 (setq package-user-dir (expand-file-name "straight" user-emacs-directory)
+      load-prefer-newer t
       straight-use-package-by-default t)
 
 (unless (file-directory-p package-user-dir)
