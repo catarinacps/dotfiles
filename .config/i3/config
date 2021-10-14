@@ -80,7 +80,7 @@ for_window [class="Xfburn"] floating enable
 for_window [urgent=latest] focus
 
 # start a terminal window in scratchpad on startup
-for_window [instance="__scratchpad"] move scratchpad
+for_window [title="__scratchpad"] move scratchpad
 
 # Set shut down, restart and locking features
 # bindsym $mod+0 mode "$mode_system"

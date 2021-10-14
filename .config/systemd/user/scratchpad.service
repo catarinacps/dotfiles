@@ -1,0 +1,12 @@
+[Unit]
+Description=Scratchpad byobu session
+Wants=graphical-session.target
+After=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/alacritty -t __scratchpad -e /usr/bin/byobu -S scratchpad
+Restart=always
+RestartSec=1s
+
+[Install]
+WantedBy=default.target

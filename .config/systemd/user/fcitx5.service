@@ -1,0 +1,13 @@
+[Unit]
+Description=Fcitx5
+Wants=polybar.service
+After=polybar.service
+
+[Service]
+ExecStartPre=sleep 2
+ExecStart=fcitx5
+Restart=always
+RestartSec=2s
+
+[Install]
+WantedBy=default.target

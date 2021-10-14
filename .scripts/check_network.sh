@@ -70,7 +70,7 @@ while true; do
         WAN4=$(dig -4 TXT +short "$QUERY_DOMAIN" "$QUERY_NS" | tr -d '"')
         LAN4=$(ip -o -4 addr show dev "$IFNAME" scope global | awk '{print $4; exit}')
 
-        SSID="$(iwgetid -r)"; [ "$SSID" ] && IFNAME="$IFNAME ($SSID)"
+        # SSID="$(iwgetid -r)"; [ "$SSID" ] && IFNAME="$IFNAME ($SSID)"
 
         echo "!${IFNAME},${LAN4:-NA},${WAN4:-NA},${LAN6:-NA},${WAN6:-NA}" |
             sed -E 's/\/[0-9]+(,?)/\1/g' >&3
