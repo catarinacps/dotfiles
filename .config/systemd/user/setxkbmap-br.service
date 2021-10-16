@@ -1,10 +1,10 @@
 [Unit]
-Description=setxkbmap
+Description=setxkbmap-br
 Wants=graphical-session.target
 After=graphical-session.target
 
 [Service]
-ExecStart=/usr/bin/setxkbmap -model pc105 us altgr-intl -option caps:escape
+ExecStart=/usr/bin/setxkbmap -model pc105 br -option caps:escape
 Type=oneshot
 Restart=on-failure
 RestartSec=1s
