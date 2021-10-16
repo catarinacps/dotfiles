@@ -1,0 +1,5 @@
+partial default
+xkb_symbols "tilde" {
+    include "level3(ralt_switch)"
+    key <ESC> { [ grave, asciitilde, dead_grave, dead_tilde ] };
+};
