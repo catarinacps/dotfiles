@@ -434,13 +434,6 @@ actually need it.
 Stuff that isn't either a package nor a language nor downloadable: stuff you
 coded yourself.
 
-Alas! Lexical binding:
-
-#+begin_src emacs-lisp :tangle yes
-;;; -*- lexical-binding: t -*-
-
-#+end_src
-
 To-do:
 
 - [X] Increase/decrease font size
@@ -1682,36 +1675,20 @@ best of both worlds!
     (evil-visual-restore))
   (defun dzop/evil-org-insert-state-in-edit-buffer (fun &rest args)
     "Bind `evil-default-state' to `insert' before calling FUN with ARGS."
-    (let ((temp-evil-default-state evil-default-state)
-      (temp-evil-emacs-state-modes evil-emacs-state-modes)
-      (temp-evil-normal-state-modes evil-normal-state-modes)
-      (temp-evil-motion-state-modes evil-motion-state-modes)
-      (temp-evil-visual-state-modes evil-visual-state-modes)
-      (temp-evil-operator-state-modes evil-operator-state-modes)
-      (temp-evil-replace-state-modes evil-replace-state-modes))
-      (setq
-       evil-default-state 'insert
-       ;; Force insert state
-       evil-emacs-state-modes nil
-       evil-normal-state-modes nil
-       evil-motion-state-modes nil
-       evil-visual-state-modes nil
-       evil-operator-state-modes nil
-       evil-replace-state-modes nil)
+    (let ((evil-default-state 'insert)
+          ;; Force insert state
+          (evil-emacs-state-modes nil)
+          (evil-normal-state-modes nil)
+          (evil-motion-state-modes nil)
+          (evil-visual-state-modes nil)
+          (evil-operator-state-modes nil)
+          (evil-replace-state-modes nil))
       (apply fun args)
-      (evil-refresh-cursor)
-      (setq
-       evil-default-state temp-evil-default-state
-       evil-emacs-state-modes temp-evil-emacs-state-modes
-       evil-normal-state-modes temp-evil-normal-state-modes
-       evil-motion-state-modes temp-evil-motion-state-modes
-       evil-visual-state-modes temp-evil-visual-state-modes
-       evil-operator-state-modes temp-evil-operator-state-modes
-       evil-replace-state-modes temp-evil-replace-state-modes)))
+      (evil-refresh-cursor)))
   :init
   (setq evil-want-keybinding nil)
   (advice-add #'org-babel-do-key-sequence-in-edit-buffer
-          :around #'dzop/evil-org-insert-state-in-edit-buffer)
+              :around #'dzop/evil-org-insert-state-in-edit-buffer)
   (hcps/hook-require-once pre-command-hook evil)
   :general
   (:states '(normal visual)
@@ -1739,13 +1716,12 @@ best of both worlds!
   (evil-echo-state nil)
   (evil-want-C-u-scroll t)
   (evil-want-C-d-scroll t)
-  ;; (evil-want-Y-yank-to-eol t) ; why doesn't this work???
+  (evil-want-Y-yank-to-eol t) ; why doesn't this work???
   (evil-ex-substitute-global t)
   (evil-respect-visual-line-mode t)
   (evil-mode-line-format '(before . mode-line-front-space))
   :config
-  (evil-mode +1)
-  (custom-set-variables '(evil-want-Y-yank-to-eol t t)))
+  (evil-mode +1))
 #+end_src
 
 **** States
