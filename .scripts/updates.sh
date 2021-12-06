@@ -8,8 +8,8 @@ SHORT_SLEEP=300
 LONG_SLEEP=$((SHORT_SLEEP * 3))
 
 while true; do
-    if UPDATES="$(checkupdates 2>/dev/null)"; then
-        QTY="$(printf '%s\n' "$UPDATES" | wc -l)"
+    if UPDATES=$(checkupdates 2>/dev/null); then
+        QTY=$(printf '%s\n' "$UPDATES" | wc -l)
 
         [ "$QTY" -gt 50 ] && URGENCY='critical' || URGENCY='normal'
 
