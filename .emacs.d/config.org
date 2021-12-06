@@ -1842,7 +1842,7 @@ popular packages,
   :config
   (setq evil-collection-mode-list
         (cl-set-difference evil-collection-mode-list
-                           '(magit markdown-mode dashboard ibuffer lispy)))
+                           '(magit markdown-mode org dashboard ibuffer lispy)))
   (evil-collection-init))
 #+end_src
 
@@ -3314,6 +3314,12 @@ anyone should try Emacs.
    "m p" #'org-set-property
    "m s" #'org-match-sparse-tree
    "m l" #'org-insert-link)
+  (:states 'motion
+   :keymaps 'org-mode-map
+   "{" #'org-backward-paragraph
+   "}" #'org-forward-paragraph
+   "(" #'org-backward-sentence
+   ")" #'org-forward-sentence)
   (:keymaps 'hcps/leader-map
    "o b" #'org-switchb)
   :config
