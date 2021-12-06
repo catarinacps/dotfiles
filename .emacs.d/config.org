@@ -166,6 +166,7 @@ Cool Emacs configs from cool people:
   - [[Racket][Racket]]
   - [[YAML][YAML]]
   - [[GGO][GGO]]
+  - [[Git-related files][Git-related files]]
 - [[Local variables][Local variables]]
 
 * Introduction
@@ -1235,7 +1236,9 @@ Let's monitor ourselves with =whitespace=.
   (whitespace-style
    '(face ;;
      tabs indentation trailing lines-tail missing-newline-at-eof
-     space-after-tab space-before-tab)))
+     space-after-tab space-before-tab))
+  :custom-face
+  (whitespace-missing-newline-at-eof ((t (:foreground unspecified :background unspecified)))))
 #+end_src
 
 *** =compile=
@@ -1914,7 +1917,7 @@ very pretty on =gruvbox=).
   (setq completion-category-defaults nil)
   :custom
   (completion-styles '(orderless))
-  (completion-category-overrides nil)
+  (completion-category-overrides '((file (styles . (partial-completion)))))
   (orderless-matching-styles '(orderless-regexp orderless-initialism orderless-prefixes))
   :custom-face
   (orderless-match-face-0 ((t (:weight bold :foreground "#d75f5f"))))
@@ -1962,7 +1965,10 @@ that eventually changes in the future, 'cause I like Corfu more than I like
   :demand t
   :custom
   (corfu-cycle t)
+  (corfu-quit-at-boundary t)
+  (corfu-quit-no-match t)
   (corfu-max-width 50)
+  (corfu-scroll-margin 5)
   :custom-face
   (corfu-current ((t (:inherit hl-line :extend t))))
   :general
@@ -2349,7 +2355,7 @@ This package does have an extra sister package: =lsp-ui=.
 
 =flycheck= provides a reliable source to syntax checking in Emacs.
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp :tangle yes
 (use-package flycheck
   :straight t
   :straight pos-tip
@@ -2358,8 +2364,7 @@ This package does have an extra sister package: =lsp-ui=.
   :delight
   (flycheck-mode " fc")
   :hook
-  ((prog-mode-hook . flycheck-mode)
-   (flycheck-mode-hook . flycheck-pos-tip-mode))
+  (flycheck-mode-hook . flycheck-pos-tip-mode)
   :custom
   (flycheck-check-syntax-automatically '(save mode-enabled))
   (flycheck-disabled-checkers '(emacs-lisp-checkdoc))
@@ -2403,7 +2408,7 @@ Non-bloated =lsp-mode= alternative. Always strive for leaner, simpler alternativ
   (eglot-send-changes-idle-time 0.10)
   :config
   (add-to-list 'eglot-server-programs
-               '((c++-mode c-mode) . ("clangd" "--header-insertion=never")))
+               '((c++-mode c-mode) . ("clangd")))
   (add-to-list 'eglot-server-programs
                '((clojure-mode clojurec-mode clojurescript-mode) . ("clojure-lsp")))
   (require 'xref))
@@ -2447,8 +2452,7 @@ Of course, =flyspell= corrects your writing!
   (flyspell-mode " fs")
   (flyspell-prog-mode " fs")
   :hook
-  ((prog-mode-hook . wucuo-start)
-   (text-mode-hook . wucuo-start))
+  (text-mode-hook . wucuo-start)
   :custom
   (ispell-program-name "aspell")
   (ispell-extra-args '("--sug-mode=ultra" "--run-together" "--run-together-limit=16"))
@@ -2458,7 +2462,7 @@ Of course, =flyspell= corrects your writing!
   (:keymaps 'hcps/leader-map
    "e d" #'ispell-change-dictionary)
   :config
-  (add-to-list 'ispell-skip-region-alist '("^#+BEGIN_SRC" . "^#+END_SRC")))
+  (add-to-list 'ispell-skip-region-alist '("^#+begin_src" . "^#+end_src")))
 #+end_src
 
 *** =diff-hl=
@@ -2993,6 +2997,7 @@ Obscure but nice way to enable ligature fonts.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package ligature
+  :disabled
   :demand t
   :straight
   (ligature
@@ -3117,6 +3122,7 @@ support for editing files inside containers.
 
 #+begin_src emacs-lisp :tangle yes
 (use-package docker-tramp
+  :disabled
   :after tramp
   :demand t)
 #+end_src
@@ -3238,7 +3244,7 @@ anyone should try Emacs.
    (org-mode-hook . yas-minor-mode)
    ;; (org-mode-hook . flycheck-mode)
    (org-mode-hook . eldoc-mode)
-   (org-mode-hook . visual-line-mode)
+   ;; (org-mode-hook . visual-line-mode)
    (org-mode-hook . (lambda () (whitespace-toggle-options 'lines-tail)))
    (org-log-buffer-setup-hook . evil-emacs-state)
    (org-log-buffer-setup-hook . hcps/hide-evil-tag))
@@ -3246,7 +3252,7 @@ anyone should try Emacs.
   (org-return-follows-link t)
   ;; the following used to be '(latex script entities)
   (org-highlight-latex-and-related nil)
-  (org-hide-leading-stars nil)
+  (org-hide-leading-stars t)
   (org-hide-emphasis-markers t)
   (org-support-shift-select nil)
   (org-link-descriptive t)
@@ -3254,7 +3260,7 @@ anyone should try Emacs.
   (org-directory (expand-file-name "Org" onedrive-user-dir))
   (org-cycle-emulate-tab t)
   (org-use-property-inheritance nil)
-  (org-startup-indented nil)
+  (org-startup-indented t)
   (org-startup-folded t)
   (org-outline-path-complete-in-steps nil)
   (org-fontify-done-headline t)
@@ -3284,7 +3290,7 @@ anyone should try Emacs.
   (org-todo-keywords '((sequence "TODO(t)" "STARTED(s!)" "|" "DONE(d!)")
                        (sequence "WAITING(w@/!)" "HOLD(h@/!)" "|" "CANCELLED(c@/!)")))
   (org-log-into-drawer t)
-  (org-effort-property "EFFORT")
+  ;; (org-effort-property "EFFORT")
   (org-global-properties
    '(("EFFORT_ALL" . "0 1 2 3 4 5 6 7 8 9 10")))
   :general
@@ -3329,6 +3335,7 @@ anyone should try Emacs.
   (:keymaps 'hcps/leader-map
    "o b" #'org-switchb)
   :config
+  (setq org-effort-property "EFFORT")
   (setq-mode-local org-mode electric-pair-inhibit-predicate (lambda (c) (if (char-equal c ?<) t (electric-pair-default-inhibit c))))
   (setq-mode-local org-mode electric-pair-pairs (append electric-pair-pairs org-electric-pairs)))
 #+end_src
@@ -3560,6 +3567,26 @@ To see inline pdf images! Amazing right?
   :after org
   :hook
   (org-mode-hook . org-inline-pdf-mode))
+#+end_src
+
+**** =org-bars=
+
+Adds bars to visualize the indentation provided by the built-in =org-indent=
+
+#+begin_src emacs-lisp :tangle yes
+(use-package org-bars
+  :straight
+  (org-bars
+   :type git
+   :host github
+   :repo "tonyaldon/org-bars")
+  :hook
+  (org-mode-hook . org-bars-mode)
+  :config
+  (setq org-bars-stars '(:empty "*" :invisible "*" :visible "*")
+        org-bars-color-options '(:desaturate-level-faces 15
+                                 :darken-level-faces 30)
+        org-bars-extra-pixels-height 0))
 #+end_src
 
 *** Export
@@ -4018,7 +4045,8 @@ Statistics/. It provides you with everything you need from R.
    "m z" #'ess-switch-to-end-of-ESS)
   :custom
   (ido-enable-flex-matching t)
-  (ess-auto-width 'frame)
+  (ess-gen-proc-buffer-name-function #'ess-gen-proc-buffer-name:simple)
+  (ess-auto-width fill-column)
   (ess-style 'RStudio))
 #+end_src
 
@@ -4032,36 +4060,6 @@ As for shell-scripting:
   :commands (shell-script-mode sh-mode)
   :mode ("\\.zsh\\'" . shell-script-mode)
   :preface
-  (defconst more-sh-utilities
-    '("addbib" "apropos" "ar" "at" "awk" "banner" "basename" "batch" "biff"
-      "cal" "calendar" "cancel" "cat" "cb" "cc" "checkeq" "checknr" "chgrp"
-      "chmod" "chown" "chroot" "clear" "cmp" "colcrt" "comm" "compress" "cp"
-      "cpio" "cpp" "csh" "ctags" "cut" "date" "dbx" "dd" "deroff" "df" "diff"
-      "dirname" "du" "e" "ed" "edit" "env" "eqn" "ex" "expand" "expr" "file"
-      "find" "finger" "fmt" "fold" "ftp" "git" "gprof" "grep" "groups" "head"
-      "hostname" "indent" "install" "join" "last" "ld" "leave" "less" "lex"
-      "lint" "ln" "login" "look" "lookbib" "lorder" "lp" "lpq" "lpr" "lprm"
-      "ls" "mail" "make" "man" "mesg" "mkdir" "mkfifo" "mkstr" "more" "mv"
-      "neqn" "nice" "nm" "nroff" "od" "page" "passwd" "paste" "pgrep" "pkill"
-      "pr" "prof" "ps" "ranlib" "rcp" "rev" "rlogin" "rm" "rmdir" "roffbib"
-      "rsh" "rup" "ruptime" "rusers" "rwall" "rwho" "sccs" "script" "sed" "seq"
-      "sh" "size" "sleep" "sort" "sortbib" "spell" "split" "strings" "strip"
-      "stty" "su" "sudo" "tabs" "tac" "tail" "talk" "tar" "tbl" "tee" "telnet"
-      "tftp" "time" "timeout" "touch" "tr" "troff" "tsort" "tty" "ul" "uname"
-      "uncompress" "unexpand" "uniq" "units" "unlink" "uptime" "users" "uucp"
-      "vacation" "vedit" "vi" "view" "w" "wall" "wc" "whatis" "whereis" "which"
-      "who" "whoami" "write" "xargs" "xstr" "yacc" "yes" "zcat" "gawk" "curl"
-      "ip" "killall")
-    "A list of common shell commands to be fontified especially in `sh-mode'.")
-  (defconst more-sh-builtins
-    '("alias" "bg" "bind" "break" "builtin" "caller" "cd"
-      "command" "compgen" "complete" "compopt" "continue" "declare" "dirs"
-      "disown" "echo" "enable" "eval" "exec" "exit" "export" "false" "fc" "fg"
-      "getopts" "hash" "help" "history" "jobs" "kill" "let" "local" "logout"
-      "mapfile" "popd" "printf" "pushd" "pwd" "read" "readarray" "readonly"
-      "return" "set" "shift" "shopt" "source" "suspend" "test" "times" "trap"
-      "true" "type" "typeset" "ulimit" "umask" "unalias" "unset" "wait")
-    "Actual list of common keywords and builtins in `sh-mode'.")
   (defconst prezto-files
     '(".zlogin" ".zlogin" ".zlogout" ".zpreztorc" ".zprofile" ".zshenv" ".zshrc")
     "Files that are too zsh-style files.")
@@ -4070,51 +4068,27 @@ As for shell-scripting:
     (if (and buffer-file-name
              (member (file-name-nondirectory buffer-file-name) prezto-files))
         (sh-set-shell "zsh")))
-  (defun sh--match-variables-in-quotes (limit)
-    "Search for variables in double-quoted strings bounded by LIMIT."
-    (with-syntax-table sh-mode-syntax-table
-      (let (res)
-        (while (and
-                (setq res (re-search-forward
-                           "[^\\]\\(\\$\\)\\({.+?}\\|\\<[a-zA-Z0-9_]+\\|[@*#!]\\)"
-                           limit t))
-                (not (eq (nth 3 (syntax-ppss)) ?\"))))
-        res)))
-  (defun sh--match-command-subst-in-quotes (limit)
-    "Search for a command in double-quoted strings bounded by LIMIT."
-    (with-syntax-table sh-mode-syntax-table
-      (let (res)
-        (while (and
-                (setq res (re-search-forward
-                           "[^\\]\\(\\$(.+?)\\|`.+?`\\)"
-                           limit t))
-                (not (eq (nth 3 (syntax-ppss)) ?\"))))
-        res)))
   :hook
   ((sh-mode-hook . zsh-prezto-files)
-   (sh-mode-hook . aggressive-indent-mode)
    (sh-mode-hook . tree-sitter-mode)
-   (sh-mode-hook . rainbow-delimiters-mode))
-  :config
-  ;; (font-lock-add-keywords
-  ;;  'sh-mode `((sh--match-variables-in-quotes
-  ;;              (1 'default prepend)
-  ;;              (2 'font-lock-variable-name-face prepend))
-  ;;             ;; (sh--match-command-subst-in-quotes
-  ;;             ;;  (1 'sh-quoted-exec prepend))
-  ;;             ("[^\\]\\([|&]\\{1,2\\}\\|[0-9]?[<>]\\{1,3\\}&?[0-9-]?\\|;\\{1,2\\}\\)"
-  ;;              (1 'font-lock-keyword-face append))
-  ;;             ;; ("\\(?:^\\|;\\)[^(]*[^\\]\\()\\)"
-  ;;             ;;  (1 'font-lock-keyword-face append))
-  ;;             (,(concat
-  ;;                "\\(?:^\\|[$<>](\\|||\\|&&\\|[;|]\\)"
-  ;;                "[[:blank:]]*"
-  ;;                "\\(?:while\\|for\\|if\\)?"
-  ;;                "[[:blank:]]*"
-  ;;                "\\(?:[[:alpha:]_]+=\\(?:[\"'][[:ascii:]]*?[\"']\\|[^[:blank:];&|\\$()]*?\\)?[[:blank:]]*\\)*"
-  ;;                (regexp-opt (append more-sh-builtins more-sh-utilities) 'words))
-  ;;              (1 'font-lock-builtin-face append))))
-  )
+   (sh-mode-hook . flycheck-mode)
+   (sh-mode-hook . rainbow-delimiters-mode)
+   (sh-mode-hook . sh-electric-here-document-mode))
+  :general
+  (:states '(normal visual)
+   :keymaps 'sh-mode-map
+   :prefix hcps/leader-key
+   :non-normal-prefix hcps/alt-leader-key
+   "m s" #'sh-set-shell
+   "m i c" #'sh-case
+   "m i f" #'sh-for
+   "m i i" #'sh-if
+   "m i s" #'sh-select
+   "m i w" #'sh-while
+   "m i o" #'sh-while-getopts
+   "m i u" #'sh-until
+   "m i F" #'sh-function
+   "m i I" #'sh-indexed-loop))
 #+end_src
 
 For =shell= completion I use =bash-complete=, which auto completes several
@@ -4368,8 +4342,7 @@ Packages to write Julia source code in Emacs.
     "Because jupyter still uses this symbol.")
   (advice-add #'julia :around (lambda (func &rest args) (set-buffer (apply func args))))
   :hook
-  ((julia-mode-hook . lsp)
-   (julia-mode-hook . tree-sitter-mode)
+  ((julia-mode-hook . tree-sitter-mode)
    (julia-mode-hook . rainbow-delimiters-mode)
    (julia-mode-hook . aggressive-indent-mode))
   :general
@@ -4817,6 +4790,27 @@ Yet Another Markup Language
   :mode "\\.ggo\\'"
   :hook
   (ggo-mode-hook . (lambda () (run-hooks 'prog-mode-hook))))
+#+end_src
+
+** Git-related files
+
+Like configuration files, only, I don't know, different?
+
+#+begin_src emacs-lisp :tangle yes
+(use-package git-modes
+  :mode
+  (("/\\.gitconfig\\'"      . gitconfig-mode)
+   ("/\\.git/config\\'"     . gitconfig-mode)
+   ("/modules/.*/config\\'" . gitconfig-mode)
+   ("/git/config\\'"        . gitconfig-mode)
+   ("/\\.gitmodules\\'"     . gitconfig-mode)
+   ("/etc/gitconfig\\'"     . gitconfig-mode)
+   ("/\\.gitignore\\'"      . gitignore-mode)
+   ("/info/exclude\\'"      . gitignore-mode)
+   ("/git/ignore\\'"        . gitignore-mode)
+   ("/\\.gitattributes\\'"  . gitattributes-mode)
+   ("/info/attributes\\'"   . gitattributes-mode)
+   ("/git/attributes\\'"    . gitattributes-mode)))
 #+end_src
 
 * Local variables

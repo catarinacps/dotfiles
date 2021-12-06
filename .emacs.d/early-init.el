@@ -9,7 +9,7 @@
       package--init-file-ensured t)
 
 ;; setup some frame configurations early so we don't waste time later
-(setq default-frame-alist '((font . "Dina")
+(setq default-frame-alist '((font . "Unifont")
                             (menu-bar-lines . 0)
                             (tool-bar-lines . 0)
                             (tab-bar-show . t)
