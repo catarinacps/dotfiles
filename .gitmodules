@@ -1,0 +1,24 @@
+[submodule ".config/nvim/plugged/indentLine/nvim/plugged/indentLine"]
+	path = .config/nvim/plugged/indentLine/nvim/plugged/indentLine
+	url = https://github.com/Yggdroot/indentLine.git
+[submodule ".config/nvim/plugged/pear-tree/nvim/plugged/pear-tree"]
+	path = .config/nvim/plugged/pear-tree/nvim/plugged/pear-tree
+	url = https://github.com/tmsvg/pear-tree.git
+[submodule ".config/nvim/plugged/rainbow/nvim/plugged/rainbow"]
+	path = .config/nvim/plugged/rainbow/nvim/plugged/rainbow
+	url = https://github.com/luochen1990/rainbow.git
+[submodule ".config/nvim/plugged/vim-abolish/nvim/plugged/vim-abolish"]
+	path = .config/nvim/plugged/vim-abolish/nvim/plugged/vim-abolish
+	url = https://github.com/tpope/vim-abolish.git
+[submodule ".config/nvim/plugged/vim-autoformat/nvim/plugged/vim-autoformat"]
+	path = .config/nvim/plugged/vim-autoformat/nvim/plugged/vim-autoformat
+	url = https://github.com/Chiel92/vim-autoformat.git
+[submodule ".config/nvim/plugged/vim-repeat/nvim/plugged/vim-repeat"]
+	path = .config/nvim/plugged/vim-repeat/nvim/plugged/vim-repeat
+	url = https://github.com/tpope/vim-repeat.git
+[submodule ".config/nvim/plugged/vim-surround/nvim/plugged/vim-surround"]
+	path = .config/nvim/plugged/vim-surround/nvim/plugged/vim-surround
+	url = https://github.com/tpope/vim-surround.git
+[submodule ".config/nvim/plugged/vim-visual-multi/nvim/plugged/vim-visual-multi"]
+	path = .config/nvim/plugged/vim-visual-multi/nvim/plugged/vim-visual-multi
+	url = https://github.com/mg979/vim-visual-multi.git
