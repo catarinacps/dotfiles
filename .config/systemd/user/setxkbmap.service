@@ -4,7 +4,8 @@ Wants=graphical-session.target
 After=graphical-session.target
 
 [Service]
-ExecStart=/usr/bin/xkbcomp -I%h/.config/xkb %h/.config/xkb/keymap.txt $DISPLAY
+Environment="DISPLAY=:0"
+ExecStart=/usr/bin/xkbcomp -I%h/.config/xkb %h/.config/xkb/keymap.txt ${DISPLAY}
 Type=oneshot
 Restart=on-failure
 RestartSec=1s

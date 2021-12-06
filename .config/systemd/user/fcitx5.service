@@ -2,6 +2,7 @@
 Description=Fcitx5
 Wants=polybar.service
 After=polybar.service
+After=setxkbmap.service
 
 [Service]
 ExecStartPre=sleep 2
