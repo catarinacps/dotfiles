@@ -8,8 +8,8 @@ set $mod Mod4
 # workspace_layout tabbed <stacking|tabbed>
 
 # Configure border style <normal|1pixel|pixel xx|none|pixel>
-new_window pixel 4
-new_float pixel 4
+new_window pixel 0
+new_float pixel 0
 
 # Hide borders
 hide_edge_borders none
@@ -42,10 +42,13 @@ set $ws7 7
 set $ws8 8
 
 # Open applications on specific workspaces
-# assign [class="Thunderbird"] $ws1
+assign [class="emacs"] $ws1
+assign [class="firefox"] $ws2
 # assign [class="Pale moon"] $ws2
+assign [class="Thunderbird"] $ws3
 # assign [class="Pcmanfm"] $ws3
 # assign [class="Skype"] $ws5
+assign [class="spotify"] $ws7
 
 # Open specific applications in floating mode
 for_window [title="alsamixer"] floating enable
