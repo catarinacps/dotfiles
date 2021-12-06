@@ -649,6 +649,12 @@ And sometimes there's no need in having an evil tag
   (setq-local evil-operator-state-tag nil))
 #+end_src
 
+also goddamnit can we please not have variable pitch?
+
+#+begin_src emacs-lisp :tangle yes
+(custom-set-faces '(mode-line-active ((t (:inherit mode-line)))))
+#+end_src
+
 *** Move lines
 
 Using the ~transpose-lines~ function.
