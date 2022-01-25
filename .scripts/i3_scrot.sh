@@ -3,7 +3,7 @@
 # simple screenshot-script using scrot for manjaro-i3 by oberon@manjaro.org
 # modified by me! @hcpsilva
 
-DEFAULT_DIR=$HOME/Pictures
+DEFAULT_DIR="$HOME/Pictures"
 
 usage() {
     cat <<EOF
@@ -24,24 +24,24 @@ EOF
 
 scrot_dir=${2:-$DEFAULT_DIR}
 
-[ ! -d $scrot_dir ] && mkdir -p $scrot_dir
+[ ! -d "$scrot_dir" ] && mkdir -p "$scrot_dir"
 
 for i in "$@"; do
     case $i in
         --desk|-d)
-            cd $scrot_dir
+            cd "$scrot_dir"
             scrot &&
-                notify-send "screenshot has been saved in $scrot_dir"
+                notify-send "full-screen screenshot has been saved in $scrot_dir"
             ;;
         --window|-w)
-            cd $scrot_dir
+            cd "$scrot_dir"
             scrot -u &&
-                notify-send "screenshot has been saved in $scrot_dir"
+                notify-send "window screenshot has been saved in $scrot_dir"
             ;;
         --select|-s)
-            cd $scrot_dir
+            cd "$scrot_dir"
             scrot -fs &&
-                notify-send "screenshot has been saved in $scrot_dir"
+                notify-send "region screenshot has been saved in $scrot_dir"
             ;;
         --help|-h)
             usage
