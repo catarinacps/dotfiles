@@ -178,6 +178,9 @@ super + 0
 super + {_,shift,ctrl} + @XF86LaunchA
     i3_scrot.sh -{w,s,d}
 
+super + {_,shift,ctrl} + @Print
+    i3_scrot.sh -{w,s,d}
+
 # for my notebook, toggles the touchpad
 XF86TouchpadToggle
     touch_toggle.sh
@@ -196,21 +199,24 @@ XF86Audio{Raise,Lower}Volume
 # stuff that really is only here because some stuff is kinda broken sometimes
 #
 
-# to start and stop compton
-super + {_,ctrl,shift} + t
-    CMD='{stop,start,restart} picom.service'; systemctl --user $CMD; notify-send $CMD
+super + {_,ctrl,shift} + {t,d,x,e}
+    CMD='{stop,start,restart} {picom,dunst,sxhkd,emacs}.service'; systemctl --user $CMD; notify-send $CMD
 
-# restart the notification system
-super + shift + d
-    CMD='restart dunst.service'; systemctl --user $CMD; notify-send $CMD
+# # to start and stop compton
+# super + {_,ctrl,shift} + t
+#     CMD='{stop,start,restart} picom.service'; systemctl --user $CMD; notify-send $CMD
 
-# reload sxhkd, useful if you added any new keybindings
-super + shift + x
-    CMD='reload sxhkd.service'; systemctl --user $CMD; notify-send $CMD
+# # restart the notification system
+# super + shift + d
+#     CMD='restart dunst.service'; systemctl --user $CMD; notify-send $CMD
 
-# restarts emacs
-super + shift + e
-    CMD='restart emacs.service'; systemctl --user $CMD; notify-send $CMD
+# # reload sxhkd, useful if you added any new keybindings
+# super + shift + x
+#     CMD='reload sxhkd.service'; systemctl --user $CMD; notify-send $CMD
+
+# # restarts emacs
+# super + shift + e
+#     CMD='restart emacs.service'; systemctl --user $CMD; notify-send $CMD
 
 # i used to do things this way, which is way fancier btw:
     # tee >(xargs notify-send) >(xargs -n 2 systemctl --user) <<<'restart emacs.service'
