@@ -3376,6 +3376,7 @@ multiple export backends and such
 
 #+begin_src emacs-lisp :tangle yes
 (use-package org-ref
+  :disabled
   :preface
   (defconst hcps/user-org-ref-path
     (expand-file-name "Documentos/Papers" onedrive-user-dir))
@@ -3631,9 +3632,7 @@ Configurations relating all the numerous org exporters.
    :keymaps 'org-mode-map
    :prefix hcps/leader-key
    :non-normal-prefix hcps/alt-leader-key
-   "m e" #'org-export-dispatch)
-  :config
-  (require 'org-ref))
+   "m e" #'org-export-dispatch))
 #+end_src
 
 **** =ox-extra=
@@ -3908,6 +3907,11 @@ languages):
    '((java-mode . "java")
      (awk-mode  . "awk")
      (other     . "linux")))
+  (c-doc-comment-style
+   '((java-mode . javadoc)
+     (pike-mode . autodoc)
+     (c-mode    . doxygen)
+     (c++-mode  . doxygen)))
   (c-basic-offset 4))
 #+end_src
 
@@ -3916,6 +3920,7 @@ doxygen, here's a package that highlights it!
 
 #+begin_src emacs-lisp :tangle yes
 (use-package highlight-doxygen
+  :disabled
   :hook
   (c-mode-common-hook . highlight-doxygen-mode)
   :custom-face
