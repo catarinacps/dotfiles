@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: alg
-# key: <alg
-# --
-#+begin_algorithm
-$0
-#+end_algorithm

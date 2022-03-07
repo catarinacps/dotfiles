@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: r-graph
-# key: <rg
-# --
-#+begin_src R :session :results output file graphics :file (org-babel-temp-file "figure" ".pdf") :unit cm :width 9 :height 6
-$0
-#+end_src

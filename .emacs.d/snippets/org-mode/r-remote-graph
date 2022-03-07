@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: r-remote-graph
-# key: <rg
-# --
-#+begin_src R :session *R-REMOTE* :results output file graphics :file (org-babel-temp-file "figure" ".png") :dir (hcps/get-user-server) :width 900 :height 600
-$0
-#+end_src

@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: julia-graph
-# key: <jg
-# --
-#+begin_src jupyter-julia :display image/svg+xml image/jpeg image/png
-$0
-#+end_src

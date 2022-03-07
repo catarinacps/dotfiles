@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: dot
-# key: <d
-# --
-#+begin_src dot :results output graphics file :file (org-babel-temp-file "figure" ".pdf") :exports results :cmdline -Kdot -Tpdf
-$0
-#+end_src

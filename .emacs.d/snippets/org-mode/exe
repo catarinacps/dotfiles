@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: exe
-# key: <e
-# --
-#+begin_example
-$0
-#+end_example

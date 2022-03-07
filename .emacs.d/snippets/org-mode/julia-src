@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: julia-src
-# key: <j
-# --
-#+begin_src jupyter-julia :display text/plain
-$0
-#+end_src
