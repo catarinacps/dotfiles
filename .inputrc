@@ -1,0 +1,10 @@
+# -*- conf -*-
+
+$include /etc/inputrc
+
+set editing-mode emacs
+
+Control-u: kill-whole-line
+Control-Space: set-mark
+"\e\C-k": shell-kill-word
+"\e\C-\b": shell-backward-kill-word
