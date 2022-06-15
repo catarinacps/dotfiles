@@ -25,7 +25,7 @@
 #
 ## Code:
 
-SENTENCES_FILE="$HOME/OneDrive/Documentos/enfrentamento.txt"
+SENTENCES_FILE="$HOME/OneDrive/documentos/enfrentamento.txt"
 
 LINE_COUNT=$(wc -l < "$SENTENCES_FILE")
 
