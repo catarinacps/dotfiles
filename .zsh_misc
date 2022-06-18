@@ -1,0 +1,11 @@
+# -*- mode: shell-script; sh-shell: zsh; -*-
+
+# improve help
+unalias run-help
+autoload run-help
+HELPDIR=/usr/share/zsh/"${ZSH_VERSION}"/help
+alias help=run-help
+
+# home config repo stuff
+alias dotgit='GIT_DIR=$HOME/.cfg/ GIT_WORK_TREE=$HOME git'
+compdef dotgit='git'
