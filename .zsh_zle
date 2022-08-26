@@ -1,16 +1,17 @@
 # -*- mode: shell-script; sh-shell: zsh; -*-
 
+typeset -A funcs
+
+funcs[forward-word]='^[^F'
+funcs[backward-word]='^[^B'
+funcs[kill-word]='^[^K'
+funcs[backward-kill-word]='^[^H'
+
 autoload -U select-word-style
 select-word-style bash
-zle -N unix-backward-kill-word backward-kill-word-match
-zle -N unix-kill-word kill-word-match
-zle -N unix-forward-word forward-word-match
-zle -N unix-backward-word backward-word-match
-zstyle :zle:unix-backward-word word-style space
-zstyle :zle:unix-forward-word word-style space
-zstyle :zle:unix-backward-kill-word word-style space
-zstyle :zle:unix-kill-word word-style space
-bindkey '^[^F' unix-forward-word
-bindkey '^[^B' unix-backward-word
-bindkey '^[^K' unix-kill-word
-bindkey '^[^H' unix-backward-kill-word
+
+for func key in ${(kv)funcs}; do
+    zle -N "unix-$func" "$func-match"
+    zstyle ":zle:unix-$func" word-style space
+    bindkey "$key" "unix-$func"
+done

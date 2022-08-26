@@ -2,7 +2,10 @@
 
 $include /etc/inputrc
 
+set bell-style none
 set editing-mode emacs
+set show-all-if-ambiguous on
+set print-completions-horizontally on
 
 Control-u: kill-whole-line
 Control-Space: set-mark

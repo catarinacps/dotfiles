@@ -1,3 +1,6 @@
+# if not running interactively, don't do anything
+[[ $- == *i* ]] || return
+
 # check terminal type
 case "$TERM" in
     (tramp | dumb | xterm-mono)
